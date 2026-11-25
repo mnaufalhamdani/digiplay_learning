@@ -1,0 +1,113 @@
+{
+ "keterangan": "Pelajaran mengetik bertahap untuk db:seed (tabel pelajaran_mengetik). Pelajaran n+1 terbuka bila target pelajaran n tercapai.",
+ "pelajaran": [
+  {
+   "kode": "P01",
+   "nama": "Baris tengah: asdf",
+   "urutan": 1,
+   "tombol_fokus": "asdf",
+   "teks_latihan": "asdf asdf fdsa fdsa sad fad dad add as as ad ad fa fa sa sa asdf fdsa",
+   "target_wpm": 6,
+   "target_akurasi": 90
+  },
+  {
+   "kode": "P02",
+   "nama": "Baris tengah: jkl;",
+   "urutan": 2,
+   "tombol_fokus": "jkl;",
+   "teks_latihan": "jkl; jkl; ;lkj ;lkj kl; jl; lk lk jk jk kj kj ;l ;l jkl; ;lkj",
+   "target_wpm": 6,
+   "target_akurasi": 90
+  },
+  {
+   "kode": "P03",
+   "nama": "Baris tengah lengkap",
+   "urutan": 3,
+   "tombol_fokus": "asdfghjkl;",
+   "teks_latihan": "salah gagal gagak kakak salak dada jaga haha jalak lagak sakal gaji hajah",
+   "target_wpm": 8,
+   "target_akurasi": 90
+  },
+  {
+   "kode": "P04",
+   "nama": "Baris atas kiri: qwert",
+   "urutan": 4,
+   "tombol_fokus": "qwert",
+   "teks_latihan": "qwert qwert trewq tre rew wet tet ewe qwe wer ert qwert trewq ewe",
+   "target_wpm": 8,
+   "target_akurasi": 90
+  },
+  {
+   "kode": "P05",
+   "nama": "Baris atas kanan: yuiop",
+   "urutan": 5,
+   "tombol_fokus": "yuiop",
+   "teks_latihan": "yuiop yuiop poiuy pu pi pi oi oi yu yu ui ui op op yuiop poiuy",
+   "target_wpm": 8,
+   "target_akurasi": 90
+  },
+  {
+   "kode": "P06",
+   "nama": "Baris atas dan tengah",
+   "urutan": 6,
+   "tombol_fokus": "qwertyuiopasdfghjkl;",
+   "teks_latihan": "kuda tahu jahe sapu ular pita topi kuku padi pagi pahit tidur sakit ayah pasir",
+   "target_wpm": 10,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P07",
+   "nama": "Baris bawah kiri: zxcvb",
+   "urutan": 7,
+   "tombol_fokus": "zxcvb",
+   "teks_latihan": "zxcvb zxcvb bvcxz cv cv zx zx xc xc vb vb bcx cvb zxc zxcvb bvcxz",
+   "target_wpm": 10,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P08",
+   "nama": "Baris bawah kanan: nm,./",
+   "urutan": 8,
+   "tombol_fokus": "nm,./",
+   "teks_latihan": "nm nm mn mn n,m m,n ,. ., ./ /. nm,. m,./ n.m nm,./ /.,mn",
+   "target_wpm": 10,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P09",
+   "nama": "Semua huruf: kata sehari-hari",
+   "urutan": 9,
+   "tombol_fokus": "a-z",
+   "teks_latihan": "sekolah belajar komputer pensil jendela mainan bermain makanan minuman keluarga teman sahabat gembira",
+   "target_wpm": 12,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P10",
+   "nama": "Huruf kapital dan Shift",
+   "urutan": 10,
+   "tombol_fokus": "Shift",
+   "teks_latihan": "Aku Dina. Budi dan Citra bermain di Surabaya. Bu Ratna mengajar Matematika. Pak Dedi tinggal di Bogor.",
+   "target_wpm": 12,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P11",
+   "nama": "Angka baris atas",
+   "urutan": 11,
+   "tombol_fokus": "1234567890",
+   "teks_latihan": "12 34 56 78 90 123 456 789 1045 2468 1357 9753 17 Agustus 1945",
+   "target_wpm": 10,
+   "target_akurasi": 92
+  },
+  {
+   "kode": "P12",
+   "nama": "Tanda baca",
+   "urutan": 12,
+   "tombol_fokus": "., ? ! ; : - ( )",
+   "teks_latihan": "Halo, apa kabar? Aku baik-baik saja! Hari ini kita belajar: mengetik, menggambar, dan berhitung (1, 2, 3).",
+   "target_wpm": 12,
+   "target_akurasi": 92
+  }
+ ]
+}

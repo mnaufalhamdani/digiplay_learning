@@ -1,0 +1,38 @@
+{
+  "name": "digiplay-learning",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:init": "node scripts/db-init.mjs",
+    "db:seed": "node --import ./scripts/_alias.mjs scripts/db-seed.mjs",
+    "admin:buat": "node scripts/admin-buat.mjs",
+    "siswa:uji": "node scripts/siswa-uji.mjs",
+    "data:uji-besar": "node scripts/data-uji-besar.mjs"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
+    "awilix": "13.0.5",
+    "mysql2": "3.24.6",
+    "next": "16.4.6",
+    "pdfkit": "0.21.0",
+    "qrcode": "1.5.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.19.0",
+    "@types/react": "19.3.0",
+    "dotenv": "18.0.9",
+    "postcss": "8.5.31",
+    "sharp": "0.35.5",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}

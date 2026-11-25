@@ -1,0 +1,24 @@
+node_modules/
+.next/
+
+# env: semua varian diabaikan, kecuali contohnya (tanpa nilai rahasia)
+.env
+.env.*
+!.env.example
+
+uploads/*
+!uploads/.gitkeep
+*.tsbuildinfo
+next-env.d.ts
+# cadangan JSON dari scripts/db-migrasi-id.mjs (berisi data asli)
+/backup/
+*.sql.bak
+
+# log dan berkas sampah sistem
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# VS Code (konfigurasi lokal, tidak perlu di-share lewat git)
+.vscode/

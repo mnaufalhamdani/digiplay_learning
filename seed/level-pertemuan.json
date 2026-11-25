@@ -1,0 +1,263 @@
+{
+ "keterangan": "Data level dan 13 pertemuan per level untuk db:seed. Pertemuan 13 selalu post test. Sumber: project-context.md bagian 2.",
+ "level": [
+  {
+   "kode": "L1",
+   "nama": "Pemula",
+   "urutan": 1,
+   "deskripsi": "Belum pernah memegang komputer",
+   "pertemuan": [
+    {
+     "nomor": 1,
+     "judul": "Mengenal komputer, menyalakan dan mematikan",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 2,
+     "judul": "Mouse: klik, drag and drop",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 3,
+     "judul": "Keyboard: huruf dan angka",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 4,
+     "judul": "Mengetik kata dan kalimat sederhana",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 5,
+     "judul": "Desktop, folder, dan file",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 6,
+     "judul": "Paint 1: menggambar bebas",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 7,
+     "judul": "Paint 2: mewarnai dan membuat poster",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 8,
+     "judul": "Word 1: mengetik dan menyimpan dokumen",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 9,
+     "judul": "Word 2: format huruf dan menyisipkan gambar",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 10,
+     "judul": "Internet sehat",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 11,
+     "judul": "Coding visual 1 (Scratch Jr / Code.org)",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 12,
+     "judul": "Proyek akhir: kartu ucapan atau poster",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 13,
+     "judul": "Post test",
+     "jenis": "post_test",
+     "tujuan": null
+    }
+   ]
+  },
+  {
+   "kode": "L2",
+   "nama": "Dasar",
+   "urutan": 2,
+   "deskripsi": "Sudah bisa mengoperasikan komputer dasar",
+   "pertemuan": [
+    {
+     "nomor": 1,
+     "judul": "Review Level 1 dan mengetik 10 jari",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 2,
+     "judul": "Latihan mengetik (target kecepatan)",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 3,
+     "judul": "Word 1: tabel dan daftar",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 4,
+     "judul": "Word 2: laporan sederhana",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 5,
+     "judul": "PowerPoint 1: slide, teks, gambar",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 6,
+     "judul": "PowerPoint 2: animasi dan transisi",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 7,
+     "judul": "Excel 1: sel, baris, kolom, tabel",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 8,
+     "judul": "Excel 2: rumus dasar (SUM, AVERAGE)",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 9,
+     "judul": "Scratch 1: sprite, gerak, suara",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 10,
+     "judul": "Scratch 2: percabangan dan perulangan",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 11,
+     "judul": "Scratch 3: game sederhana",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 12,
+     "judul": "Proyek akhir: presentasi topik pilihan",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 13,
+     "judul": "Post test",
+     "jenis": "post_test",
+     "tujuan": null
+    }
+   ]
+  },
+  {
+   "kode": "L3",
+   "nama": "Lanjutan",
+   "urutan": 3,
+   "deskripsi": "Sudah menguasai Word, PowerPoint, Excel, dan Scratch dasar",
+   "pertemuan": [
+    {
+     "nomor": 1,
+     "judul": "Review dan mengetik cepat",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 2,
+     "judul": "Excel 1: rumus lanjutan (IF, COUNT, MAX/MIN)",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 3,
+     "judul": "Excel 2: grafik dan format data",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 4,
+     "judul": "Word dan PowerPoint untuk tugas sekolah",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 5,
+     "judul": "Canva: poster dan konten",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 6,
+     "judul": "Animasi 1: konsep dasar",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 7,
+     "judul": "Animasi 2: animasi pendek",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 8,
+     "judul": "Coding game 1: variabel dan logika",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 9,
+     "judul": "Coding game 2: skor, nyawa, level",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 10,
+     "judul": "Coding game 3: menyelesaikan game",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 11,
+     "judul": "Dasar HTML/CSS",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 12,
+     "judul": "Proyek akhir: game, animasi, atau website sederhana",
+     "jenis": "materi",
+     "tujuan": null
+    },
+    {
+     "nomor": 13,
+     "judul": "Post test",
+     "jenis": "post_test",
+     "tujuan": null
+    }
+   ]
+  }
+ ]
+}

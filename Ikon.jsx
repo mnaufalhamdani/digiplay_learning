@@ -1,0 +1,101 @@
+'use client';
+import {
+  ArrowLeftIcon,
+  ArrowsClockwiseIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  CheckCircleIcon,
+  ClipboardTextIcon,
+  ClockCounterClockwiseIcon,
+  CopyIcon,
+  FileTextIcon,
+  FunnelIcon,
+  ImageIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+  PrinterIcon,
+  SparkleIcon,
+  StackIcon,
+  StudentIcon,
+  TrashIcon,
+  CircleNotchIcon,
+  DevicesIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  GearIcon,
+  HouseIcon,
+  InfoIcon,
+  KeyIcon,
+  ListIcon,
+  MoonIcon,
+  PencilSimpleIcon,
+  ProhibitIcon,
+  SignInIcon,
+  SignOutIcon,
+  SunIcon,
+  UploadSimpleIcon,
+  UserCircleIcon,
+  UserPlusIcon,
+  UsersIcon,
+  WarningCircleIcon,
+  XIcon,
+} from '@phosphor-icons/react';
+import { AREA } from '@/enums';
+import { useArea } from './AreaContext';
+
+/** Daftar ikon yang dipakai aplikasi, dipanggil lewat nama Indonesia. Tambahkan di sini bila perlu ikon baru. */
+const DAFTAR_IKON = {
+  absensi: ClipboardTextIcon,
+  acak: ArrowsClockwiseIcon,
+  cari: MagnifyingGlassIcon,
+  cetak: PrinterIcon,
+  contoh: SparkleIcon,
+  filter: FunnelIcon,
+  gambar: ImageIcon,
+  hapus: TrashIcon,
+  kanan: CaretRightIcon,
+  kembali: ArrowLeftIcon,
+  kiri: CaretLeftIcon,
+  level: StackIcon,
+  log: ClockCounterClockwiseIcon,
+  salin: CopyIcon,
+  siswa: StudentIcon,
+  tambah: PlusIcon,
+  template: FileTextIcon,
+  aktifkan: CheckCircleIcon,
+  akun: UserCircleIcon,
+  beranda: HouseIcon,
+  ganti_device: DevicesIcon,
+  info: InfoIcon,
+  kunci: KeyIcon,
+  keluar: SignOutIcon,
+  lihat: EyeIcon,
+  masuk: SignInIcon,
+  memuat: CircleNotchIcon,
+  menu: ListIcon,
+  nonaktifkan: ProhibitIcon,
+  pengaturan: GearIcon,
+  pengguna: UsersIcon,
+  peringatan: WarningCircleIcon,
+  sembunyikan: EyeSlashIcon,
+  sukses: CheckCircleIcon,
+  tambah_pengguna: UserPlusIcon,
+  tema_gelap: MoonIcon,
+  tema_terang: SunIcon,
+  tutup: XIcon,
+  ubah: PencilSimpleIcon,
+  unggah: UploadSimpleIcon,
+};
+
+/**
+ * Pembungkus ikon Phosphor. Bobot mengikuti area: siswa `bold`, pengelola `regular` (bisa ditimpa `bobot`).
+ * Tanpa `label` ikon dianggap dekoratif (disembunyikan dari pembaca layar).
+ */
+export default function Ikon({ nama, ukuran = '1.25em', bobot = null, label = null, className = '' }) {
+  const { area } = useArea();
+  const Komponen = DAFTAR_IKON[nama];
+  // nama ikon salah ketik: jangan merusak halaman, cukup tidak tampil
+  if (!Komponen) return null;
+  const weight = bobot ?? (area === AREA.SISWA ? 'bold' : 'regular');
+  return <Komponen size={ukuran} weight={weight} className={`shrink-0 ${className}`} aria-hidden={label ? undefined : true} aria-label={label ?? undefined} role={label ? 'img' : undefined} />;
+}

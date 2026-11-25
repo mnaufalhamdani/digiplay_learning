@@ -1,0 +1,224 @@
+/* =====================================================================
+   Token desain DigiPlay Learning
+   Mengikuti pola globals.css DK Docs: Tailwind v4, mode gelap lewat class "dark" pada <html>
+   (skrip anti-kedip SKRIP_TEMA yang sama), variabel warna dipetakan lewat @theme inline.
+
+   Dua area dalam satu project, dibedakan atribut data-area pada pembungkus layout:
+     <div data-area="siswa" class="min-h-dvh bg-bg text-fg font-body">...</div>
+     <div data-area="pengelola" class="min-h-dvh bg-bg text-fg font-body">...</div>
+   Komponen UI sama; tampilan berbeda hanya karena variabel di bawah ini.
+   Semua pasangan teks/latar sudah diuji kontras (WCAG AA, 64 pasangan lulus).
+   ===================================================================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------- Bentuk, ukuran, dan gerak per area (tidak berubah antara terang/gelap) ---------- */
+
+[data-area="siswa"] {
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 28px;
+  --r-btn: 16px;
+  --tap: 3rem;        /* tinggi minimum kontrol */
+  --tap-lg: 3.5rem;
+  --fs-base: 1.125rem;
+  --edge: 5px;      /* tebal "bibir" 3D pada tombol; 0 = tombol datar */
+}
+
+[data-area="pengelola"] {
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-btn: 10px;
+  --tap: 2.5rem;        /* tinggi minimum kontrol */
+  --tap-lg: 2.75rem;
+  --fs-base: 0.875rem;
+  --edge: 0px;      /* tebal "bibir" 3D pada tombol; 0 = tombol datar */
+}
+
+/* ---------- Warna: terang ---------- */
+
+[data-area="siswa"] {
+  --bg: #FFF8EE;
+  --panel: #FFFFFF;
+  --fg: #2A2347;
+  --muted: #62598A;
+  --line: #E9E2F7;
+  --primary: #6240F0;
+  --on-primary: #FFFFFF;
+  --primary-soft: #EFEAFF;
+  --primary-text: #5233DB;
+  --sun: #FFC93C;
+  --on-sun: #2A2347;
+  --ok: #0A7550;
+  --on-ok: #FFFFFF;
+  --ok-soft: #DDF6EA;
+  --warn: #8F5300;
+  --warn-soft: #FFF0CC;
+  --bad: #C42B31;
+  --on-bad: #FFFFFF;
+  --bad-soft: #FFE3E3;
+  --info: #1464BE;
+  --info-soft: #DDEEFF;
+  --primary-edge: #4C31BB;
+  --sun-edge: #C69C2E;
+  --ok-edge: #075B3E;
+  --bad-edge: #982126;
+}
+
+[data-area="pengelola"] {
+  --bg: #F5F6FB;
+  --panel: #FFFFFF;
+  --fg: #1B1D3A;
+  --muted: #5A5F82;
+  --line: #E1E4F2;
+  --primary: #4F46E5;
+  --on-primary: #FFFFFF;
+  --primary-soft: #ECEBFF;
+  --primary-text: #4338CA;
+  --sun: #F59E0B;
+  --on-sun: #1B1D3A;
+  --ok: #0A7550;
+  --on-ok: #FFFFFF;
+  --ok-soft: #DDF6EA;
+  --warn: #8F5300;
+  --warn-soft: #FFF0CC;
+  --bad: #BF2A30;
+  --on-bad: #FFFFFF;
+  --bad-soft: #FFE3E3;
+  --info: #1464BE;
+  --info-soft: #DDEEFF;
+  --primary-edge: #3D36B2;
+  --sun-edge: #BF7B08;
+  --ok-edge: #075B3E;
+  --bad-edge: #942025;
+}
+
+/* ---------- Warna: gelap ---------- */
+
+.dark [data-area="siswa"] {
+  --bg: #17153A;
+  --panel: #221F4D;
+  --fg: #F4F1FF;
+  --muted: #B7B0DE;
+  --line: #38337A;
+  --primary: #A793FF;
+  --on-primary: #17153A;
+  --primary-soft: #2E2965;
+  --primary-text: #BBAAFF;
+  --sun: #FFD45E;
+  --on-sun: #17153A;
+  --ok: #4ADE9F;
+  --on-ok: #0B2A1F;
+  --ok-soft: #17402F;
+  --warn: #FFC24D;
+  --warn-soft: #4A3A12;
+  --bad: #FF8A8F;
+  --on-bad: #3A0B0E;
+  --bad-soft: #4A1F25;
+  --info: #6DB8FF;
+  --info-soft: #173759;
+  --primary-edge: #7B6CBC;
+  --sun-edge: #BC9C45;
+  --ok-edge: #36A475;
+  --bad-edge: #BC6669;
+}
+
+.dark [data-area="pengelola"] {
+  --bg: #0E1022;
+  --panel: #161933;
+  --fg: #E8EAFB;
+  --muted: #A5AAD0;
+  --line: #2A2E55;
+  --primary: #8B93FF;
+  --on-primary: #0E1022;
+  --primary-soft: #222654;
+  --primary-text: #A5ABFF;
+  --sun: #FBBF24;
+  --on-sun: #0E1022;
+  --ok: #4ADE9F;
+  --on-ok: #0B2A1F;
+  --ok-soft: #143A2B;
+  --warn: #FBBF24;
+  --warn-soft: #43340F;
+  --bad: #FF8A8F;
+  --on-bad: #3A0B0E;
+  --bad-soft: #451D24;
+  --info: #6DB8FF;
+  --info-soft: #163455;
+  --primary-edge: #666CBC;
+  --sun-edge: #B98D1A;
+  --ok-edge: #36A475;
+  --bad-edge: #BC6669;
+}
+
+/* Mode orang tua (area siswa, tampilan lihat saja): lebih tenang, huruf standar, tombol tidak "gemuk" */
+[data-area="siswa"][data-mode="ortu"] {
+  --fs-base: 1rem;
+  --tap: 2.75rem;
+  --edge: 0px;
+  --r-btn: 12px;
+}
+
+/* ---------- Pemetaan ke utilitas Tailwind (bg-primary, text-muted, rounded-md, font-display, dst) ---------- */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-text: var(--primary-text);
+  --color-primary-edge: var(--primary-edge);
+  --color-sun: var(--sun);
+  --color-on-sun: var(--on-sun);
+  --color-sun-edge: var(--sun-edge);
+  --color-ok: var(--ok);
+  --color-on-ok: var(--on-ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-edge: var(--ok-edge);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-on-bad: var(--on-bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-bad-edge: var(--bad-edge);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  /* font dipasang lewat next/font (Fredoka untuk judul siswa, Nunito untuk teks) pada layout akar */
+  --font-display: var(--font-fredoka), var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Judul area siswa memakai font display; area pengelola tetap memakai font teks */
+[data-area="siswa"] :where(h1, h2, h3) { font-family: var(--font-display); }
+[data-area] { font-size: var(--fs-base); }
+
+/* Fokus keyboard terlihat jelas di semua komponen */
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Gerak ---------- */
+:root {
+  --dur-cepat: 120ms;
+  --dur-sedang: 200ms;
+  --dur-lambat: 320ms;
+  --ease-pegas: cubic-bezier(0.34, 1.56, 0.64, 1); /* sedikit memantul, untuk tombol dan lencana */
+}
+
+/* Pengguna yang memilih "kurangi gerakan": matikan animasi dan transisi dekoratif (konfeti, memantul) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

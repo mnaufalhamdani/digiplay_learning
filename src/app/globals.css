@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "./design-tokens.css";
+
+/* Folder referensi DK Docs bukan bagian aplikasi: jangan dipindai untuk kelas Tailwind */
+@source not "../../referensi";
+
+/* Gaya dasar minimum; warna dan ukuran huruf datang dari token area (data-area) */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Konfeti jatuh sekali (komponen Konfeti); disembunyikan bila pengguna memilih kurangi gerakan */
+@keyframes konfeti-jatuh {
+  from {
+    translate: 0 -2rem;
+    opacity: 1;
+  }
+  to {
+    translate: 0 105vh;
+    rotate: 540deg;
+    opacity: 0.6;
+  }
+}
+.konfeti {
+  animation-name: konfeti-jatuh;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .konfeti {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Angka skor, WPM, dan pewaktu tidak "bergoyang" saat berubah */
+.angka-tabular {
+  font-variant-numeric: tabular-nums;
+}
