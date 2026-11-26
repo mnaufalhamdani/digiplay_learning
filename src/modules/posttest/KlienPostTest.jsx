@@ -1,8 +1,7 @@
 'use client';
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { t } from '@/utils/i18n';
-import { WAKTU_POST_TEST } from '@/enums';
 import Button from '@/modules/shared/ui/Button';
 import Card from '@/modules/shared/ui/Card';
 import ConfirmDialog from '@/modules/shared/ui/ConfirmDialog';
@@ -11,49 +10,12 @@ import TextField from '@/modules/shared/ui/TextField';
 import Toast from '@/modules/shared/ui/Toast';
 import OpsiJawaban from '@/modules/shared/ui/domain/OpsiJawaban';
 import Pewaktu from '@/modules/shared/ui/domain/Pewaktu';
+import TautanTombol from '@/modules/shared/ui/TautanTombol';
+import { useArea } from '@/modules/shared/ui/AreaContext';
+import { gabungJalur } from '@/utils/jalurArea';
 import AreaMengetik from '@/modules/mengetik/AreaMengetik';
 import { jawabPostTest, kumpulPostTest, siapDinilaiPostTest, tesMengetikPostTest } from './posttest.actions';
-
-/**
- * Waktu post test: tampilan menghitung mundur dari nilai server, lalu disinkronkan lewat denyut tiap 15 detik
- * saat halaman terlihat. Server yang memutuskan waktu habis (dan mengumpulkan); `habis()` dipanggil saat itu.
- */
-function useWaktu(awal, habis) {
-  const [sisa, setSisa] = useState(awal);
-  const panggil = useRef(habis);
-  panggil.current = habis;
-  useEffect(() => {
-    let berhenti = false;
-    /** Satu denyut ke server; balasannya menggantikan hitungan tampilan. */
-    async function denyut() {
-      if (berhenti || document.visibilityState !== 'visible') return;
-      try {
-        const res = await fetch('/api/v1/posttest/denyut', { method: 'POST', credentials: 'same-origin', cache: 'no-store' });
-        const isi = await res.json();
-        // login berakhir atau tes sudah dikumpulkan: muat ulang agar halaman menyesuaikan
-        if (!res.ok || isi.data.selesai) return panggil.current();
-        setSisa(isi.data.sisaDetik);
-      } catch {
-        // jaringan putus sesaat: coba lagi pada denyut berikutnya
-      }
-    }
-    const jam = setInterval(() => setSisa((s) => Math.max(0, s - 1)), 1000);
-    const timer = setInterval(denyut, WAKTU_POST_TEST.intervalDenyutDetik * 1000);
-    document.addEventListener('visibilitychange', denyut);
-    return () => {
-      berhenti = true;
-      clearInterval(jam);
-      clearInterval(timer);
-      document.removeEventListener('visibilitychange', denyut);
-    };
-  }, []);
-  // hitungan tampilan habis: minta server memeriksa sekarang juga (server yang mengumpulkan)
-  useEffect(() => {
-    if (sisa > 0) return;
-    fetch('/api/v1/posttest/denyut', { method: 'POST', credentials: 'same-origin', cache: 'no-store' }).finally(() => panggil.current());
-  }, [sisa]);
-  return sisa;
-}
+import { useWaktu } from './useWaktuPostTest';
 
 /** Navigasi butir: kotak bernomor (terjawab/belum, dengan teks untuk pembaca layar) dikelompokkan per bagian. */
 function NavigasiButir({ butir, indeks, pilih, terjawab }) {
@@ -83,6 +45,46 @@ function NavigasiButir({ butir, indeks, pilih, terjawab }) {
   );
 }
 
+/** Tombol Unduh bahan di dalam instruksi butir (gambar mewarnai/berwarna milik butir ini); bernomor bila bahannya lebih dari satu. */
+function TombolUnduhBahan({ gambar, butirId }) {
+  // butir tanpa bahan unduhan
+  if (!gambar?.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {gambar.map((g, i) => (
+        <a key={g.kode} href={`/api/v1/posttest/unduh?tugasId=${butirId}&kode=${encodeURIComponent(g.kode)}`} download className="inline-flex min-h-11 items-center gap-2 rounded-[var(--r-btn)] border-2 border-line bg-panel px-4 font-bold hover:bg-primary-soft">
+          <Ikon nama="unduh" />
+          {gambar.length > 1 ? t('sesiSiswa.unduhBahanKe', { nomor: i + 1 }) : t('sesiSiswa.unduhBahan')}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Butir praktik coding (Studio Zippy): tombol membuka Studio untuk butir ini (waktu tes tetap berjalan di sana).
+ * Proyek yang sudah dikirim ditampilkan namanya; tombol panggil tutor baru muncul setelah ada kiriman.
+ */
+function ButirProyek({ b, toggleSiap, memuat }) {
+  const { basis } = useArea();
+  const terkirim = b.jawaban != null && b.jawaban !== '';
+  return (
+    <div className="space-y-3">
+      <p className="text-muted">{t('posttest.proyekPetunjuk')}</p>
+      <TautanTombol href={gabungJalur(basis, `/studio?butir=${b.id}`)} ukuran="lg" ikon="coding">
+        {t(terkirim ? 'posttest.bukaStudioLagi' : 'posttest.bukaStudio')}
+      </TautanTombol>
+      {terkirim && <p className="font-semibold text-ok">{t('posttest.proyekTerkirim', { nama: b.jawaban })}</p>}
+      {terkirim && (
+        <Button ukuran="lg" varian={b.siapDinilai ? 'secondary' : 'sukses'} ikon={b.siapDinilai ? 'kembalikan' : 'sukses'} memuat={memuat} onClick={() => toggleSiap(b)}>
+          {t(b.siapDinilai ? 'posttest.batalSiap' : 'posttest.panggilTutor')}
+        </Button>
+      )}
+      {b.siapDinilai && <p className="font-semibold text-ok">{t('posttest.menungguTutor')}</p>}
+    </div>
+  );
+}
+
 /** Isi satu butir sesuai jenisnya (tanpa umpan balik benar/salah). */
 function IsiButir({ b, jawaban, ubahJawaban, simpanIsian, toggleSiap, kirimMengetik, memuat }) {
   if (b.jenis === 'mengetik') {
@@ -92,6 +94,10 @@ function IsiButir({ b, jawaban, ubahJawaban, simpanIsian, toggleSiap, kirimMenge
     return <AreaMengetik teks={b.teks} onSelesai={kirimMengetik} bolehUlang={false} nonaktif={memuat} />;
   }
   if (b.jenis === 'tutor') {
+    // tutor sudah menyimpan skor: status berubah dan penanda siap tidak bisa diubah lagi (skornya tidak ditampilkan di sini)
+    if (b.dinilai) return <p className="font-semibold text-ok">{t('posttest.dinilaiTutor')}</p>;
+    // praktik coding: dikerjakan di Studio Zippy lalu dikirim dari sana (mengirim = siap dinilai)
+    if (b.tipe === 'coding_proyek') return <ButirProyek b={b} toggleSiap={toggleSiap} memuat={memuat} />;
     return (
       <div className="space-y-3">
         <p className="text-muted">{t('posttest.praktikPetunjuk')}</p>
@@ -118,7 +124,12 @@ export default function KlienPostTest({ data }) {
   const [konfirmasi, setKonfirmasi] = useState(false);
   const [toast, setToast] = useState({ pesan: '', nada: 'bahaya' });
   const [memuat, mulai] = useTransition();
-  const sisa = useWaktu(data.sisaDetik, () => router.refresh());
+  // butir praktik yang baru dinilai tutor ditandai tanpa memuat ulang halaman (tes tidak boleh terganggu)
+  const sisa = useWaktu(
+    data.sisaDetik,
+    () => router.refresh(),
+    (d) => setButir((daftar) => daftar.map((y) => (d.dinilai?.includes(y.id) && !y.dinilai ? { ...y, dinilai: true, terjawab: true } : y))),
+  );
   // peringatan bawaan browser saat menutup/meninggalkan halaman selama tes
   useEffect(() => {
     const peringatan = (e) => e.preventDefault();
@@ -162,6 +173,7 @@ export default function KlienPostTest({ data }) {
       <Card varian="terangkat" className="space-y-4">
         <p className="font-bold text-muted">{t('posttest.butirKe', { nomor: b.nomor, total: butir.length, bagian: `${b.bagian.kode}. ${b.bagian.nama}` })}</p>
         {b.soal && <p className="text-[1.15em] whitespace-pre-wrap">{b.soal}</p>}
+        <TombolUnduhBahan gambar={b.gambar} butirId={b.id} />
         <IsiButir
           key={b.id}
           b={b}

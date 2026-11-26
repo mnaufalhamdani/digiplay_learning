@@ -40,7 +40,7 @@ function gabungTutor(daftarSesi, tutor) {
  * Usecase sesi: absen masuk (C1), penutupan sesi oleh siswa (Pulang) atau tutor (C5), catatan dan penuntasan
  * oleh tutor (C4), daftar sesi berlangsung (C3), beranda siswa (C6), dan riwayat kehadiran (C9).
  */
-export function buatSesiUsecase({ sesiModel, tugasUsecase, pembayaranUsecase, authModel, authUsecase, siswaModel, penggunaModel, pengaturanUsecase, logUsecase, db, idGen, catatAktivitas }) {
+export function buatSesiUsecase({ sesiModel, tugasUsecase, materiUsecase, pembayaranUsecase, authModel, authUsecase, siswaModel, penggunaModel, pengaturanUsecase, logUsecase, db, idGen, catatAktivitas }) {
   /** Mengambil sesi (bentuk tampilan) atau melempar 404. */
   async function wajibSesi(id, conn = null) {
     const b = await sesiModel.cariId(id, conn);
@@ -246,8 +246,12 @@ export function buatSesiUsecase({ sesiModel, tugasUsecase, pembayaranUsecase, au
       // belum diabsen tutor: beranda menampilkan mode lihat saja
       if (!b) return null;
       const sesi = bentukSesi(b);
+      const materi = await materiUsecase.statusMateri(sesi.siswa_id, sesi.pertemuan_id);
       return {
         id: sesi.id,
+        pertemuanId: sesi.pertemuan_id,
+        // tugas terkunci sampai materi dibaca: daftar tugas tidak dikirim sama sekali (bukan hanya disembunyikan di tampilan)
+        materi: { ada: materi.ada, terkunci: materi.terkunci },
         jamMasuk: sesi.jam_masuk,
         lamaDetik: sesi.lama_detik,
         levelId: sesi.level_id,
@@ -256,7 +260,7 @@ export function buatSesiUsecase({ sesiModel, tugasUsecase, pembayaranUsecase, au
         siswaLevelId: sesi.siswa_level_id,
         pertemuanNomor: sesi.pertemuan_nomor,
         pertemuanJudul: sesi.pertemuan_judul,
-        tugas: await tugasUsecase.daftarUntukSiswa(sesi.id),
+        tugas: materi.terkunci ? [] : await tugasUsecase.daftarUntukSiswa(sesi.id),
       };
     },
     /** Riwayat sesi dan kehadiran level berjalan seorang siswa (detail siswa, C9). */

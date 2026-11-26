@@ -32,7 +32,7 @@ Chrome dan Firefox mengarahkan `*.localhost` ke komputer sendiri tanpa mengubah 
 |---|---|
 | `npm run dev` | Server pengembangan |
 | `npm run build` / `npm run start` | Build dan jalankan mode produksi |
-| `npm run db:init` | Menjalankan `schema.sql` (satu-satunya skrip yang memakai `multipleStatements`). Bila skema sudah terpasang, hanya menambah kolom dan indeks baru yang belum ada (`post_test.bagian_ulang` dan indeks Fase F) tanpa mengubah data. Aman dijalankan berulang |
+| `npm run db:init` | Menjalankan `schema.sql` (satu-satunya skrip yang memakai `multipleStatements`). Bila skema sudah terpasang, hanya menambah tabel, kolom, nilai ENUM, dan indeks baru yang belum ada (tabel `materi`, `materi_baca`, dan `labirin_blockly`; `post_test.bagian_ulang` dan `hasil_latihan.labirin_id`; nilai `blockly` pada `template.tipe` dan `hasil_latihan.jenis`; indeks Fase F) tanpa mengubah data. Aman dijalankan berulang |
 | `npm run db:seed` | Seed dari `seed/*.json` dan `docs/aset/prompt-gambar.csv` (lihat "Seed data master") |
 | `npm run admin:buat` | Membuat akun admin; menolak email yang sudah ada |
 | `npm run siswa:uji` | Data uji manual: satu siswa beserta kode siswa, kode orang tua, dan level berjalan (setelah `db:seed`) |
@@ -59,6 +59,8 @@ Chrome dan Firefox mengarahkan `*.localhost` ke komputer sendiri tanpa mengubah 
 - **Semua berkas divalidasi lebih dulu** (kode template unik, ENUM tipe/penilaian/sumber, total butir 15 dan bobot 100 per level, bagian yang dirujuk ada, dan `validasiTemplate` dengan 50 kali render). Bila ada galat, tidak ada yang ditulis.
 - Penulisan dalam satu transaksi, dicocokkan dengan kunci unik (`level.kode`, `pertemuan level+nomor`, `bagian level+kode`, `template.kode`, `gambar.kode`; bank teks: `level+teks`). Upsert penuh: baris yang sudah ada **diperbarui dari berkas seed**, jadi perubahan admin lewat halaman Level/Template (termasuk template yang dinonaktifkan) kembali ke isi berkas seed setiap kali seed dijalankan. Penanda `punya_*` gambar selalu mengikuti berkas di disk.
 - Ringkasan yang diharapkan: 3 level, 39 pertemuan, 14 bagian post test, 407 template, 48 teks mengetik, 12 pelajaran mengetik, 75 gambar.
+- Labirin Coding Zippy: `seed/labirin-blockly.json` (7 labirin Level 1) di-upsert per `kode` ke `labirin_blockly`; semua kolom ikut **ditimpa** dari berkas seed setiap kali seed dijalankan. Tiap labirin diperiksa (bentuk grid, titik mulai/bintang, blok tersedia) dan `contoh_solusi`-nya harus berhasil di penerjemah; nama labirin yang dirujuk template `blockly` harus ada. Berkas hilang atau kosong hanya memberi peringatan.
+- Materi pertemuan: `seed/materi-level-{1,2,3}.json` ikut dimuat (lihat "Fitur materi pertemuan"). Berkas yang belum ada dilewati dengan peringatan jumlah materi yang dimuat, bukan galat.
 - Skrip memakai utilitas aplikasi di `src/utils/` lewat `node --import ./scripts/_alias.mjs` (menerjemahkan alias `@/` dan impor JSON).
 
 ## Domain dan reverse proxy
@@ -98,7 +100,7 @@ src/
     layout/                   ShellSiswa, ShellPengelola, menu, halaman placeholder lama (tidak dipakai lagi)
     shared/ui/                Button, TextField, TextArea, Select, Card, Badge, Modal, ConfirmDialog, Toast, Ikon, ThemeToggle,
                               TabelResponsif, Paginasi, FormFilter, EmptyState, TautanTombol, Tabs, ProgressBar, kelasTombol.js
-    shared/ui/domain/         KolomKode, Maskot, StatusSesi, OpsiJawaban, Konfeti, GrafikKemajuan, KartuGambar, Pewaktu
+    shared/ui/domain/         KolomKode, Maskot, StatusSesi, OpsiJawaban, Konfeti, GrafikKemajuan, Pewaktu
 scripts/                      db-init, db-seed, admin-buat, siswa-uji, data-uji-besar, _alias, _koneksi, _idGen (+ gabung-mewarnai)
 uploads/                      logo/ dan karya/<siswaId>/ (tidak masuk git; wajib ikut dicadangkan)
 ```
@@ -133,7 +135,7 @@ Batas keamanan (percobaan login, masa cookie, interval ping) ada di `src/config/
 | Modul | Halaman / endpoint | Isi |
 |---|---|---|
 | `sesi` | Backoffice `/absensi`, `/absensi/[sesiId]`, beranda; siswa `/` dan `/sampai-jumpa` | Absen masuk dua langkah (cek kode -> pertemuan, tutor tambahan, pembayaran), sesi berlangsung, Ikut menangani, Tutup sesi, Pulang, catatan per tutor, penuntasan (otomatis/tutor, Kembali ke otomatis), pengecualian kehadiran post test, riwayat dan kehadiran di detail siswa, lencana jumlah sesi di menu Absensi |
-| `tugas` | `GET /api/v1/tugas/unduh?tugasId=&kode=` (siswa) | Generate tugas saat absen (`jumlah_tugas_per_sesi`, minimal sepertiga per jenis penilaian), jawaban otomatis pilihan ganda/Excel, Ganti tugas, Lewati, ubah status oleh tutor, penuntasan otomatis, unduh bahan `mewarnai.png`/`berwarna.png` |
+| `tugas` | `GET /api/v1/tugas/unduh?tugasId=&kode=` (siswa) | Generate tugas saat absen (`jumlah_tugas_per_sesi`, minimal sepertiga per jenis penilaian), jawaban otomatis pilihan ganda/Excel, Ganti tugas, Lewati, ubah status oleh tutor, penuntasan otomatis, tombol **Unduh bahan** (`mewarnai.png`/`berwarna.png`) di dalam kartu tugas |
 | `pembayaran` | Detail sesi dan tab Pembayaran di detail siswa | Catat (jumlah dan/atau keterangan), daftar, hapus (admin), tampilan `Rp15.000` |
 
 - `POST /api/v1/auth/ping` kini membalas `sesiAktifId`; beranda siswa memuat ulang sendiri bila nilainya berubah (tutor mengabsen). Interval ping 15 detik (`intervalPingDetik` di `keamanan.config.js`), jadi perubahan tampil paling lambat sekitar 15 detik atau saat tab kembali terlihat. Setelah tutor menutup sesi, login siswa berakhir dan siswa diarahkan ke halaman masuk.
@@ -149,22 +151,22 @@ Batas keamanan (percobaan login, masa cookie, interval ping) ada di `src/config/
 |---|---|---|
 | `mengetik` | `/mengetik`, `/mengetik/kemajuan` | 12 pelajaran bertahap per baris keyboard (pelajaran berikutnya terbuka setelah target WPM dan akurasi tercapai), latihan adaptif dari tombol yang sering salah, teks acak dari `bank_teks_mengetik`, game **Hujan Kata**, keyboard visual, WPM + akurasi + konsistensi, peta panas tombol salah, grafik perkembangan |
 | `latihan` | `/latihan-mouse`, `/puzzle` | Lima game mouse (klik balon, klik ganda kotak, drag ke keranjang, klik kanan, gulung) dan puzzle 2x2/2x3/3x3 dari `puzzle.png`; hasil tersimpan di `hasil_latihan`. Tab **Latihan** di detail siswa (backoffice) |
-| `sesi` | `/bahan` | Bahan unduhan untuk tugas Paint/Word |
 
 - Halaman latihan bisa dibuka kapan saja, tetapi hasil hanya disimpan saat sesi aktif (di luar sesi tampil "lihat saja"). Menu latihan di header siswa aktif hanya selama sesi berlangsung.
 - Tugas sesi bertipe mengetik, game mouse, dan puzzle **selesai otomatis** bila hasil memenuhi target (`min_wpm`/`min_akurasi`, `min_skor`, gambar dan jumlah keping yang sama). Tombol **Main**/**Kerjakan** di kartu tugas membuka halaman latihannya dengan tugas itu.
+- Tugas bertipe `blockly` (Coding Zippy, lihat "Fitur Coding Zippy") dinilai otomatis dari tabel `hasil_latihan` (`kunci.jenis` = `blockly`, `kunci.labirin` = **nama** labirin yang berhasil diselesaikan) dan memakai `penilaian` `otomatis_jawaban` seperti `game_mouse` dan `puzzle`. Tombol **Kerjakan** di kartu tugas langsung membuka labirin yang diminta.
 - Server menghitung ulang WPM dan akurasi, dan menolak hasil yang tidak wajar (WPM > 250, durasi < 3 detik, karakter benar > karakter diketik, skor game > 5 per detik). Batasnya di `BATAS_LATIHAN` (`src/enums/index.js`).
 
 ## Modul Fase D2 (post test)
 
 | Modul | Halaman / endpoint | Isi |
 |---|---|---|
-| `posttest` | Siswa `/post-test`; backoffice `/post-test`, `/post-test/[id]`; `POST /api/v1/posttest/denyut` (siswa) | Tombol **Mulai Post Test** di beranda siswa saat sesi pertemuan 13 aktif, 15 butir (1 tes mengetik + butir acak bagian B/C/D dari bank), pewaktu 45 menit, lanjut setelah ganti device dengan sisa waktu yang sama, kumpulkan (manual atau otomatis saat waktu habis), penilaian per bagian dan total, nilai bagian praktik oleh tutor dengan rubrik, kelulusan, **Buka tes ulang** per bagian, tab **Post test** di detail siswa |
+| `posttest` | Siswa `/post-test`; backoffice `/post-test`, `/post-test/[id]`; `POST /api/v1/posttest/denyut` dan `GET /api/v1/posttest/unduh?tugasId=&kode=` (siswa) | Tombol **Mulai Post Test** di beranda siswa saat sesi pertemuan 13 aktif, 15 butir (1 tes mengetik + butir acak bagian B/C/D dari bank), pewaktu 45 menit, lanjut setelah ganti device dengan sisa waktu yang sama, kumpulkan (manual atau otomatis saat waktu habis), penilaian per bagian dan total, penilaian butir praktik oleh tutor (skor 0 sampai skor rubrik, catatan) dan tombol **Finalisasi**, kelulusan, **Buka tes ulang** per bagian, tab **Post test** di detail siswa |
 | `sertifikat` | Lihat Fase E | Dipanggil saat finalisasi post test lulus (`terbitkanOtomatis`) |
 
 - Layar post test memakai `ShellSiswa mode="fokus"` (tanpa menu, ping sesi tetap berjalan). Kunci jawaban tidak pernah dikirim ke browser.
 - Waktu dihitung server: tiap denyut (15 detik) menambah paling banyak 30 detik. Membuka halaman lagi setelah ganti device mengatur ulang titik hitung, sehingga waktu saat tidak login tidak terpakai.
-- Bagian mengetik dinilai saat tes mengetik dikirim (sekali saja, teks tetap untuk satu percobaan). Saat dikumpulkan, bagian pilihan ganda = benar / jumlah soal x 100, butir kosong dihitung salah, tes mengetik yang belum dikerjakan bernilai 0. Bagian praktik menunggu nilai tutor; setelah semua bagian terisi, total dan kelulusan dihitung (batas di Pengaturan, bawaan total >= 70 dan tiap bagian >= 50).
+- Bagian mengetik dinilai saat tes mengetik dikirim (sekali saja, teks tetap untuk satu percobaan). Saat dikumpulkan, bagian pilihan ganda = benar / jumlah soal x 100, butir kosong dihitung salah, tes mengetik yang belum dikerjakan bernilai 0. Bagian praktik menunggu penilaian tutor per butir (skor 0 sampai jumlah poin rubrik, catatan opsional; boleh saat siswa menandai "siap dinilai" atau setelah dikumpulkan). Tombol **Finalisasi** aktif bila semua butir praktik sudah dinilai: nilai bagian praktik = rata-rata skor butir (skala 0-100), lalu total dan kelulusan dihitung (batas di Pengaturan, bawaan total >= 70 dan tiap bagian >= 50).
 - Tes ulang hanya untuk percobaan terakhir yang sudah dinilai dan belum lulus. Bagian yang diulang disimpan di `post_test.bagian_ulang`. Nilai bagian yang tidak diulang disalin; butir dan waktu hanya untuk bagian yang diulang, pewaktu mulai saat siswa menekan Mulai.
 - Lulus tidak mengubah level siswa secara otomatis. Tutor menaikkan level lewat **Ganti level** di detail siswa: kode siswa dan kode orang tua tetap, level lama tercatat **Lulus** (atau **Berhenti** bila post test-nya belum lulus), lalu level baru dimulai.
 - **Rubrik bawaan** tugas praktik (pengaturan `rubrik_bawaan`) diubah admin di halaman Pengaturan: 1-10 kriteria, total poin tepat 100. Rubrik ini tampil di detail sesi dan detail post test untuk template tanpa `kunci.rubrik`. Nilai awalnya dari `rubrik_default` berkas seed; `npm run db:seed` hanya menyisipkannya bila belum ada (`INSERT IGNORE`), jadi perubahan admin tidak tertimpa.
@@ -242,7 +244,7 @@ Batas keamanan (percobaan login, masa cookie, interval ping) ada di `src/config/
 ## Cara uji Fase E
 
 1. `npm run db:seed` (database lama) lalu admin membuka **Pengaturan** -> kelompok **Sertifikat**: isi nama dan jabatan penandatangan, simpan. Teks lebih dari 100 karakter ditolak di kolomnya.
-2. Selesaikan post test siswa sampai lulus (Cara uji Fase D2). Begitu nilai bagian terakhir disimpan tutor, detail post test menampilkan kartu **Sertifikat** berstatus **Terbit** dengan nomor `DPL-L1-<YYYYMM>-0001`. Menyimpan ulang nilai tidak membuat sertifikat kedua.
+2. Selesaikan post test siswa sampai lulus (Cara uji Fase D2). Begitu tutor menekan **Finalisasi** (setelah semua butir praktik dinilai), detail post test menampilkan kartu **Sertifikat** berstatus **Terbit** dengan nomor `DPL-L1-<YYYYMM>-0001`. Menyimpan ulang nilai tidak membuat sertifikat kedua.
 3. Menu **Sertifikat**: filter status/level dan cari nama atau nomor. **Unduh PDF** menghasilkan `sertifikat-<nomor>.pdf` A4 lanskap; pindai QR dengan HP (HP harus bisa membuka `URL_SISWA`) atau tekan **Salin tautan verifikasi** lalu buka di browser: halaman **Sah** dengan nomor, nama, level, nilai, tanggal, dan penerbit.
 4. **Batalkan**: tombol Ya mati sampai alasan diisi. Setelah dibatalkan, halaman verifikasi menampilkan **Dibatalkan** dan nomor saja, dan PDF dari backoffice bertanda watermark DIBATALKAN. Token acak (`/verifikasi/ABCDEFGHJKLMNPQR`) menampilkan **Tidak ditemukan**.
 5. Ubah nama siswa langsung di database (belum ada form ubah nama), lalu **Terbitkan ulang**: sertifikat lama otomatis dibatalkan dengan alasan "Diterbitkan ulang", sertifikat baru mendapat nomor dan token baru, dan PDF-nya memakai nama baru. Tab **Sertifikat** di detail siswa menampilkan keduanya beserta "Menggantikan ...".
@@ -276,7 +278,7 @@ Kolom: **P** = publik, **A** = admin, **T** = tutor, **S** = siswa (login perang
 | Backoffice `/`, `/absensi`, `/absensi/[id]`, `/data-siswa`, `/data-siswa/[id]`, `/kartu-kode/[id]`, `/level`, `/template`, `/template/[id]`, `/gambar`, `/gambar/[id]`, `/post-test`, `/post-test/[id]`, `/sertifikat`, `/karya`, `/ekspor`, `/akun` | – | ✓ | ✓ | – | – | `wajibPengguna`; kartu pembayaran beranda hanya admin |
 | Backoffice `/pengaturan`, `/pengguna`, `/log`, `/template/baru`, `/template/[id]/ubah` | – | ✓ | – | – | – | tutor mendapat 404 |
 | Siswa `/masuk`, `/sampai-jumpa` | ✓ | ✓ | ✓ | ✓ | ✓ | |
-| Siswa `/`, `/mengetik`, `/mengetik/kemajuan`, `/latihan-mouse`, `/puzzle`, `/bahan`, `/karya`, `/post-test` | – | – | – | ✓ | – | `wajibSiswa`; tanpa sesi berlangsung hanya lihat saja |
+| Siswa `/`, `/mengetik`, `/mengetik/kemajuan`, `/latihan-mouse`, `/puzzle`, `/karya`, `/post-test` | – | – | – | ✓ | – | `wajibSiswa`; tanpa sesi berlangsung hanya lihat saja (`/bahan` sudah dihapus; unduhan ada di kartu tugas) |
 | Siswa `/ortu` | – | – | – | – | ✓ | `wajibOrtu`; data dibatasi `siswaId` cookie |
 | `/verifikasi/[token]` (kedua host) | ✓ | ✓ | ✓ | ✓ | ✓ | noindex, no-store, data terbatas |
 | `GET /api/v1/health`, `GET /api/v1/pengaturan/logo` | ✓ | ✓ | ✓ | ✓ | ✓ | |
@@ -329,6 +331,11 @@ Simpan cadangan di luar server aplikasi dan uji pemulihan secara berkala.
 - [ ] Jadwalkan cadangan database dan `uploads/`, dan uji pemulihannya.
 - [ ] Opsional: Content-Security-Policy di reverse proxy (aplikasi memakai satu skrip inline untuk tema, perlu nonce/hash bila CSP ketat).
 
+## Cara uji perbaikan instruksi bahan, penilaian praktik, dan posisi jari
+1. **Penilaian praktik post test.** Siswa Uji (Level 1, pertemuan 13) memulai post test, menandai satu butir praktik "Sudah selesai, panggil tutor", lalu tutor membuka `/post-test/<id>` di backoffice: panel **Butir praktik yang perlu dinilai** menampilkan bagian, instruksi, bahan, rubrik, kolom skor dan catatan. Skor kosong, di bawah 0, di atas maksimum rubrik, atau bukan angka ditolak. Setelah disimpan, layar siswa berubah menjadi "Sudah dinilai kakak tutor" (dalam 15 detik, tanpa skor). Siswa mengumpulkan; **Finalisasi** nonaktif dengan keterangan "N butir praktik belum dinilai" sampai semua butir dinilai, lalu nilai bagian C/D, total, kelulusan, dan sertifikat terhitung. Skor boleh direvisi, lalu tekan **Finalisasi ulang**. Aksi tercatat di Log (`nilai_butir_post_test`, `finalisasi_post_test`). Tugas biasa (bukan post test) yang dicek tutor sudah punya layar penilaian di detail sesi (tombol Tandai selesai), tidak ada perubahan.
+2. **Instruksi bahan.** `npm run db:seed` (memvalidasi dan memperbarui 19 template). Buka tugas Level 1 pertemuan 6, 7, 9 dan butir post test pertemuan 13: instruksi hanya berbunyi "Unduh bahan ..." (tanpa nama subjek dan tanpa "menu Bahan"), tombol **Unduh bahan** tepat di bawahnya, dan berkas yang terunduh adalah `mewarnai.png` (menggambar/mewarnai) atau `berwarna.png` (sisip gambar) subjek tugas itu. Menu **Bahan** tidak ada lagi. Templat yang menyebut "menu Bahan", menulis nama subjek bahan di teks, atau memakai gambar bahan tanpa kata "bahan" ditolak validasi (seed dan halaman Template).
+3. **Posisi jari.** Siswa (sesi berlangsung) membuka **Mengetik**, pilih latihan: gambar `public/aset/mengetik/posisi-jari.png` tampil di kanan bawah area ketik pada layar lebar, dan sebagai panel **Posisi jari** yang tertutup di bawah area ketik di HP. Pindahkan berkas itu sementara: panel hilang dan tidak ada ikon gambar rusak.
+
 ## Cara uji Fase F
 
 1. `npm run db:init` (menambah indeks baru pada database lama). Admin dan tutor masuk backoffice: beranda menampilkan kartu siswa aktif, sesi berlangsung, post test menunggu, sertifikat bulan ini; kartu **pembayaran bulan ini** hanya tampil untuk admin.
@@ -337,3 +344,101 @@ Simpan cadangan di luar server aplikasi dan uji pemulihan secara berkala.
 4. Buka `/api/v1/karya/berkas?id=<id karya siswa lain>` dengan login siswa atau orang tua lain: 404. Tutor menghapus karya dari `/karya` (tercatat di Log) dan berkasnya hilang dari `uploads/karya/`.
 5. **Ekspor**: unduh keempat CSV dan buka di Excel. Huruf seperti "é" utuh, tidak ada kolom kode akses, dan keterangan pembayaran `=HYPERLINK(...)` tampil sebagai teks berawalan apostrof.
 6. Performa (opsional, database pengembangan): `npm run data:uji-besar`, buka daftar siswa/sesi/sertifikat/log, lalu `npm run data:uji-besar '--' --hapus`.
+
+## Fitur materi pertemuan
+
+Materi hanya untuk pertemuan 1-12 tiap level (36 materi); pertemuan 13 (post test) tidak punya materi. Saat siswa membuka pertemuan sesi berlangsung, materi tampil lebih dulu dan **tugas terkunci di server** sampai siswa menekan **Saya sudah paham** (tombol baru aktif setelah penanda akhir materi terlihat di layar). Status disimpan per siswa per pertemuan (`materi_baca`) dan tidak dikunci ulang. Pertemuan yang belum punya materi (atau materinya dinonaktifkan) tidak mengunci tugas.
+
+- **Menu Materi (siswa)** bisa dibuka sebelum maupun sesudah absen. Isinya hanya pertemuan yang sudah dilalui: pertemuan yang pernah punya sesi untuk siswa itu (status Diajarkan, termasuk sesi berlangsung), semua level, urut level lalu nomor. Pertemuan lain tidak ikut dikirim dari server dan URL langsungnya dijawab 404. Tombol "Saya sudah paham" hanya ada pada materi pertemuan sesi berlangsung; materi lain hanya mode baca.
+- **Backoffice**: halaman **Materi** (daftar 36 materi, pratinjau tampilan siswa; editor JSON hanya untuk admin) dan kolom **Materi** ("Sudah dibaca (waktu)" / "Belum dibaca") di tab Riwayat detail siswa.
+- **Seed**: `seed/materi-level-<n>.json` berupa daftar `{ "kodePertemuan": "L1-P01", "judul": "...", "isi": { ... } }` (kode = kode level + `-P` + nomor dua digit). `npm run db:seed` memvalidasi isinya, lalu upsert per pertemuan dan **menimpa** isi yang diubah admin lewat halaman Materi (perubahan lewat editor hanya berlaku sampai seed dijalankan lagi). Berkas yang belum ada dilewati dengan peringatan; pertemuan 13 atau kode tidak dikenal membatalkan seed.
+- **Format `isi`** (JSON):
+
+```json
+{
+  "tujuan": ["Kamu bisa ..."],
+  "bagian": [
+    { "tipe": "paragraf", "judul": "Judul (opsional)", "teks": "..." },
+    { "tipe": "langkah", "judul": "Judul (opsional)", "langkah": [ { "teks": "...", "gambar": "aset/gambar/<kode>/berwarna.png" } ] },
+    { "tipe": "zippy", "teks": "Tahukah kamu? ..." },
+    { "tipe": "gambar", "src": "aset/mengetik/posisi-jari.png", "keterangan": "(opsional)" }
+  ]
+}
+```
+
+  Jalur gambar relatif terhadap `public/`, harus diawali `aset/`, dan gambar yang hilang tidak menampilkan ikon rusak. Tipe atau kunci yang tidak dikenal ditolak dengan pesan yang menyebut letaknya.
+
+### Cara uji fitur materi
+1. `npm run db:init` lalu `npm run db:seed` (tanpa berkas materi: hanya peringatan). Restart `npm run dev` bila modul baru belum terbaca.
+2. Daftarkan siswa baru dan masuk dengan kodenya: menu **Materi** kosong dengan pesan ramah dari Zippy; `/materi/<id pertemuan>` dijawab 404.
+3. Pastikan P01 dan P02 sudah Diajarkan, lalu tutor absen di P03: beranda siswa dialihkan ke materi P03, menu Materi menampilkan P01-P03 berurutan, P04-P12 tidak ada di HTML dan URL langsungnya 404; hanya P03 punya tombol "Saya sudah paham".
+4. Sebelum paham: aksi tugas (jawab, lewati, ganti, unduh bahan) ditolak 403 walau dipanggil langsung. Gulir ke bawah, tombol aktif, tekan: tugas terbuka. Buka ulang lewat **Baca materi** (tanpa penguncian ulang).
+5. Tutup sesi, **Ganti level** siswa ke level lain: materi level lama tetap tampil di menu Materi. Pertemuan tanpa materi (mis. level 2 sebelum seed) membuka tugas langsung.
+6. Admin: halaman **Materi** (daftar, pratinjau, ubah; isi dengan tipe tidak dikenal ditolak). Tutor hanya bisa melihat. Detail siswa menampilkan status baca per pertemuan. Hapus siswa uji: data `materi_baca` ikut terhapus (CASCADE dari `siswa`).
+
+## Fitur Coding Zippy (Blockly buatan sendiri, Level 1 P11)
+
+Pertemuan L1 P11 tidak lagi memakai aplikasi pihak ketiga. Siswa menyusun blok perintah untuk membantu Zippy berjalan di labirin kecil sampai ke bintang, di menu **Coding Zippy** (`/coding-zippy`, `/coding-zippy/<kode>`), tanpa akun dan tanpa internet ke pihak ketiga. Penilaian otomatis. Pustaka `blockly` dipin di `13.4.0` (rilis stabil terbaru yang sudah lebih dari 2 minggu saat dipasang; dipasang dengan `--legacy-peer-deps` agar `jsdom` yang hanya dipakai Blockly di Node tidak ikut terpasang). Pustaka dimuat hanya di halaman ini lewat `next/dynamic` tanpa SSR.
+
+- **Menu Coding Zippy** terbuka sebelum maupun sesudah absen. Di luar sesi siswa boleh mencoba, tetapi hasil tidak disimpan (ada keterangan di halaman). Hasil hanya tersimpan saat sesi berlangsung, dan hanya percobaan yang **berhasil** (satu baris `hasil_latihan`, `jenis` = `blockly`, `labirin_id`, `detail` berisi `jumlahBlok` dan `jumlahLangkah`).
+- **Penilaian di server**: browser hanya mengirim `{ kode, program }`. Server memvalidasi program dengan zod, mengambil labirin dari database, menjalankan `simulasiProgram` sendiri, lalu menentukan berhasil atau tidak. Kiriman "berhasil" dari browser tidak ada dan diabaikan. `contoh_solusi` hanya untuk uji dan tidak pernah dikirim ke browser. Hasil berhasil menyelesaikan tugas `blockly` yang labirinnya sama (dan, seperti game mouse, hanya bila materi pertemuan tugas itu sudah dipahami).
+- **Format program** (JSON buatan kita, bukan XML atau kode JavaScript Blockly): daftar perintah berurutan, mis. `[{ "blok": "maju" }, { "blok": "belok_kanan" }, { "blok": "ulangi", "kali": 3, "isi": [{ "blok": "maju" }, { "blok": "maju" }] }]`. Blok Level 1: `maju`, `belok_kiri`, `belok_kanan`, `ulangi` (`kali` bulat 2 sampai 10). Tipe lain, kunci asing, atau blok yang tidak ada di `blok_tersedia` labirin ditolak.
+- **Penerjemah** `simulasiProgram(labirin, program)` di `src/modules/shared/blockly/simulasiProgram.js` adalah satu-satunya sumber kebenaran: murni (tanpa efek samping dan tanpa database), dipakai sama persis oleh animasi di browser dan penilaian di server, tanpa `eval`. Hasil: `berhasil`, `alasan` (`menabrak`, `belum_sampai`, `terlalu_banyak_blok`, `program_kosong`, `tidak_valid`), `jumlahBlok`, `jumlahLangkah`, dan `jejak`. Aturan: `maju` yang menabrak dinding atau tepi papan menghentikan program; `maju` yang mendarat di bintang langsung berhasil (sisa perintah tidak dijalankan); `jumlahBlok` menghitung semua blok termasuk `ulangi` dan isinya (blok "Mulai" tidak dihitung), dan melebihi `batas_blok` berarti belum berhasil walau sampai bintang. Pengaman: maksimal 500 langkah, `ulangi` bersarang maksimal 3 tingkat, maksimal 300 blok per program, pemeriksaan tanpa rekursi.
+- **Menambah blok baru** (mis. percabangan atau variabel untuk Level 2 dan 3): cukup menambah satu entri di `DAFTAR_BLOK` (`src/modules/shared/blockly/daftarBlok.js`) berisi tampilan Blockly (JSON blok), `jalankan` (untuk blok perintah) atau bidang `kali`/`isi` (untuk blok wadah), lalu menulis nama blok itu di kolom `blok_tersedia` labirin pada `seed/labirin-blockly.json`. Toolbox, pembaca workspace, validasi program, dan penerjemah semuanya dibaca dari daftar itu, jadi komponen halaman tidak berubah. Blok L2/L3 belum dibuat.
+- **Tugas** `blockly` (4 template P11 di `seed/template-level-1.json`: `L1-P11-PR-01` sampai `-04`): `kunci` = `{ "jenis": "blockly", "labirin": "{labirin}" }` dengan `parameter.labirin` berisi nama labirin. `validasiTemplate` mewajibkan `kunci.jenis` = `blockly` dan `kunci.labirin` berupa teks. Tugas lama bertipe `scratch` yang sudah digenerate di data siswa tidak diubah; tipe `scratch` dan template L2/L3 tidak berubah.
+- Tong sampah dan tombol zoom Blockly dimatikan karena memakai gambar sprite bawaan Blockly yang tidak kita sertakan: blok dihapus dengan menyeretnya kembali ke toolbox atau menekan Delete, zoom lewat cubit. Blockly meminta kursor `handdelete.cur` dari `/aset/blockly/` (tidak ada, jadi 404 tak berbahaya) dan tidak lagi memuat apa pun dari `static.blockly.com`.
+
+### Cara uji Coding Zippy
+1. `npm run db:init` (menambah tabel, kolom, dan nilai ENUM), `npm run db:seed` (7 labirin dan 4 template P11; tanpa `seed/labirin-blockly.json` hanya peringatan), lalu restart `npm run dev`.
+2. Siswa tanpa absen: menu **Coding Zippy** terbuka, labirin bisa dicoba, ada keterangan hasil tidak tersimpan, dan aksi simpan lewat permintaan manual dijawab 403.
+3. Tutor absen siswa di L1 P11 (materi dipahami lebih dulu). Tugas `blockly` tampil dengan tombol **Kerjakan** yang langsung membuka labirin yang diminta. Selesaikan ketujuh labirin dengan solusi sendiri: tiap keberhasilan menambah satu baris `hasil_latihan`, tanda "Sudah selesai" muncul, dan tugas yang cocok otomatis selesai. Coba program yang menabrak, program kosong, dan "Jalan Panjang" tanpa blok Ulangi (harus belum berhasil: blok melebihi batas).
+4. Kirim paksa lewat permintaan manual: tipe blok asing, `kali` di luar 2-10, program bersarang terlalu dalam (ditolak 400 dengan pesan letaknya), dan kiriman `berhasil: true` palsu (diabaikan, server menilai sendiri).
+5. Periksa HP (papan di atas, toolbox Blockly di atas area kerja), mode gelap, dan pengaturan "kurangi gerakan" (Zippy langsung loncat ke hasil akhir).
+
+## Fitur Studio Zippy (Level 2: P09 sampai P11 dan bagian D post test)
+
+Pertemuan L2 P09 sampai P11 dan bagian D post test L2 ("Praktik Coding") tidak lagi memakai Scratch. Siswa memakai **Studio Zippy**: panggung bebas buatan sendiri dengan sprite dan blok kode, tanpa akun dan tanpa pihak ketiga.
+
+- **Menu Studio Zippy** (`/studio`) terbuka sebelum maupun sesudah absen. Di luar sesi siswa boleh bereksperimen; menyimpan, menghapus, dan mengirim proyek hanya saat sesi berlangsung (403 bila tidak). Perubahan yang belum disimpan ditahan dengan peringatan saat menutup tab, menekan tautan di dalam aplikasi, atau memilih Proyek baru/Buka.
+- **Pustaka** (semua dibuat di kode, tanpa berkas baru): sprite = 75 subjek gambar aktif (kostum 1 `berwarna.png`, kostum 2 `outline.png`) ditambah Zippy (dua berkas maskot); daftar subjek dibaca dari tabel `gambar`. Latar SVG: `polos`, `taman`, `pantai`, `luar angkasa`, `kota`, `labirin` (8 x 6 petak, dinding tipis dan satu petak tujuan berbentuk bintang; dibuat deterministik di `pustakaStudio.js`). Suara disintesis dengan Web Audio di **satu tempat**, `src/modules/studio/pustakaSuara.js`: tema `hewan`, `musik`, `alam` masing-masing 3 suara (nama `<tema>-<nomor>`); mengganti dengan berkas suara sungguhan cukup mengubah berkas itu. Suara baru bunyi setelah klik Bendera hijau (aturan autoplay browser) dan mengikuti tombol bisukan.
+- **Tabel**: `proyek_coding` (proyek milik siswa; `UNIQUE (siswa_id, nama)`, `tingkat` bawaan `l2`, maksimal 256 KB dan 30 proyek per siswa; `ON DELETE CASCADE` dari `siswa`) dan `proyek_kiriman` (salinan beku yang dikirim ke satu tugas/butir post test; unik per `tugas_id`, `ON DELETE CASCADE` dari `tugas_siswa`). Menghapus siswa menghapus keduanya tanpa langkah tambahan di urutan hapus. `npm run db:init` menambahkan kedua tabel dan nilai ENUM `template.tipe = coding_proyek` pada database lama.
+- **Format proyek** (JSON buatan kita; koordinat seperti Scratch: panggung 480 x 360, pusat (0,0), arah 90 = kanan, searah jarum jam):
+  ```json
+  { "versi": 1, "latar": "taman", "variabel": { "skor": 0 },
+    "sprite": [ { "id": "s1", "subjek": "hwn-01", "x": 0, "y": -120, "arah": 90, "kostum": 0, "tampil": true,
+      "skrip": [ { "kejadian": "bendera", "x": 24, "y": 24, "isi": [ { "blok": "ulangi", "kali": 10, "isi": [ { "blok": "gerak", "langkah": 10 } ] } ] } ] } ] }
+  ```
+  Skrip diawali blok kejadian (`bendera`, atau `tombol` dengan `tombol` = `spasi|kanan|kiri|atas|bawah`); isian angka boleh diganti blok nilai (`{ "blok": "angka_acak", "a": 1, "b": 6 }`, `{ "blok": "skor" }`) dan `jika` memakai `syarat` berupa blok `menyentuh` (`tepi|dinding|tujuan|sprite_lain`) atau `bandingkan` (`gte|eq|lt`). `x`/`y` pada skrip hanya posisi di ruang kerja. Validasi (`periksaProyek`, tanpa rekursi) menolak tipe blok tak dikenal, kunci asing, angka di luar rentang, lebih dari 10 sprite, 20 skrip per sprite, 2000 node, wadah bersarang lebih dari 5 tingkat, dan nilai bersarang lebih dari 4 tingkat; server juga memastikan `subjek` ada di bank gambar.
+- **Blok Level 2** (kategori dan warna dipakai soal): Kejadian (kuning), Gerakan (biru), Tampilan (ungu), Suara (merah muda), Kontrol (oranye), Sensor (biru muda), Operator (hijau), Variabel (merah). Sensor "Menyentuh" punya satu pilihan tambahan, `tujuan` (bintang di latar labirin), supaya tugas labirin bisa mendeteksi kemenangan. Warna kuning memakai emas gelap agar teks putih lolos kontras AA.
+- **Penerjemah** `buatMesinStudio` (`src/modules/shared/blockly/mesinStudio.js`) murni dan tanpa `eval`: tiap skrip adalah generator yang diputar sekitar 30 bingkai per detik (`useMesinStudio`), satu putaran `ulangi`/`selamanya` per bingkai, `tunggu` memakai waktu mesin, dan tiap skrip dibatasi 200 blok per bingkai sehingga proyek ganas tidak membekukan tab. **Berhenti** menghentikan semuanya. Gambar sprite memakai `mix-blend-mode: multiply` agar latar putih gambar tidak tampak (kecuali latar luar angkasa).
+- **Menambah blok baru** (mis. blok Level 3: kostum unggahan, `tunggu` lanjutan, adegan, nyawa): cukup menambah satu entri di `DAFTAR_BLOK_STUDIO` (`src/modules/shared/blockly/daftarBlokStudio.js`) berisi `jenis`, `kategori`, `bidang` (angka, teks, pilihan, kondisi, isi), dan `jalankan` atau `hitung`, menulis teks tampilannya di `studio.blok.<nama>` dan `studio.tip.<nama>` pada `src/locales/id_ID.json`, lalu menambah namanya di `KONFIGURASI_TOOLBOX` (kolom `tingkat` proyek memilih konfigurasi). Toolbox, pembaca/pemuat workspace, validasi, dan penerjemah dibaca dari daftar itu, jadi komponen halaman tidak berubah. Tipe Blockly diberi awalan `studio_` agar tidak bentrok dengan blok Coding Zippy L1.
+- **Tugas** bertipe `coding_proyek` (`penilaian: dicek_tutor`, masuk `TIPE_DICEK_TUTOR_SAJA`): kartu tugas siswa menampilkan **Buka Studio Zippy** dan **Kirim proyek** (pilih proyek tersimpan); di dalam Studio yang dibuka dari tugas ada tombol **Kirim ke tugas** (menyimpan dulu bila perlu). Yang dikirim adalah salinan beku; boleh dikirim ulang selama tugas masih `belum` (tutor menandai selesai = tidak bisa lagi). Tutor melihat panel **Proyek siswa** di detail sesi (pratinjau panggung hanya-baca dengan Jalankan/Berhenti, tombol keyboard, dan **Lihat susunan blok** yang membuka ruang kerja Blockly mode baca) dan menandai selesai seperti tugas lain. Tipe `scratch` tetap ada (dipakai L3).
+- **Post test L2 bagian D** ("Praktik Coding"): butir `coding_proyek` menampilkan **Buka Studio Zippy** (`/studio?butir=<id>`, layar fokus dengan pewaktu yang tetap berdenyut ke `/api/v1/posttest/denyut`, jadi waktu tes terus berjalan). **Kirim ke butir ini** menyimpan salinan dan sekaligus menandai butir siap dinilai; penilaian tutor memakai panel `PenilaianPraktik` yang sudah ada (skor, catatan, rubrik, Finalisasi) dengan pratinjau proyek di kartu butir. Setelah dikumpulkan atau waktu habis, kirim ditolak dan Studio dialihkan ke halaman post test.
+- **Seed** `seed/template-level-2.json` (kode sama, 30 baris diedit): 17 template praktik (`L2-P09-PR-*`, `L2-P10-PR-*`, `L2-P11-PR-*`, `L2-P13-D-*`) berpindah dari `scratch` ke `coding_proyek`; 12 soal pilihan ganda memakai nama blok Indonesia; bagian D diganti nama menjadi "Praktik Coding"; parameter `sprite`/`pemain`/`objek` hanya memakai subjek yang ada atau Zippy, `tujuan` labirin = `bintang`, `tema` dan `tema_suara` cocok dengan pustaka. L3 tidak diubah.
+
+### Cara uji Studio Zippy
+1. `npm run db:init`, `npm run db:seed`, restart `npm run dev`.
+2. Siswa tanpa absen: **Studio Zippy** terbuka, bendera/berhenti/suara bekerja, Simpan dan Kirim memberi keterangan (aksi manual dijawab 403).
+3. Tutor absen siswa L2 di P09 (materi dipahami lebih dulu): buat proyek untuk tiap tugas (gerak, suara, ganti latar, putar, ulangi, selamanya dan pantul, tombol ditekan, ganti kostum, game tangkap dengan skor, labirin dengan latar `labirin`, pesan menang), simpan dengan nama, kirim lewat kartu tugas atau tombol di Studio, lalu kirim ulang. Tutor membuka detail sesi, menjalankan pratinjau, melihat susunan blok, dan menandai selesai.
+4. Kirim paksa proyek tidak valid (tipe blok asing, kunci asing, subjek tak dikenal, terlalu dalam/besar): ditolak 400 dengan pesan letaknya. Proyek dengan `selamanya` tidak membekukan tab dan berhenti dengan tombol Berhenti.
+5. Post test L2 (pertemuan 13): bagian D lewat Studio, kumpulkan, tutor menilai butir dan Finalisasi. Periksa HP dan mode gelap. Hapus siswa uji: `proyek_coding` dan `proyek_kiriman` ikut terhapus.
+
+## Fitur Studio Zippy Level 3 (P06 sampai P12 dan bagian C/D post test L3)
+
+Studio Zippy dipakai juga di Level 3. Proyek punya **tingkat**: `l2` (blok dasar, bawaan semua siswa) dan `l3` (blok lanjutan). Siswa pada level berurutan 3 ke atas boleh membuat proyek tingkat 3; menu **Proyek baru** menampilkan pilihan tingkat hanya bila siswa boleh memakai lebih dari satu. Proyek lama (`l2`) dibuka dan dijalankan persis seperti sebelumnya; satu-satunya perubahan di tingkat 2 adalah blok `bandingkan` yang kini berisi lima pembanding (`>`, `>=`, `=`, `<`, `<=`). Server menolak proyek tingkat 3 dari siswa yang belum boleh (403) dan menolak blok tingkat 3 di proyek tingkat 2 (400).
+
+- **Blok baru** (semua di `DAFTAR_L3` pada `src/modules/shared/blockly/daftarBlokStudio.js`; `DAFTAR_BLOK_STUDIO` = `DAFTAR_L2` + `DAFTAR_L3`, toolbox lewat `KONFIGURASI_TOOLBOX.l3`): Ketika sprite ini diklik, Kirim pesan / Ketika menerima pesan (nama pesan diketik, maksimal 20 karakter), Katakan selama, Mainkan/Hentikan musik latar, Jika-maka-jika tidak, Tunggu sampai, Menyentuh sprite, Tanya dan jawaban, hitung angka (tambah, kurang, kali, bagi), Gabung teks, dan/atau/bukan, serta blok variabel (nilai, atur, ubah, tampilkan, sembunyikan). Isian "bebas" menerima angka atau teks.
+- **Variabel buatan sendiri**: tombol **Buat variabel** di kategori Variabel membuka dialog (nama 1 sampai 15 huruf, angka, atau spasi; unik tanpa membedakan huruf besar kecil; maksimal 8 selain `skor`). Dropdown variabel dan sprite pada blok dibaca dari data proyek; variabel atau sprite yang sudah dihapus tetap tampil di blok lama agar proyek tidak rusak. Variabel yang ditampilkan muncul sebagai monitor di panggung.
+- **Sprite teks**: tulisan (maksimal 40 karakter), ukuran, dan satu dari 8 warna yang terbaca di semua latar. Sprite teks tidak punya kostum dan bisa diklik, digeser, serta diberi blok.
+- **Kostum unggahan**: siswa mengunggah PNG atau JPEG (diperkecil di browser menjadi PNG sisi terpanjang 256 px; server menolak berkas lebih dari 200 KB atau bukan gambar PNG/JPEG, mengenalinya dari byte awal). Maksimal 6 kostum unggahan per sprite dan 60 per siswa. Berkas disimpan di `uploads/kostum/<siswaId>/<token>.png|jpg` (tabel `kostum_unggahan`, `ON DELETE CASCADE` dari `siswa`; total 31 tabel); proyek hanya menyimpan ID di `sprite.kostumUnggahan`. Route HTTP: `POST /api/v1/studio/kostum` (multipart kolom `berkas`, siswa dengan sesi berlangsung) dan `GET /api/v1/studio/kostum/berkas?id=<id>` (pemilik, atau pengelola untuk pratinjau). Kostum yang sudah ikut terkirim ke tugas atau butir (kiriman memuat ID itu) tidak bisa dihapus (409); kostum lain boleh dihapus dan rujukannya dicabut dari proyek tersimpan. Menghapus siswa menghapus baris dan folder berkasnya.
+- **Musik latar**: disintesis Web Audio di `pustakaSuara.js` dengan tiga suasana (`ceria`, `tenang`, `petualangan`), mengikuti tombol bisukan, dan berhenti saat Berhenti.
+- **Format proyek** (versi 1, tetap kompatibel): sprite boleh punya `jenis: 'teks'` (`teks`, `ukuran`, `warna`) atau `kostumUnggahan` (daftar ID), `variabel` memuat variabel buatan selain `skor`, dan kolom `tingkat` pada `proyek_coding` menentukan blok yang sah. Batas baru ada di `BATAS_STUDIO` (kedalaman nilai 6, variabel, kostum).
+- **Seed** `seed/template-level-3.json`: 27 template praktik (P06 sampai P12 dan P13 bagian C/D) berpindah dari `scratch` ke `coding_proyek`; teks tugas dan 9 soal pilihan ganda memakai nama blok Indonesia dan bebas dari istilah Scratch (parameter objek/rintangan hanya subjek yang ada: `jeruk`, `pisang`, `bola sepak`, `roket`, `kaktus`, `truk`, `lebah`). Tipe `scratch` tetap terdaftar tetapi tidak dipakai template mana pun. `npm run db:seed` juga memuat materi dan template ke database lokal, jadi tugas pertemuan terkunci sampai siswa menandai materinya paham.
+
+### Cara uji Studio Zippy Level 3
+1. `npm run db:init`, `npm run db:seed`, restart `npm run dev`.
+2. Siswa Level 3 (absen di P06): **Proyek baru** menampilkan pilihan tingkat; pilih Tingkat 3, lalu tambah sprite teks, buat variabel (nama kembar ditolak), susun skrip dengan Tanya, Kirim pesan, Jika-tidak, dan Mainkan musik, simpan, dan jalankan (kotak jawaban muncul untuk Tanya, klik sprite teks memicu skripnya).
+3. Unggah kostum: PNG atau JPEG kecil diterima; berkas teks berekstensi `.png`, WebP, SVG, dan berkas di atas 200 KB ditolak. Hapus kostum yang belum terkirim (berhasil) dan yang sudah terkirim ke tugas (ditolak dengan pesan).
+4. Buka proyek tingkat 2 lama: tetap jalan. Siswa Level 2 tidak melihat tombol Tambah sprite teks, Unggah kostum, maupun pilihan tingkat.
+5. Kirim proyek ke tugas L3, lalu tutor membuka detail sesi: pratinjau menjalankan proyek (Tanya bisa dijawab, kostum unggahan tampil lewat route berkas) dan menampilkan susunan blok.
+6. Post test L3 (pertemuan 13): butir `coding_proyek` di bagian C dan D dikirim lewat Studio, tutor menilai, Finalisasi, dan sertifikat terbit bila lulus. Periksa HP dan mode gelap. Hapus siswa uji: `proyek_coding`, `proyek_kiriman`, `kostum_unggahan`, dan folder `uploads/kostum/<siswaId>` ikut hilang.

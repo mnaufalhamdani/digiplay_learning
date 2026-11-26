@@ -1,0 +1,862 @@
+[
+ {
+  "kodePertemuan": "L3-P01",
+  "judul": "Review dan mengetik cepat",
+  "isi": {
+   "tujuan": [
+    "Kamu mengingat kembali dasar yang sudah kamu pelajari.",
+    "Kamu bisa memakai pintasan keyboard yang penting.",
+    "Kamu tahu cara mengetik cepat tanpa melelahkan tangan."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Selamat datang di Level 3!",
+     "teks": "Kamu sudah menguasai Word, PowerPoint, Excel, dan dasar mengetik. Di level ini kamu belajar membuat karya yang lebih lengkap. Kita mulai dengan memanaskan jari: mengetik cepat dan memakai pintasan keyboard."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mengetik cepat dan akurat",
+     "teks": "Kecepatan mengetik datang dari latihan yang teliti. Jaga akurasimu tetap baik, lalu naikkan kecepatan sedikit demi sedikit. Tantangan kecepatan hanya dilakukan setelah ketikanmu rapi. Kalau sudah lancar, mulailah mengetik angka, tanda baca, dan kalimat panjang."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menjaga kesehatan saat mengetik",
+     "teks": "Saat mengetik lama, beristirahatlah dan regangkan tanganmu secara berkala. Duduk dengan punggung tegak, layar sejajar mata, dan pergelangan tangan lurus. Jangan mengetik berjam-jam tanpa henti atau menunduk terlalu dekat dengan layar."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Pintasan keyboard",
+     "teks": "Pintasan keyboard adalah kombinasi tombol yang mempercepat pekerjaan. Tahan tombol Ctrl lalu tekan huruf yang sesuai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ctrl + C",
+     "teks": "Menyalin (copy) tulisan atau gambar yang sedang dipilih."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ctrl + V",
+     "teks": "Menempel (paste) hasil salinan atau potongan di tempat yang baru."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ctrl + X",
+     "teks": "Memotong (cut): memindahkan sesuatu dari tempat asalnya, lalu ditempel di tempat lain."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ctrl + Z",
+     "teks": "Membatalkan langkah terakhir (undo). Berguna saat salah menghapus atau salah mengubah sesuatu."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ctrl + S",
+     "teks": "Menyimpan pekerjaan. Biasakan menekannya setiap selesai satu bagian."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Pintasan keyboard membuat tanganmu tidak perlu bolak-balik ke mouse. Coba satu per satu sampai hafal!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P02",
+  "judul": "Excel 1: rumus lanjutan (IF, COUNT, MAX/MIN)",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa mencari angka terbesar dan terkecil dengan MAX dan MIN.",
+    "Kamu bisa menghitung banyak angka dengan COUNT.",
+    "Kamu bisa memakai IF untuk membuat keputusan di Excel."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Mengingat rentang sel",
+     "teks": "Rentang sel ditulis dengan titik dua. A1:A5 berarti semua sel dari A1 sampai A5. Semua fungsi di bawah memakai rentang seperti ini."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "MAX dan MIN",
+     "teks": "MAX mencari angka terbesar dalam sekelompok sel. Contoh: =MAX(A1:A5). MIN mencari angka terkecil. Contoh: =MIN(A1:A5)."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "COUNT",
+     "teks": "COUNT menghitung berapa banyak sel yang berisi angka. Sel yang kosong tidak dihitung. Contoh: =COUNT(A1:A4). Kalau A3 kosong dan tiga sel lainnya berisi angka, hasilnya 3."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "IF",
+     "teks": "IF dipakai untuk membuat keputusan. Excel memeriksa sebuah syarat, lalu menampilkan hasil yang berbeda bila syaratnya benar atau salah. Bentuknya: =IF(syarat, hasil jika benar, hasil jika salah). Tulisan dalam rumus diberi tanda kutip."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Contoh IF",
+     "teks": "Rumus =IF(A1>=70,\"Lulus\",\"Remedial\") menampilkan Lulus bila nilai di A1 minimal 70. Bila nilainya kurang dari 70, yang tampil adalah Remedial."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat tabel nilai dengan IF",
+     "langkah": [
+      {
+       "teks": "Buat kolom Nama dan Nilai, lalu isi beberapa baris."
+      },
+      {
+       "teks": "Di kolom sebelahnya tulis rumus IF untuk baris pertama."
+      },
+      {
+       "teks": "Salin rumusnya ke baris-baris di bawahnya dengan menarik sudut sel ke bawah."
+      },
+      {
+       "teks": "Cari nilai tertinggi dengan MAX dan nilai terendah dengan MIN."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "IF itu seperti pertanyaan ya atau tidak. Kalau ya, Excel menjawab satu hal. Kalau tidak, menjawab hal lainnya!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P03",
+  "judul": "Excel 2: grafik dan format data",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat grafik dari tabel data.",
+    "Kamu tahu grafik mana yang cocok untuk tujuan tertentu.",
+    "Kamu bisa menghitung persentase dan diskon, dan memberi format mata uang."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Kenapa pakai grafik",
+     "teks": "Grafik membuat data lebih mudah dipahami sekilas, dibanding angka di dalam tabel."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Jenis grafik",
+     "teks": "Grafik garis (line) cocok untuk melihat perubahan nilai dari waktu ke waktu. Grafik batang (bar atau column) cocok untuk membandingkan beberapa hal. Grafik lingkaran (pie) menunjukkan bagian dari keseluruhan, misalnya persentase."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat grafik",
+     "langkah": [
+      {
+       "teks": "Buat tabel data dengan judul kolom dan beberapa baris."
+      },
+      {
+       "teks": "Blok seluruh tabelnya."
+      },
+      {
+       "teks": "Klik tab Insert, lalu pilih jenis grafik di kelompok Charts."
+      },
+      {
+       "teks": "Tambahkan judul grafik dan label supaya grafik mudah dipahami."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Persentase",
+     "teks": "Persentase dihitung dengan membagi bagian dengan keseluruhan, lalu dikali 100. Contoh: dari 50 soal kamu benar 40, rumusnya =A1/50*100."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Diskon",
+     "teks": "Untuk mencari harga setelah diskon, kurangi harga dengan besar diskonnya. Bila harga di A1 dan persen diskon di B1, rumusnya =A1-A1*B1/100."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menjumlahkan data",
+     "teks": "Untuk mencari total, pakai SUM pada rentang data. Contohnya total penjualan beberapa hari."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Format mata uang dan warna",
+     "langkah": [
+      {
+       "teks": "Blok kolom harga."
+      },
+      {
+       "teks": "Di tab Home, ubah format angka menjadi mata uang (Currency), lalu pilih Rupiah."
+      },
+      {
+       "teks": "Blok baris judul tabel, lalu beri warna latar yang berbeda dari isinya."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Grafik yang bagus punya judul dan label. Tanpa itu, orang bingung membacanya!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P04",
+  "judul": "Word dan PowerPoint untuk tugas sekolah",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa menyusun makalah singkat yang rapi.",
+    "Kamu bisa mengatur kertas, margin, header, dan nomor halaman.",
+    "Kamu bisa mengubah makalah menjadi presentasi dan menyebut sumber informasi."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Makalah singkat",
+     "teks": "Makalah singkat tersusun dari sampul, pendahuluan, isi, dan penutup. Isinya boleh dilengkapi satu tabel supaya datanya jelas, dan gambar bila perlu."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengatur kertas dan margin",
+     "langkah": [
+      {
+       "teks": "Buka tab Layout."
+      },
+      {
+       "teks": "Pilih Size lalu pilih A4."
+      },
+      {
+       "teks": "Pilih Margins lalu Custom Margins, dan isi ukuran margin yang diminta (dalam sentimeter) untuk semua sisi."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Header dan footer",
+     "teks": "Header adalah bagian di atas halaman yang berulang di setiap halaman. Footer adalah bagian di bawah halaman yang berulang di setiap halaman. Pilihannya ada di tab Insert. Header sering dipakai untuk judul makalah, dan footer untuk nomor halaman."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Nomor halaman",
+     "langkah": [
+      {
+       "teks": "Klik tab Insert."
+      },
+      {
+       "teks": "Pilih Page Number."
+      },
+      {
+       "teks": "Pilih posisi nomor, misalnya di bawah halaman."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menyebut sumber dan jujur",
+     "teks": "Tuliskan sumber informasi yang kamu pakai di bagian akhir tugasmu. Itu cara menghargai pembuat tulisan dan bersikap jujur. Jangan menyalin mentah-mentah karya orang lain. Baca dulu, lalu tulis lagi dengan kata-katamu sendiri."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Dari makalah menjadi presentasi",
+     "langkah": [
+      {
+       "teks": "Baca makalahmu dan tentukan poin utama dari tiap bagian."
+      },
+      {
+       "teks": "Buat satu slide untuk tiap poin utama dengan teks singkat."
+      },
+      {
+       "teks": "Tekan tombol Unduh bahan pada tugas, lalu sisipkan gambarnya ke satu slide lewat Insert > Pictures."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Tugas sekolah yang rapi dan jujur membuat gurumu bangga dan dirimu percaya diri!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P05",
+  "judul": "Canva: poster dan konten",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu apa itu Canva dan template.",
+    "Kamu bisa membuat poster, kartu ucapan, dan infografis sederhana.",
+    "Kamu bisa menyimpan desain agar bisa dicetak atau dibagikan."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Apa itu Canva?",
+     "teks": "Canva adalah aplikasi untuk membuat desain seperti poster, kartu, dan konten. Di Canva, kamu tidak perlu menggambar dari nol. Kamu bisa memilih rancangan siap pakai yang disebut template. Karena Canva berjalan di internet, pakailah bersama tutor dan ikuti aturan keamanan internet yang sudah kamu pelajari."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat desain dari template",
+     "langkah": [
+      {
+       "teks": "Pilih jenis desain, misalnya poster atau kartu ucapan."
+      },
+      {
+       "teks": "Pilih template yang cocok dengan tema."
+      },
+      {
+       "teks": "Klik tulisan lalu ubah isinya. Ubah juga warna dan ukuran hurufnya."
+      },
+      {
+       "teks": "Ganti atau tambah gambar sesuai tema."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Poster yang menarik",
+     "teks": "Poster yang menarik memakai judul besar, satu gambar utama, dua sampai tiga warna utama, dan huruf yang jelas. Jangan memakai huruf yang sangat kecil dan jangan memakai terlalu banyak warna."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Infografis",
+     "teks": "Infografis menjelaskan sesuatu lewat gambar dan tulisan singkat. Pilih beberapa fakta yang penting, tulis dengan kalimat pendek, lalu beri ikon di samping tiap fakta."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memakai gambar dari bahan",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan."
+      },
+      {
+       "teks": "Di Canva, cari menu Uploads lalu unggah gambar yang tadi terunduh."
+      },
+      {
+       "teks": "Tarik gambar ke desainmu, lalu tambahkan tulisan yang diminta."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyimpan desain",
+     "langkah": [
+      {
+       "teks": "Klik tombol Share atau Download di pojok atas."
+      },
+      {
+       "teks": "Pilih bentuk berkas, misalnya gambar atau PDF."
+      },
+      {
+       "teks": "Klik Download. Berkasnya tersimpan di komputer dan bisa dicetak atau dibagikan."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Gunakan sedikit warna dan huruf yang jelas. Desain sederhana sering terlihat paling keren!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P06",
+  "judul": "Animasi 1: konsep dasar",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu apa itu frame dan kenapa animasi tampak bergerak.",
+    "Kamu bisa membuat animasi sprite berjalan dengan kostum yang berganti.",
+    "Kamu bisa menggambar kostum di Paint dan mengunggahnya ke Studio Zippy."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Apa itu animasi?",
+     "teks": "Animasi adalah gambar-gambar yang tampak bergerak. Setiap gambar yang ditampilkan satu per satu disebut frame, atau bingkai. Gambar-gambar itu hanya sedikit berbeda satu sama lain."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kenapa tampak bergerak?",
+     "teks": "Kalau frame-frame itu ditampilkan berurutan dengan cepat, mata kita melihatnya seperti gambar yang bergerak. Seperti buku catatan yang kamu bolak-balik cepat."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kostum adalah frame",
+     "teks": "Di Studio Zippy, tiap sprite punya kostum. Setiap kostum bisa kamu anggap sebagai satu frame. Sprite bawaan punya dua kostum. Blok Kostum berikutnya ada di kategori Tampilan (ungu) dan mengganti sprite ke kostum berikutnya."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Animasi berjalan",
+     "langkah": [
+      {
+       "teks": "Pilih sprite, misalnya kucing."
+      },
+      {
+       "teks": "Pasang blok Selamanya, atau Ulangi bila kamu ingin sampai beberapa kali."
+      },
+      {
+       "teks": "Di dalamnya pasang Kostum berikutnya, lalu Tunggu (detik) detik."
+      },
+      {
+       "teks": "Ubah angka pada Tunggu. Angka kecil membuat animasi cepat, angka besar membuatnya lambat."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Bergerak melintasi layar",
+     "langkah": [
+      {
+       "teks": "Letakkan sprite di sisi kiri panggung dengan blok Atur x ke angka negatif."
+      },
+      {
+       "teks": "Di dalam pengulangan, pasang Ubah x sebesar angka kecil, supaya sprite bergeser ke kanan."
+      },
+      {
+       "teks": "Pasang Kostum berikutnya dan Tunggu dalam pengulangan yang sama."
+      },
+      {
+       "teks": "Jalankan dengan bendera hijau dan lihat sprite berjalan sambil berganti kostum."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menggambar kostum sendiri",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan sebagai contoh gambar."
+      },
+      {
+       "teks": "Buka Paint, lalu gambar kostum pertama. Simpan sebagai PNG atau JPEG."
+      },
+      {
+       "teks": "Gambar kostum berikutnya dengan sedikit perbedaan, misalnya posisi kaki atau sayap. Simpan dengan nama berbeda."
+      },
+      {
+       "teks": "Di Studio Zippy, pilih sprite lalu tekan Unggah kostum, dan pilih gambar dari komputermu."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Catatan unggah kostum",
+     "teks": "Kostum baru bisa diunggah setelah kakak tutor mencatat kehadiranmu. Ukuran dan jumlah kostum unggahan ada batasnya, dan Studio Zippy akan memberi tahu bila terlalu besar atau sudah penuh. Kostum yang sudah ikut terkirim ke tugas tidak bisa dihapus."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Animasi bagus lahir dari perbedaan kecil antar frame. Sabar menggambar, hasilnya pasti seru!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P07",
+  "judul": "Animasi 2: animasi pendek",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa merencanakan cerita animasi dengan storyboard.",
+    "Kamu bisa membuat animasi beberapa adegan dengan tokoh yang bergerak dan berbicara.",
+    "Kamu bisa menambahkan musik latar dan efek suara."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Storyboard",
+     "teks": "Storyboard adalah rencana urutan adegan sebelum animasi dibuat. Gambar kotak-kotak kecil di kertas atau di Paint, satu kotak untuk satu adegan, lalu tulis apa yang terjadi di tiap adegan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Cerita yang baik",
+     "teks": "Animasi pendek yang baik punya awal, tengah, dan akhir cerita. Awal memperkenalkan tokoh dan tempatnya, tengah berisi kejadian utama, dan akhir menutup cerita."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Adegan",
+     "teks": "Satu adegan biasanya punya latar sendiri. Untuk berganti adegan, pakai blok Ganti latar ke. Pilihannya antara lain taman, pantai, luar angkasa, dan kota. Pilih latar yang cocok dengan tema ceritamu."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Tokoh bergerak dan berbicara",
+     "langkah": [
+      {
+       "teks": "Pasang blok Ketika bendera hijau diklik."
+      },
+      {
+       "teks": "Pakai Gerak, atau Ubah x sebesar, agar tokoh berpindah tempat."
+      },
+      {
+       "teks": "Pakai Katakan (teks) selama (n) detik supaya tokoh berbicara beberapa detik."
+      },
+      {
+       "teks": "Pakai Tunggu (n) detik sebelum Ganti latar ke untuk pindah ke adegan berikutnya."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Musik latar",
+     "teks": "Musik latar membuat suasana animasi terasa. Pakai blok Mainkan musik latar, lalu pilih suasana: ceria, tenang, atau penuh petualangan. Hanya satu musik latar yang berbunyi dalam satu waktu. Blok Hentikan musik mematikannya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Efek suara",
+     "teks": "Selain musik, tambahkan satu efek suara pendek dengan blok Mainkan suara pada kejadian penting, misalnya saat tokoh melompat."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mempresentasikan animasi",
+     "teks": "Ceritakan animasimu kepada tutor: apa ceritanya, bagaimana cara membuatnya, dan blok apa yang kamu pakai. Bicara pelan dan jelas."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Rencanakan dulu di storyboard, baru buat animasinya. Cerita yang rapi membuat animasi lebih mudah dibuat!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P08",
+  "judul": "Coding game 1: variabel dan logika",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat variabel dan mengubah nilainya.",
+    "Kamu bisa memakai angka acak, perbandingan, dan blok Jika ... maka ... jika tidak.",
+    "Kamu bisa membuat game tebak angka dan kalkulator sederhana."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Variabel",
+     "teks": "Variabel adalah tempat menyimpan nilai yang bisa berubah, seperti skor. Di Studio Zippy, variabel skor selalu ada. Kamu juga bisa membuat variabel sendiri di kategori Variabel dengan tombol Buat variabel. Nama variabel boleh huruf, angka, atau spasi, dan jumlahnya ada batasnya."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memakai variabel",
+     "langkah": [
+      {
+       "teks": "Atur [variabel] ke angka awal, biasanya 0, di bagian atas programmu."
+      },
+      {
+       "teks": "Ubah [variabel] sebesar angka untuk menambah. Angka negatif mengurangi."
+      },
+      {
+       "teks": "Tampilkan variabel di panggung supaya pemain bisa melihat nilainya."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Variabel saat sprite diklik",
+     "langkah": [
+      {
+       "teks": "Pasang blok Ketika sprite ini diklik di kategori Kejadian."
+      },
+      {
+       "teks": "Di bawahnya pasang Ubah [variabel] sebesar angka yang diminta tugas."
+      },
+      {
+       "teks": "Klik sprite berkali-kali dan lihat nilai variabelnya naik."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Angka acak",
+     "teks": "Blok Angka acak dari (a) sampai (b) menghasilkan angka yang berubah-ubah di antara dua angka itu. Contoh: Angka acak dari 1 sampai 10 menghasilkan angka antara 1 dan 10. Cocok untuk game tebak angka."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Perbandingan",
+     "teks": "Blok perbandingan membandingkan dua angka: sama dengan, lebih besar dari, lebih kecil dari, lebih besar atau sama dengan, dan lebih kecil atau sama dengan. Hasilnya benar atau salah."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Jika ... maka ... jika tidak",
+     "teks": "Blok ini memilih salah satu dari dua kemungkinan. Bila syaratnya benar, blok di bagian maka dijalankan. Bila salah, blok di bagian jika tidak yang dijalankan. Contoh: jika skor lebih besar dari 10, sprite berkata Menang!, jika tidak sprite berkata Ayo coba lagi!."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Dan, atau, bukan",
+     "teks": "Blok dan benar bila kedua syarat benar. Blok atau benar bila salah satu syarat benar. Blok bukan membalik benar menjadi salah. Contoh: syarat skor lebih besar dari 10 dan nyawa lebih besar dari 0 hanya benar bila keduanya terpenuhi."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Game tebak angka",
+     "langkah": [
+      {
+       "teks": "Atur variabel angka rahasia ke Angka acak dari 1 sampai batas yang diminta tugas."
+      },
+      {
+       "teks": "Pakai Tanya (teks) dan tunggu jawaban untuk meminta tebakan pemain."
+      },
+      {
+       "teks": "Blok jawaban menyimpan tebakan terakhir. Bandingkan jawaban dengan angka rahasia memakai Jika ... maka ... jika tidak."
+      },
+      {
+       "teks": "Pakai Katakan untuk memberi tahu tebakan terlalu besar, terlalu kecil, atau benar."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kalkulator sederhana",
+     "teks": "Blok hitung punya pilihan tambah, kurang, kali, dan bagi. Ambil dua angka acak, hitung hasilnya, lalu tampilkan dengan Katakan. Blok Gabung membantu menyambung teks dan angka, misalnya Hasilnya adalah ..."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Variabel itu seperti kotak berlabel. Isinya boleh berubah, tapi namanya tetap!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P09",
+  "judul": "Coding game 2: skor, nyawa, level",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat variabel nyawa yang berkurang saat pemain terkena rintangan.",
+    "Kamu bisa membuat layar Game Over dengan sprite teks.",
+    "Kamu bisa membuat game naik level dan memberi suara berbeda untuk kejadian berbeda."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Skor dan nyawa",
+     "teks": "Skor mencatat poin yang didapat pemain. Nyawa adalah kesempatan bermain: berkurang saat pemain terkena rintangan. Keduanya dibuat dengan variabel. Atur skor dan nyawa ke nilai awal setiap kali bendera hijau diklik, supaya game bisa dimainkan ulang."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat nyawa",
+     "langkah": [
+      {
+       "teks": "Buat variabel nyawa dan atur ke jumlah yang diminta tugas di awal game."
+      },
+      {
+       "teks": "Di dalam Selamanya, pakai Jika sprite pemain Menyentuh sprite rintangan."
+      },
+      {
+       "teks": "Di dalamnya pasang Ubah nyawa sebesar -1."
+      },
+      {
+       "teks": "Kembalikan rintangan ke posisi awal supaya tidak mengenai pemain berulang kali."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menyentuh sprite tertentu",
+     "teks": "Blok Menyentuh sprite (pilih sprite) memeriksa apakah sprite ini menyentuh sprite yang kamu pilih. Pilih sprite rintangan atau sprite objek dari daftar pilihan."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Game Over",
+     "langkah": [
+      {
+       "teks": "Tambahkan sprite teks dengan tulisan GAME OVER, lalu sembunyikan di awal game."
+      },
+      {
+       "teks": "Di dalam Selamanya, pakai Jika nyawa sama dengan 0."
+      },
+      {
+       "teks": "Di dalamnya, Tampilkan sprite teks GAME OVER."
+      },
+      {
+       "teks": "Pasang blok Hentikan semua supaya game berhenti."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Naik level",
+     "teks": "Level membuat game makin sulit. Buat variabel level dan variabel target berikutnya. Saat skor lebih besar atau sama dengan target berikutnya, Ubah level sebesar 1, lalu tambahkan target berikutnya sebesar kelipatan yang diminta tugas. Dengan begitu level naik setiap skor mencapai kelipatan itu."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Rintangan makin cepat",
+     "teks": "Buat variabel kecepatan. Pada blok yang menggerakkan rintangan, isi angkanya dengan blok variabel kecepatan. Setiap naik level, Ubah kecepatan sebesar angka kecil supaya rintangan bergerak lebih cepat."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Suara berbeda",
+     "teks": "Pakai Mainkan suara dengan pilihan yang berbeda saat pemain mendapat poin dan saat terkena rintangan. Suara yang berbeda membantu pemain tahu apa yang terjadi tanpa melihat layar."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Game yang bagus selalu bisa dimainkan ulang. Jangan lupa mengatur ulang nilai awal setiap bendera hijau diklik!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P10",
+  "judul": "Coding game 3: menyelesaikan game",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa menguji game, menemukan bug, dan memperbaikinya.",
+    "Kamu bisa membuat layar awal dengan tombol Mulai memakai pesan.",
+    "Kamu bisa menambah judul, petunjuk cara bermain, dan nama pembuat, lalu menyimpan game final."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Menguji game",
+     "teks": "Menguji (testing) artinya mencoba game berkali-kali untuk mencari kesalahan. Coba dengan cara yang tidak biasa: berhenti, mengulang, dan menekan banyak tombol. Minta teman mencoba juga dan catat masukannya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Bug",
+     "teks": "Kesalahan pada program disebut bug. Bila game tidak seperti yang kamu mau, cari bagian blok yang salah. Coba jalankan sedikit demi sedikit untuk menemukan penyebabnya. Setelah ditemukan, perbaiki dan uji lagi."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Petunjuk yang jelas",
+     "teks": "Pemain perlu tahu cara bermain. Buat sprite teks berisi petunjuk singkat, misalnya tombol apa yang dipakai dan apa tujuannya. Petunjuk yang jelas membantu pemain memahami game."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Pesan antar sprite",
+     "teks": "Blok Kirim pesan mengirim pesan dengan sebuah nama. Sprite lain yang punya blok Ketika menerima pesan dengan nama yang sama akan langsung bekerja. Nama pesan diketik, maksimal 20 karakter. Dengan pesan, beberapa sprite bisa bekerja bersamaan."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Layar awal dengan tombol Mulai",
+     "langkah": [
+      {
+       "teks": "Tambahkan sprite teks dengan tulisan MULAI. Tambahkan juga sprite teks judul game."
+      },
+      {
+       "teks": "Pasang blok Ketika sprite ini diklik pada sprite MULAI, lalu pasang Kirim pesan dengan nama mulai."
+      },
+      {
+       "teks": "Pada sprite lain, pasang Ketika menerima pesan mulai sebelum game berjalan."
+      },
+      {
+       "teks": "Sembunyikan sprite MULAI dan judul setelah pesan mulai dikirim."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyelesaikan game final",
+     "langkah": [
+      {
+       "teks": "Tambahkan judul game, petunjuk cara bermain, dan nama pembuat memakai sprite teks."
+      },
+      {
+       "teks": "Periksa lagi: skor, nyawa, Game Over, dan layar awal harus bekerja."
+      },
+      {
+       "teks": "Simpan proyek dengan nama yang diminta tugas, lalu kirim ke tugas."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Game pertamamu hampir selesai! Uji, perbaiki, lalu tunjukkan dengan bangga!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P11",
+  "judul": "Dasar HTML/CSS",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu bahwa HTML menyusun isi halaman web dan CSS mengatur tampilannya.",
+    "Kamu bisa membuat halaman web sederhana dengan judul, paragraf, gambar, daftar, dan tautan.",
+    "Kamu bisa mengubah warna dengan CSS."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "HTML dan CSS",
+     "teks": "Halaman web dibuat dari kode. HTML menyusun isi halaman: judul, paragraf, gambar, dan daftar. CSS mengatur tampilannya, seperti warna dan ukuran huruf."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tag",
+     "teks": "HTML memakai tag yang ditulis di antara tanda kurung sudut. Kebanyakan tag punya pembuka dan penutup, penutupnya diberi garis miring. Contoh: <h1>Halo</h1>."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tag yang sering dipakai",
+     "teks": "<h1> untuk judul paling besar. <p> untuk paragraf. <img> untuk menyisipkan gambar. <ul> untuk daftar berpoin, dengan <li> untuk tiap itemnya. <a> untuk tautan (link)."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat halaman HTML pertamamu",
+     "langkah": [
+      {
+       "teks": "Buka Notepad, lalu ketik kode HTML-mu."
+      },
+      {
+       "teks": "Simpan dengan nama yang berakhiran .html, misalnya halamanku.html."
+      },
+      {
+       "teks": "Buka berkasnya di browser dengan klik dua kali."
+      },
+      {
+       "teks": "Setiap kali mengubah kode, simpan lagi lalu muat ulang halaman di browser."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menyisipkan gambar",
+     "teks": "Tekan tombol Unduh bahan pada tugas. Simpan gambarnya satu folder dengan berkas HTML-mu, lalu panggil memakai tag <img> dengan nama berkas gambar itu."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Daftar dan tautan",
+     "teks": "Untuk daftar berpoin, bungkus item-itemnya dengan <ul>, dan tulis tiap item dengan <li>. Untuk tautan, pakai tag <a> yang berisi alamat tujuan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "CSS",
+     "teks": "CSS mengubah tampilan. Contoh: mengubah warna judul menjadi biru dan warna latar halaman menjadi kuning muda. Kamu bisa menulisnya di dalam tag <style> pada halamanmu, memakai pengaturan color untuk warna tulisan dan background-color untuk warna latar."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kalau halaman tidak berubah, jangan panik. Pastikan kamu sudah menyimpan berkas, lalu muat ulang halaman di browser!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L3-P12",
+  "judul": "Proyek akhir: game, animasi, atau website sederhana",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa merencanakan dan mengerjakan sebuah proyek besar dari awal sampai akhir.",
+    "Kamu tahu pentingnya menyimpan, menguji, dan memperbaiki proyek.",
+    "Kamu bisa menjelaskan proyekmu kepada orang lain."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Ini proyek akhirmu",
+     "teks": "Di Level 3 kamu sudah belajar banyak hal. Sekarang saatnya membuat satu proyek besar yang menunjukkan semua kemampuanmu. Kamu bisa memilih game, animasi, atau website sederhana sesuai tugas yang diberikan tutor."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Rencanakan dulu",
+     "teks": "Langkah pertama adalah merencanakan ide dan tujuan proyek: tema apa, apa yang mau ditampilkan, dan apa yang harus ada. Buat catatan atau sketsa singkat sebelum mulai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kerjakan sedikit demi sedikit",
+     "teks": "Pecah proyek menjadi bagian-bagian kecil dan selesaikan satu per satu. Simpan pekerjaanmu secara berkala supaya tidak hilang."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Uji dan perbaiki",
+     "teks": "Proyek yang baik diuji dan diperbaiki sebelum ditampilkan. Coba sendiri, lalu minta teman mencoba. Catat masukannya dan perbaiki bagian yang membingungkan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menampilkan proyek",
+     "teks": "Saat menampilkan proyek, jelaskan idemu, cara membuatnya, dan hal yang kamu pelajari. Bicaralah dengan jelas dan tenang."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kamu sudah menempuh perjalanan panjang. Tunjukkan karyamu dengan bangga!"
+    }
+   ]
+  }
+ }
+]

@@ -18,7 +18,7 @@ function petaKode(baris) {
  * Usecase siswa: daftar, detail, pendaftaran (siswa + 2 kode + level dalam satu transaksi), ganti kode,
  * ganti level, aktif/nonaktif, dan hapus (admin). Semua aksi sensitif dicatat ke log.
  */
-export function buatSiswaUsecase({ siswaModel, levelUsecase, authUsecase, pengaturanUsecase, karyaUsecase, db, idGen, catatAktivitas, urlSiswa }) {
+export function buatSiswaUsecase({ siswaModel, levelUsecase, authUsecase, pengaturanUsecase, karyaUsecase, studioUsecase, db, idGen, catatAktivitas, urlSiswa }) {
   /** Mengambil siswa (dengan level berjalan) atau melempar 404. */
   async function wajibAda(id, conn = null) {
     const s = await siswaModel.cariId(id, conn);
@@ -142,10 +142,11 @@ export function buatSiswaUsecase({ siswaModel, levelUsecase, authUsecase, pengat
     },
     /**
      * Admin menghapus siswa beserta seluruh datanya; nama yang diketik harus sama dengan nama siswa.
-     * Berkas karya di disk ikut dihapus setelah transaksi berhasil (baris karya terhapus lewat CASCADE).
+     * Berkas karya dan kostum unggahan di disk ikut dihapus setelah transaksi berhasil (barisnya terhapus lewat CASCADE;
+     * proyek_coding dan proyek_kiriman juga ikut terhapus lewat CASCADE).
      */
     async hapus(id, konfirmasiNama, pelakuId) {
-      const berkasKarya = await db.transaction(async (conn) => {
+      const { berkasKarya, berkasKostum } = await db.transaction(async (conn) => {
         const siswa = await kunciSiswa(id, conn);
         // pengaman salah klik: nama harus diketik ulang (huruf besar/kecil dan spasi tepi diabaikan)
         if (siswa.nama.trim().toLowerCase() !== konfirmasiNama.trim().toLowerCase()) {
@@ -153,12 +154,14 @@ export function buatSiswaUsecase({ siswaModel, levelUsecase, authUsecase, pengat
         }
         // path berkas dibaca sebelum baris karya hilang karena CASCADE
         const daftarPath = await karyaUsecase.berkasSiswa(id, conn);
+        const daftarKostum = await studioUsecase.berkasKostumSiswa(id, conn);
         await siswaModel.hapusBerantai(id, conn);
-        await catatAktivitas({ penggunaId: pelakuId, aksi: AKSI_LOG.HAPUS_SISWA, entitas: 'siswa', entitasId: id, detail: { nama: siswa.nama, berkasKarya: daftarPath.length } }, conn);
-        return daftarPath;
+        await catatAktivitas({ penggunaId: pelakuId, aksi: AKSI_LOG.HAPUS_SISWA, entitas: 'siswa', entitasId: id, detail: { nama: siswa.nama, berkasKarya: daftarPath.length, berkasKostum: daftarKostum.length } }, conn);
+        return { berkasKarya: daftarPath, berkasKostum: daftarKostum };
       });
       // berkas dihapus setelah commit: bila transaksi batal, berkas tetap utuh bersama datanya
       await karyaUsecase.hapusBerkasSiswa(id, berkasKarya);
+      await studioUsecase.hapusBerkasKostumSiswa(id, berkasKostum);
       return { id };
     },
   };

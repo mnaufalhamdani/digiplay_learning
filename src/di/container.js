@@ -55,6 +55,15 @@ import { buatSertifikatModel } from '@/modules/sertifikat/sertifikat.model';
 import { buatSertifikatUsecase } from '@/modules/sertifikat/sertifikat.usecase';
 import { buatSertifikatController } from '@/modules/sertifikat/sertifikat.controller';
 import { buatPdfSertifikat } from '@/modules/sertifikat/sertifikat.pdf';
+import { buatMateriModel } from '@/modules/materi/materi.model';
+import { buatMateriUsecase } from '@/modules/materi/materi.usecase';
+import { buatMateriController } from '@/modules/materi/materi.controller';
+import { buatBlocklyModel } from '@/modules/blockly/blockly.model';
+import { buatBlocklyUsecase } from '@/modules/blockly/blockly.usecase';
+import { buatBlocklyController } from '@/modules/blockly/blockly.controller';
+import { buatStudioModel } from '@/modules/studio/studio.model';
+import { buatStudioUsecase } from '@/modules/studio/studio.usecase';
+import { buatStudioController } from '@/modules/studio/studio.controller';
 import { buatKaryaModel } from '@/modules/karya/karya.model';
 import { buatKaryaUsecase } from '@/modules/karya/karya.usecase';
 import { buatKaryaController } from '@/modules/karya/karya.controller';
@@ -128,6 +137,12 @@ function buatContainer() {
     pdfSertifikat: asFunction(buatPdfSertifikat).singleton(),
   });
   daftarModul(container, 'sertifikat', { model: buatSertifikatModel, usecase: buatSertifikatUsecase, controller: buatSertifikatController });
+  // materi: kunci tugas sampai siswa paham dan pustaka materi (dipakai sesi dan tugas)
+  daftarModul(container, 'materi', { model: buatMateriModel, usecase: buatMateriUsecase, controller: buatMateriController });
+  // blockly (Coding Zippy): labirin dan penilaian program di server; hasil disimpan di hasil_latihan
+  daftarModul(container, 'blockly', { model: buatBlocklyModel, usecase: buatBlocklyUsecase, controller: buatBlocklyController });
+  // studio (Studio Zippy, Level 2): proyek siswa dan salinan proyek yang dikirim ke tugas/butir post test
+  daftarModul(container, 'studio', { model: buatStudioModel, usecase: buatStudioUsecase, controller: buatStudioController });
   daftarModul(container, 'karya', { model: buatKaryaModel, usecase: buatKaryaUsecase, controller: buatKaryaController });
   daftarModul(container, 'ekspor', { model: buatEksporModel, usecase: buatEksporUsecase, controller: buatEksporController });
   // rapor: agregator tanpa tabel sendiri, jadi tanpa model

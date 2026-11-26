@@ -7,11 +7,15 @@ import { buatId } from './_idGen.mjs';
 import { validasiTemplate } from '../src/utils/templateValidasi.js';
 import { penandaBerkasGambar } from '../src/utils/berkasGambar.js';
 import { teksJson } from '../src/utils/json.js';
+import { isiMateriSchema } from '../src/modules/materi/materi.schema.js';
+import { ARAH, TIPE_BLOK } from '../src/modules/shared/blockly/daftarBlok.js';
+import { simulasiProgram } from '../src/modules/shared/blockly/simulasiProgram.js';
 import {
   DAFTAR_PENILAIAN,
   JENIS_GAMBAR,
   JENIS_PERTEMUAN,
   JUMLAH_PERTEMUAN,
+  JUMLAH_PERTEMUAN_MATERI,
   KATEGORI_GAMBAR,
   NOMOR_POST_TEST,
   SUMBER_BAGIAN,
@@ -20,16 +24,22 @@ import {
   TOTAL_BUTIR_POST_TEST,
 } from '../src/enums/index.js';
 
-// npm run db:seed  -> memuat level, pertemuan, bagian post test, template, bank teks mengetik, dan gambar.
+// npm run db:seed  -> memuat level, pertemuan, bagian post test, template, bank teks mengetik, gambar, dan materi.
 // Idempoten: baris dicocokkan dengan kunci uniknya, jadi aman dijalankan berulang tanpa duplikat.
 // Upsert penuh: baris yang sudah ada diperbarui dari berkas seed (termasuk template.aktif = 1),
 // sehingga perubahan admin lewat halaman Level/Template ikut tertimpa saat seed dijalankan lagi.
 // Penanda punya_* gambar selalu mengikuti berkas di disk.
+// Materi (seed/materi-level-<n>.json) di-upsert per pertemuan_id dan menimpa isi yang diubah admin; berkas yang belum ada
+// dilewati dengan peringatan (bukan galat), tetapi isi berkas yang ada wajib lolos isiMateriSchema.
+// Labirin Coding Zippy (seed/labirin-blockly.json) di-upsert per kode dan menimpa data yang ada; berkas yang hilang atau
+// kosong hanya memberi peringatan. Tiap labirin diperiksa bentuknya dan contoh_solusi-nya harus berhasil di penerjemah.
 // Jalankan lewat package.json (memakai --import ./scripts/_alias.mjs untuk alias @/ di src/).
 
 const AKAR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FOLDER_GAMBAR = path.join(AKAR, 'public', 'aset', 'gambar');
 const BERKAS_TEMPLATE = [1, 2, 3].map((n) => path.join(AKAR, 'seed', `template-level-${n}.json`));
+const BERKAS_MATERI = [1, 2, 3].map((n) => path.join(AKAR, 'seed', `materi-level-${n}.json`));
+const BERKAS_LABIRIN = path.join(AKAR, 'seed', 'labirin-blockly.json');
 
 /** Membaca berkas JSON dari jalur relatif root project. */
 async function bacaJson(jalur) {
@@ -68,6 +78,51 @@ function uraiCsv(teks) {
   return data.map((b) => Object.fromEntries(kepala.map((k, i) => [k.trim(), (b[i] ?? '').trim()])));
 }
 
+/** Membaca berkas seed materi yang ada. Berkas yang belum ada dilewati dengan peringatan, bukan galat. */
+async function bacaMateri() {
+  const berkas = [];
+  const peringatan = [];
+  for (const jalur of BERKAS_MATERI) {
+    const nama = path.basename(jalur);
+    let teks;
+    try {
+      teks = await readFile(jalur, 'utf8');
+    } catch (error) {
+      // berkas belum ditulis: lewati dan beri tahu; galat baca lain (izin, dsb.) tetap diteruskan
+      if (error.code !== 'ENOENT') throw error;
+      peringatan.push(`${nama} belum ada, dilewati.`);
+      continue;
+    }
+    try {
+      berkas.push({ nama, data: JSON.parse(teks) });
+    } catch (error) {
+      // sebut nama berkas agar mudah dicari salahnya
+      throw new Error(`${nama}: bukan JSON yang valid (${error.message})`);
+    }
+  }
+  return { berkas, peringatan };
+}
+
+/** Membaca seed labirin Coding Zippy. Berkas yang hilang atau kosong dilewati dengan peringatan, bukan galat. */
+async function bacaLabirin() {
+  let teks;
+  try {
+    teks = await readFile(BERKAS_LABIRIN, 'utf8');
+  } catch (error) {
+    // berkas belum ada: lewati; galat baca lain (izin, dsb.) tetap diteruskan
+    if (error.code !== 'ENOENT') throw error;
+    return { daftar: [], peringatan: ['labirin-blockly.json belum ada, dilewati.'] };
+  }
+  let data;
+  try {
+    data = JSON.parse(teks);
+  } catch (error) {
+    throw new Error(`labirin-blockly.json: bukan JSON yang valid (${error.message})`);
+  }
+  const daftar = Array.isArray(data?.labirin) ? data.labirin : [];
+  return { daftar, peringatan: daftar.length === 0 ? ['labirin-blockly.json kosong, dilewati.'] : [] };
+}
+
 /** Membaca semua berkas seed dan memindai folder gambar. Belum menulis apa pun. */
 async function bacaSeed() {
   const levelPertemuan = await bacaJson('seed/level-pertemuan.json');
@@ -80,7 +135,7 @@ async function bacaSeed() {
     }),
   );
   const pelajaran = (await bacaJson('seed/pelajaran-mengetik.json')).pelajaran ?? [];
-  return { level: levelPertemuan.level ?? [], template, gambar, pelajaran };
+  return { level: levelPertemuan.level ?? [], template, gambar, pelajaran, materi: await bacaMateri(), labirin: await bacaLabirin() };
 }
 
 /** Validasi level dan 13 pertemuannya. */
@@ -175,6 +230,115 @@ async function tulisPelajaran(conn, pelajaran, statistik) {
   for (const p of pelajaran) await upsert(conn, statistik, 'pelajaran_mengetik', kolom, kolom.map((k) => p[k] ?? null), kolom.slice(1));
 }
 
+/** Mengubah contoh_solusi format ringkas seed (["maju", { ulangi: 3, isi: [...] }]) menjadi format program. */
+function programDariRingkas(daftar) {
+  return daftar.map((x) => (typeof x === 'string' ? { blok: x } : { blok: 'ulangi', kali: x.ulangi, isi: programDariRingkas(x.isi ?? []) }));
+}
+
+/** Petak (x, y) ada di grid dan berupa jalan ('.'). */
+function petakJalan(grid, p) {
+  return Number.isInteger(p?.x) && Number.isInteger(p?.y) && grid[p.y]?.[p.x] === '.';
+}
+
+/** Validasi satu labirin: bentuk grid, titik mulai/bintang, blok tersedia, dan contoh_solusi harus berhasil di penerjemah. */
+function validasiSatuLabirin(l, galat) {
+  const label = `Labirin ${l?.kode ?? '(tanpa kode)'}`;
+  if (typeof l?.kode !== 'string' || !/^[a-z0-9_]{1,40}$/.test(l.kode)) galat.push(`${label}: kode wajib huruf kecil, angka, atau garis bawah (maksimal 40).`);
+  if (typeof l?.nama !== 'string' || l.nama.trim() === '' || l.nama.length > 100) galat.push(`${label}: nama wajib diisi (maksimal 100 karakter).`);
+  if (!Number.isInteger(l?.urutan) || l.urutan < 0) galat.push(`${label}: urutan harus bilangan bulat 0 atau lebih.`);
+  const grid = l?.grid;
+  const gridSah = Array.isArray(grid) && grid.length > 0 && grid.every((b) => typeof b === 'string' && /^[.#]+$/.test(b) && b.length === grid[0].length);
+  if (!gridSah) return galat.push(`${label}: grid harus daftar baris sama panjang yang hanya berisi '.' dan '#'.`);
+  if (l.tinggi !== grid.length || l.lebar !== grid[0].length) galat.push(`${label}: lebar/tinggi tidak sama dengan ukuran grid.`);
+  if (!petakJalan(grid, l.mulai) || !ARAH.includes(l.mulai?.arah)) galat.push(`${label}: mulai harus di petak jalan dengan arah ${ARAH.join('/')}.`);
+  if (!petakJalan(grid, l.bintang)) galat.push(`${label}: bintang harus di petak jalan.`);
+  if (!Number.isInteger(l.batas_blok) || l.batas_blok < 1) galat.push(`${label}: batas_blok harus bilangan bulat positif.`);
+  const tersedia = l.blok_tersedia;
+  const tersediaSah = Array.isArray(tersedia) && tersedia.length > 0 && tersedia.every((b) => TIPE_BLOK.includes(b));
+  if (!tersediaSah) return galat.push(`${label}: blok_tersedia harus daftar tipe blok yang dikenal (${TIPE_BLOK.join(', ')}).`);
+  // contoh_solusi hanya untuk uji, tetapi harus benar-benar menyelesaikan labirin dalam batas blok
+  if (l.contoh_solusi != null) {
+    const hasil = simulasiProgram(l, programDariRingkas(l.contoh_solusi));
+    if (!hasil.berhasil) galat.push(`${label}: contoh_solusi tidak berhasil di penerjemah (${hasil.alasan}).`);
+  }
+}
+
+/** Validasi seluruh labirin (kode dan nama unik) dan rujukan nama labirin pada template bertipe blockly. */
+function validasiLabirin(labirin, berkasTemplate, galat) {
+  const kode = new Set();
+  const nama = new Set();
+  for (const l of labirin.daftar) {
+    validasiSatuLabirin(l, galat);
+    if (kode.has(l?.kode)) galat.push(`Kode labirin ganda: ${l.kode}`);
+    if (nama.has(l?.nama)) galat.push(`Nama labirin ganda: ${l.nama}`);
+    kode.add(l?.kode);
+    nama.add(l?.nama);
+  }
+  // tanpa data labirin tidak ada yang bisa dicocokkan (peringatan sudah dicetak)
+  if (nama.size === 0) return;
+  for (const berkas of berkasTemplate) {
+    for (const tpl of berkas.template ?? []) {
+      if (tpl.tipe !== 'blockly') continue;
+      for (const v of Array.isArray(tpl.parameter?.labirin) ? tpl.parameter.labirin : []) if (!nama.has(v)) galat.push(`${tpl.kode}: labirin "${v}" tidak ada di labirin-blockly.json.`);
+    }
+  }
+}
+
+/** Menulis labirin (upsert per kode; semua kolom selain kode ditimpa dari berkas seed). */
+async function tulisLabirin(conn, daftar, statistik) {
+  const kolom = ['kode', 'nama', 'urutan', 'lebar', 'tinggi', 'grid', 'mulai', 'bintang', 'batas_blok', 'blok_tersedia', 'petunjuk', 'contoh_solusi', 'aktif'];
+  for (const l of daftar) {
+    const nilai = [l.kode, l.nama, l.urutan, l.lebar, l.tinggi, teksJson(l.grid), teksJson(l.mulai), teksJson(l.bintang), l.batas_blok, teksJson(l.blok_tersedia), l.petunjuk ?? null, teksJson(l.contoh_solusi), 1];
+    await upsert(conn, statistik, 'labirin_blockly', kolom, nilai, kolom.slice(1));
+  }
+}
+
+/** Ringkasan labirin: jumlah dimuat dari berkas seed dan peringatan bila berkas hilang atau kosong. */
+function cetakRingkasanLabirin(labirin, statistik) {
+  const s = statistik.labirin_blockly ?? { baru: 0, diperbarui: 0 };
+  console.log(`  ${'labirin_blockly'.padEnd(20)} ${String(labirin.daftar.length).padStart(4)}  (baru ${s.baru}, diperbarui ${s.diperbarui})  dimuat dari berkas seed`);
+  for (const p of labirin.peringatan) console.warn(`  Peringatan labirin: ${p}`);
+}
+
+/** Kode pertemuan seed ("L1-P01") dari kode level dan nomor pertemuan. */
+function kodePertemuan(kodeLevel, nomor) {
+  return `${kodeLevel}-P${String(nomor).padStart(2, '0')}`;
+}
+
+/** Validasi berkas materi: kode pertemuan dikenal dan bukan post test, tanpa ganda, judul ada, dan isi lolos isiMateriSchema. */
+function validasiMateri(berkasMateri, daftarLevel, galat) {
+  const nomorPerKode = new Map(daftarLevel.flatMap((lv) => (lv.pertemuan ?? []).map((p) => [kodePertemuan(lv.kode, p.nomor), p.nomor])));
+  const terpakai = new Set();
+  for (const { nama, data } of berkasMateri) {
+    // berkas harus berupa daftar materi
+    if (!Array.isArray(data)) {
+      galat.push(`${nama}: isi berkas harus berupa daftar.`);
+      continue;
+    }
+    data.forEach((m, i) => {
+      const label = `${nama} #${i + 1} (${m?.kodePertemuan ?? 'tanpa kodePertemuan'})`;
+      const nomor = nomorPerKode.get(m?.kodePertemuan);
+      if (nomor === undefined) galat.push(`${label}: kodePertemuan tidak ada di level-pertemuan.json.`);
+      // pertemuan post test tidak punya materi
+      else if (nomor > JUMLAH_PERTEMUAN_MATERI) galat.push(`${label}: pertemuan ${NOMOR_POST_TEST} (post test) tidak punya materi.`);
+      if (terpakai.has(m?.kodePertemuan)) galat.push(`${label}: kodePertemuan ganda.`);
+      terpakai.add(m?.kodePertemuan);
+      if (typeof m?.judul !== 'string' || m.judul.trim() === '' || m.judul.length > 200) galat.push(`${label}: judul wajib diisi (maksimal 200 karakter).`);
+      const hasil = isiMateriSchema.safeParse(m?.isi);
+      for (const isu of hasil.success ? [] : hasil.error.issues) galat.push(`${label}: isi${isu.path.length ? `.${isu.path.join('.')}` : ''}: ${isu.message}`);
+    });
+  }
+}
+
+/** Menulis materi (upsert per pertemuan_id; isi, judul, dan aktif ditimpa dari berkas seed). */
+async function tulisMateri(conn, berkasMateri, statistik) {
+  const idPertemuan = await petaId(conn, 'SELECT p.id, l.kode, p.nomor FROM pertemuan p JOIN level l ON l.id = p.level_id', (b) => kodePertemuan(b.kode, b.nomor));
+  const kolom = ['pertemuan_id', 'judul', 'isi', 'aktif'];
+  for (const { data } of berkasMateri) {
+    for (const m of data) await upsert(conn, statistik, 'materi', kolom, [idPertemuan.get(m.kodePertemuan), m.judul.trim(), teksJson(m.isi), 1], kolom.slice(1));
+  }
+}
+
 /** Menjalankan semua validasi; daftar galat kosong berarti aman ditulis. */
 function validasiSemua(data) {
   const galat = [];
@@ -182,6 +346,8 @@ function validasiSemua(data) {
   validasiGambar(data.gambar, galat);
   validasiTemplateSemua(data, gambarTersediaDari(data.gambar), galat);
   validasiPelajaran(data.pelajaran, galat);
+  validasiMateri(data.materi.berkas, data.level, galat);
+  validasiLabirin(data.labirin, data.template, galat);
   return galat;
 }
 
@@ -298,6 +464,16 @@ async function cetakRingkasan(conn, statistik) {
   }
 }
 
+/** Ringkasan materi: jumlah yang dimuat dari berkas seed dan peringatan bila berkas belum ada atau belum lengkap (bukan galat). */
+function cetakRingkasanMateri(materi, statistik) {
+  const dimuat = materi.berkas.reduce((n, b) => n + (Array.isArray(b.data) ? b.data.length : 0), 0);
+  const s = statistik.materi ?? { baru: 0, diperbarui: 0 };
+  console.log(`  ${'materi'.padEnd(20)} ${String(dimuat).padStart(4)}  (baru ${s.baru}, diperbarui ${s.diperbarui})  dimuat dari berkas seed, dari ${JUMLAH_PERTEMUAN_MATERI * 3} pertemuan`);
+  for (const p of materi.peringatan) console.warn(`  Peringatan materi: ${p}`);
+  // belum lengkap: pertemuan tanpa materi tidak mengunci tugas, jadi aman; hanya diberi tahu
+  if (dimuat < JUMLAH_PERTEMUAN_MATERI * 3) console.warn(`  Peringatan materi: baru ${dimuat} dari ${JUMLAH_PERTEMUAN_MATERI * 3} materi yang dimuat; pertemuan lain belum punya materi dan tugasnya tidak terkunci.`);
+}
+
 /** Alur utama: baca, validasi semua (tanpa menulis bila ada galat), lalu tulis dalam satu transaksi. */
 async function main() {
   const data = await bacaSeed();
@@ -318,8 +494,12 @@ async function main() {
     await tulisGambar(conn, data.gambar, statistik);
     await tulisPengaturan(conn, data.template);
     await tulisPelajaran(conn, data.pelajaran, statistik);
+    await tulisMateri(conn, data.materi.berkas, statistik);
+    await tulisLabirin(conn, data.labirin.daftar, statistik);
     await conn.commit();
     await cetakRingkasan(conn, statistik);
+    cetakRingkasanMateri(data.materi, statistik);
+    cetakRingkasanLabirin(data.labirin, statistik);
   } catch (error) {
     // satu gagal: batalkan semua agar database tidak setengah terisi
     await conn.rollback();

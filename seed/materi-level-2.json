@@ -1,0 +1,853 @@
+[
+ {
+  "kodePertemuan": "L2-P01",
+  "judul": "Review Level 1 dan mengetik 10 jari",
+  "isi": {
+   "tujuan": [
+    "Kamu mengingat kembali dasar keyboard dan menyimpan dokumen.",
+    "Kamu tahu posisi sepuluh jari di keyboard.",
+    "Kamu bisa mengetik pelan tapi teliti memakai banyak jari."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Selamat datang di Level 2!",
+     "teks": "Di Level 1 kamu sudah mengenal komputer, mouse, keyboard, Paint, dan Word. Sekarang kita naik tingkat. Kita mulai dengan mengetik memakai sepuluh jari, supaya pekerjaanmu nanti lebih cepat dan nyaman."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ingat lagi dulu",
+     "teks": "Spacebar membuat jarak antar kata, Shift membuat huruf besar, Backspace menghapus huruf yang salah, dan Enter pindah ke baris baru. Sebelum menutup sebuah dokumen, jangan lupa menyimpannya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Posisi sepuluh jari",
+     "teks": "Letakkan jari-jarimu di baris tengah (home row). Tangan kiri: kelingking di A, jari manis di S, jari tengah di D, telunjuk di F. Tangan kanan: telunjuk di J, jari tengah di K, jari manis di L, kelingking di titik koma. Kedua ibu jari beristirahat di Spacebar, dan ibu jari dipakai untuk menekannya."
+    },
+    {
+     "tipe": "gambar",
+     "src": "aset/mengetik/posisi-jari.png",
+     "keterangan": "Posisi sepuluh jari di atas keyboard"
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tonjolan di F dan J",
+     "teks": "Pada huruf F dan J ada tonjolan kecil. Tonjolan itu membantu jari telunjukmu menemukan posisi awal tanpa melihat keyboard. Setelah menekan tombol lain, kembalikan jarimu ke home row."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Cara berlatih",
+     "langkah": [
+      {
+       "teks": "Letakkan jari di home row dan rasakan tonjolan di F dan J."
+      },
+      {
+       "teks": "Tekan tombol dengan jari yang paling dekat dengannya."
+      },
+      {
+       "teks": "Lihat layar, bukan keyboard."
+      },
+      {
+       "teks": "Ketik pelan dan teliti dulu. Kecepatan akan datang sendiri."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Awalnya terasa lambat dan canggung. Itu wajar! Setiap hari berlatih sedikit, jarimu akan makin pintar."
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P02",
+  "judul": "Latihan mengetik (target kecepatan)",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu apa itu WPM dan akurasi mengetik.",
+    "Kamu tahu urutan belajar mengetik: benar dulu, baru cepat.",
+    "Kamu tahu sikap duduk yang baik saat mengetik."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Mengukur kecepatan",
+     "teks": "Kecepatan mengetik diukur dengan WPM, singkatan dari words per minute, atau kata per menit. Semakin besar angkanya, semakin cepat kamu mengetik."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Akurasi",
+     "teks": "Akurasi adalah seberapa benar ketikanmu, dinyatakan dalam persen. Ketikan yang cepat tapi banyak salah tidak berguna karena harus diperbaiki lagi."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Benar dulu, baru cepat",
+     "teks": "Saat belajar, dahulukan ketepatan. Ketik dengan teliti sampai akurasimu baik, baru tambah kecepatannya sedikit demi sedikit. Jangan mengetik sambil bermain."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Sikap duduk",
+     "teks": "Duduk dengan punggung tegak, layar sejajar mata, dan pergelangan tangan lurus (jangan menekuk ke atas atau ke bawah). Beristirahat sebentar tiap beberapa menit agar tangan dan mata tidak lelah."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Latihan yang efektif",
+     "langkah": [
+      {
+       "teks": "Mulai dengan paragraf yang akurat dan pelan."
+      },
+      {
+       "teks": "Ulangi paragraf yang sama sampai terasa mudah."
+      },
+      {
+       "teks": "Naikkan kecepatan sedikit demi sedikit."
+      },
+      {
+       "teks": "Coba tantangan kecepatan saat akurasimu sudah baik."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Target WPM itu seperti naik tangga. Pelan-pelan, satu anak tangga setiap latihan!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P03",
+  "judul": "Word 1: tabel dan daftar",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat tabel di Word dan mengisinya.",
+    "Kamu bisa membuat daftar bernomor dan daftar berpoin.",
+    "Kamu bisa memberi warna pada baris judul tabel."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Tabel",
+     "teks": "Tabel adalah kotak-kotak berisi tulisan yang tersusun rapi. Garis datar membentuk baris, garis tegak membentuk kolom, dan satu kotak kecil disebut sel."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat tabel di Word",
+     "langkah": [
+      {
+       "teks": "Klik tab Insert."
+      },
+      {
+       "teks": "Pilih Table, lalu geser mouse untuk memilih jumlah baris dan kolom."
+      },
+      {
+       "teks": "Klik di sel pertama, lalu ketik isinya. Pindah ke sel berikutnya dengan klik atau tombol Tab."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Contoh tabel",
+     "teks": "Tabel daftar teman bisa punya kolom No, Nama, dan Hobi. Baris paling atas dipakai sebagai baris judul. Tabel jadwal pelajaran bisa punya kolom Jam dan Mata Pelajaran untuk satu hari."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memberi warna pada baris judul",
+     "langkah": [
+      {
+       "teks": "Blok baris judul tabel dengan mouse."
+      },
+      {
+       "teks": "Pilih warna latar (Shading) dari menu tabel di bagian atas."
+      },
+      {
+       "teks": "Pilih warna yang membuat tulisannya tetap jelas dibaca."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Daftar bernomor dan berpoin",
+     "teks": "Daftar bernomor memakai angka urut (1, 2, 3). Cocok untuk langkah atau urutan. Daftar berpoin (bullets) memakai titik atau simbol di depannya. Cocok untuk hal yang tidak perlu berurutan. Keduanya ada di tab Home."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat daftar",
+     "langkah": [
+      {
+       "teks": "Ketik satu item per baris, tekan Enter setelah tiap item."
+      },
+      {
+       "teks": "Blok semua itemnya."
+      },
+      {
+       "teks": "Di tab Home, klik tombol daftar bernomor (Numbering) atau daftar berpoin (Bullets)."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Tabel dan daftar membuat tulisanmu rapi dan mudah dibaca. Jangan lupa simpan dengan Ctrl dan S!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P04",
+  "judul": "Word 2: laporan sederhana",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa menyusun laporan sederhana dengan susunan yang benar.",
+    "Kamu bisa menambah nomor halaman, gambar, dan sampul.",
+    "Kamu bisa memakai spell check untuk memperbaiki salah ketik."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Susunan laporan",
+     "teks": "Laporan sederhana tersusun dari: judul, pendahuluan, isi, dan penutup. Pendahuluan menjelaskan apa yang akan dibahas, isi memuat penjelasannya, dan penutup berisi kesimpulan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Judul yang baik",
+     "teks": "Judul laporan dibuat besar, tebal, dan rata tengah supaya mudah terlihat. Pakai ukuran huruf yang lebih besar daripada isi."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menambah nomor halaman",
+     "langkah": [
+      {
+       "teks": "Klik tab Insert."
+      },
+      {
+       "teks": "Pilih Page Number."
+      },
+      {
+       "teks": "Pilih posisi nomor, misalnya di bawah halaman."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyisipkan gambar dari bahan",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan."
+      },
+      {
+       "teks": "Di Word, klik tab Insert lalu pilih Pictures."
+      },
+      {
+       "teks": "Pilih gambar yang terunduh, lalu letakkan di bagian laporan yang cocok."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Spell check",
+     "teks": "Spell check (pemeriksa ejaan) menemukan kata yang salah ketik. Kata yang salah biasanya diberi garis bergelombang merah. Klik kanan kata itu untuk melihat saran perbaikan, atau pakai fitur pemeriksa ejaan di tab Review."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Sampul laporan",
+     "teks": "Sampul adalah halaman pertama. Isinya judul laporan, namamu, dan kelasmu. Buat dengan huruf tebal dan rata tengah, dengan warna yang rapi."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Setelah menulis, baca ulang laporanmu dan periksa dengan spell check. Laporan yang rapi membuat pembaca senang!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P05",
+  "judul": "PowerPoint 1: slide, teks, gambar",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu apa itu slide dan bagaimana menambahkannya.",
+    "Kamu bisa mengisi slide dengan teks, poin-poin, dan gambar.",
+    "Kamu bisa mengubah latar dan warna huruf agar mudah dibaca."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Slide",
+     "teks": "PowerPoint adalah program untuk membuat presentasi. Satu halaman dalam presentasi disebut slide. Seperti kartu-kartu yang kamu tunjukkan satu per satu."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat presentasi",
+     "langkah": [
+      {
+       "teks": "Buka PowerPoint dan pilih Blank Presentation."
+      },
+      {
+       "teks": "Slide pertama biasanya slide judul: ketik judul presentasimu."
+      },
+      {
+       "teks": "Untuk menambah slide baru, klik New Slide di tab Home."
+      },
+      {
+       "teks": "Isi slide berikutnya dengan teks singkat."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Poin-poin",
+     "teks": "Poin-poin (bullets) membuat isi slide ringkas. Tulis hal-hal pokok saja, jangan satu paragraf panjang."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyisipkan gambar",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan."
+      },
+      {
+       "teks": "Klik tab Insert lalu pilih Pictures."
+      },
+      {
+       "teks": "Pilih gambar yang terunduh. Atur ukuran dan letaknya."
+      },
+      {
+       "teks": "Tulis satu kalimat penjelasan di slide yang sama."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengubah latar dan warna huruf",
+     "langkah": [
+      {
+       "teks": "Klik tab Design, lalu pilih Format Background."
+      },
+      {
+       "teks": "Pilih warna latar, misalnya biru muda."
+      },
+      {
+       "teks": "Pilih warna huruf yang jauh berbeda dari latar, misalnya huruf gelap di latar terang."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Slide yang mudah dibaca",
+     "teks": "Pakai huruf yang besar, warna huruf yang berbeda jelas dari latar, dan teks yang singkat. Tulisan yang memenuhi seluruh halaman atau berwarna sama dengan latar membuat slide sulit dibaca."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kurangi kata, perbesar huruf. Slide yang bagus itu sederhana!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P06",
+  "judul": "PowerPoint 2: animasi dan transisi",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membedakan transisi dan animasi.",
+    "Kamu bisa memberi transisi pada slide dan animasi pada teks atau gambar.",
+    "Kamu bisa memutar presentasi dalam mode presentasi."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Transisi",
+     "teks": "Transisi adalah efek perpindahan dari satu slide ke slide berikutnya, misalnya Fade, Push, Wipe, dan Split. Pilihannya ada di tab Transitions."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memberi transisi",
+     "langkah": [
+      {
+       "teks": "Klik slide yang mau diberi transisi."
+      },
+      {
+       "teks": "Buka tab Transitions dan pilih efeknya."
+      },
+      {
+       "teks": "Klik Apply To All bila ingin semua slide memakai transisi yang sama."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Animasi",
+     "teks": "Animasi adalah efek gerak pada teks atau gambar di dalam satu slide, misalnya Fade, Fly In, Zoom, dan Wipe. Pilihannya ada di tab Animations."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memberi animasi",
+     "langkah": [
+      {
+       "teks": "Klik teks atau gambar yang mau digerakkan."
+      },
+      {
+       "teks": "Buka tab Animations dan pilih efeknya."
+      },
+      {
+       "teks": "Beri animasi pada beberapa benda agar muncul berurutan, misalnya gambar dulu lalu teks."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memutar presentasi",
+     "langkah": [
+      {
+       "teks": "Tekan tombol F5 untuk memutar dari slide pertama."
+      },
+      {
+       "teks": "Klik atau tekan panah kanan untuk pindah slide."
+      },
+      {
+       "teks": "Tekan Esc untuk keluar dari mode presentasi."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Secukupnya saja",
+     "teks": "Pakai animasi dan transisi secukupnya. Terlalu banyak efek membuat pendengar pusing dan tidak fokus pada isi presentasimu."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Efek itu seperti bumbu. Sedikit membuat enak, terlalu banyak malah merusak rasa!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P07",
+  "judul": "Excel 1: sel, baris, kolom, tabel",
+  "isi": {
+   "tujuan": [
+    "Kamu mengenal sel, baris, dan kolom di Excel.",
+    "Kamu bisa menulis alamat sel dan rumus sederhana.",
+    "Kamu bisa membuat tabel dengan garis tepi dan warna."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Excel",
+     "teks": "Excel adalah program lembar kerja yang tersusun dari banyak kotak kecil. Cocok untuk daftar nilai, harga, dan hitungan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Baris, kolom, dan sel",
+     "teks": "Kolom adalah deretan ke bawah dan diberi nama huruf (A, B, C). Baris adalah deretan ke samping dan diberi nomor (1, 2, 3). Perpotongan kolom dan baris disebut sel."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Alamat sel",
+     "teks": "Alamat sel ditulis huruf kolom dulu, lalu nomor baris. Sel di kolom C baris 3 beralamat C3. Sel A1 berada di kolom A baris 1."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Rumus",
+     "teks": "Penulisan rumus di Excel selalu diawali tanda sama dengan (=). Contoh: =A1+B1 menjumlahkan isi A1 dan B1. Tanda hitung yang dipakai: + untuk tambah, - untuk kurang, * untuk kali, dan / untuk bagi."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mencoba rumus",
+     "langkah": [
+      {
+       "teks": "Ketik angka di sel A1 dan B1."
+      },
+      {
+       "teks": "Klik sel C1 lalu ketik =A1+B1."
+      },
+      {
+       "teks": "Tekan Enter. Hasilnya langsung muncul di C1."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat tabel nilai",
+     "langkah": [
+      {
+       "teks": "Ketik judul kolom di baris pertama (misalnya Nama, Nilai 1, Nilai 2)."
+      },
+      {
+       "teks": "Isi nama dan nilai di baris-baris di bawahnya."
+      },
+      {
+       "teks": "Blok seluruh tabel, lalu beri garis tepi (Borders) di tab Home."
+      },
+      {
+       "teks": "Blok baris judul dan beri warna latar."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kalau ragu menulis rumus, ingat tiga hal: diawali sama dengan, tulis alamat sel, lalu tekan Enter."
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P08",
+  "judul": "Excel 2: rumus dasar (SUM, AVERAGE)",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa memakai SUM untuk menjumlahkan sekelompok angka.",
+    "Kamu bisa memakai AVERAGE untuk mencari rata-rata.",
+    "Kamu bisa membuat tabel belanja dengan kolom Total."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Rentang sel",
+     "teks": "Rentang sel adalah sekelompok sel yang berdekatan. A1:A5 artinya semua sel dari A1 sampai A5. Tanda titik dua berarti sampai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "SUM",
+     "teks": "SUM menjumlahkan angka pada sebuah rentang. Contoh: =SUM(A1:A5) menjumlahkan isi A1, A2, A3, A4, dan A5."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "AVERAGE",
+     "teks": "AVERAGE mencari nilai rata-rata. Contoh: =AVERAGE(B1:B4) menghitung rata-rata semua angka dari B1 sampai B4, bukan hanya B1 dan B4."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memakai SUM dan AVERAGE",
+     "langkah": [
+      {
+       "teks": "Ketik beberapa angka berurutan ke bawah, misalnya di A1 sampai A5."
+      },
+      {
+       "teks": "Klik sel kosong di bawahnya, misalnya A6."
+      },
+      {
+       "teks": "Ketik =SUM(A1:A5) lalu tekan Enter. Untuk rata-rata, ganti SUM dengan AVERAGE."
+      },
+      {
+       "teks": "Hasil rata-rata boleh dibulatkan sampai dua angka di belakang koma."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat tabel belanja",
+     "langkah": [
+      {
+       "teks": "Buat judul kolom: Nama, Harga, Jumlah, dan Total."
+      },
+      {
+       "teks": "Isi nama barang, harga, dan jumlahnya."
+      },
+      {
+       "teks": "Di kolom Total, tulis rumus perkalian, misalnya =B2*C2."
+      },
+      {
+       "teks": "Di bawah kolom Total, jumlahkan semua total dengan SUM."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Rumus membuat Excel menghitung untukmu. Ganti angkanya, hasilnya ikut berubah!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P09",
+  "judul": "Coding 1: sprite, gerak, suara",
+  "isi": {
+   "tujuan": [
+    "Kamu mengenal Studio Zippy: sprite, panggung, dan kategori blok.",
+    "Kamu bisa membuat sprite bergerak, berputar, bersuara, dan berganti latar.",
+    "Kamu bisa menyimpan proyekmu dengan nama dan mengirimnya ke tugas."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Selamat datang di Studio Zippy!",
+     "teks": "Studio Zippy adalah tempat kamu membuat program sendiri dengan menyusun blok kode, seperti di Coding Zippy tetapi lebih bebas. Di sini kamu bisa membuat tokoh bergerak, berbicara, dan bermain game."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Sprite dan panggung",
+     "teks": "Tokoh yang bisa kamu gerakkan disebut sprite. Tempat sprite bergerak disebut panggung. Latar di panggung bisa diganti sesuai tema, misalnya taman, pantai, luar angkasa, atau kota."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kategori blok",
+     "teks": "Blok kode dikelompokkan menurut warna. Blok Kejadian berwarna kuning dan dipakai untuk memulai program. Blok Gerakan berwarna biru dan menggerakkan sprite. Blok Tampilan berwarna ungu, blok Suara berwarna merah muda, dan blok Kontrol berwarna oranye."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Memulai program",
+     "teks": "Hampir semua program dimulai dengan blok Ketika bendera hijau diklik. Pasang blok perintah lain di bawahnya. Saat bendera hijau diklik, semua perintah itu dijalankan dari atas ke bawah."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat sprite bergerak",
+     "langkah": [
+      {
+       "teks": "Klik Tambah sprite, lalu pilih sprite dari pustaka, misalnya kucing."
+      },
+      {
+       "teks": "Dari kategori Kejadian, tarik blok Ketika bendera hijau diklik ke area kerja."
+      },
+      {
+       "teks": "Dari kategori Gerakan, pasang blok Gerak (angka) langkah di bawahnya, dan isi jumlah langkahnya."
+      },
+      {
+       "teks": "Klik bendera hijau di panggung dan lihat sprite-mu bergerak ke kanan."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Berputar",
+     "teks": "Blok Putar kanan dan Putar kiri memutar sprite sebanyak derajat yang kamu isi. Misalnya 90 derajat adalah seperempat putaran. Sesudah berputar, perintah Gerak membawa sprite ke arah yang baru."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Memberi suara",
+     "langkah": [
+      {
+       "teks": "Dari kategori Suara, tarik blok Mainkan suara."
+      },
+      {
+       "teks": "Pilih tema suara, misalnya hewan, musik, atau alam."
+      },
+      {
+       "teks": "Pasang di bawah blok Ketika bendera hijau diklik."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengganti latar",
+     "langkah": [
+      {
+       "teks": "Pilih tema latar di pilihan Latar panggung, atau pakai blok Ganti latar ke."
+      },
+      {
+       "teks": "Letakkan sprite di tengah panggung dengan blok Ke posisi x 0 y 0."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyimpan dan mengirim proyek",
+     "langkah": [
+      {
+       "teks": "Klik tombol Simpan, lalu tulis nama proyek sesuai permintaan tugas."
+      },
+      {
+       "teks": "Pada kartu tugas, tekan Kirim proyek lalu pilih proyekmu. Bila Studio Zippy dibuka dari tugas, kamu juga bisa menekan Kirim ke tugas."
+      },
+      {
+       "teks": "Kakak tutor akan membuka dan menilai proyekmu."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Coba blok satu per satu. Kalau hasilnya aneh, itu bukan salah, itu bahan belajar!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P10",
+  "judul": "Coding 2: percabangan dan perulangan",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa memakai blok Ulangi dan Selamanya.",
+    "Kamu bisa memakai blok Jika ... maka dengan syarat yang tepat.",
+    "Kamu bisa membuat sprite bereaksi pada tombol keyboard dan berganti kostum."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Mengulang dengan Ulangi",
+     "teks": "Blok Ulangi mengulang perintah di dalamnya beberapa kali. Daripada memasang blok Gerak lima kali, cukup pasang satu blok Gerak di dalam Ulangi 5 kali. Programmu lebih pendek dan rapi."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mengulang tanpa henti dengan Selamanya",
+     "teks": "Blok Selamanya mengulang perintah di dalamnya terus-menerus sampai kamu menekan tombol Berhenti. Cocok untuk gerakan yang tidak berhenti, seperti sprite yang berjalan bolak-balik."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Memantul di tepi",
+     "teks": "Pasang blok Gerak dan blok Pantul jika menyentuh tepi di dalam Selamanya. Sprite akan berjalan terus dan berbalik saat menyentuh tepi panggung."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Percabangan dengan Jika",
+     "teks": "Blok Jika ... maka menjalankan perintah di dalamnya hanya jika syaratnya terpenuhi. Contoh syarat yang cocok adalah Menyentuh tepi? di bagian Sensor. Bila syaratnya tidak terpenuhi, perintah di dalam Jika dilewati."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Sprite yang bereaksi pada tombol",
+     "langkah": [
+      {
+       "teks": "Dari kategori Kejadian, tarik blok Ketika tombol (spasi) ditekan."
+      },
+      {
+       "teks": "Pilih tombol yang diminta tugas, misalnya spasi atau panah kanan."
+      },
+      {
+       "teks": "Pasang blok Katakan di bawahnya dan tulis kata yang diminta."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Berganti kostum",
+     "langkah": [
+      {
+       "teks": "Sprite punya dua kostum. Blok Kostum berikutnya mengganti ke kostum lain."
+      },
+      {
+       "teks": "Pasang blok Kostum berikutnya di dalam Ulangi."
+      },
+      {
+       "teks": "Tambahkan blok Tunggu (jumlah) detik supaya perubahannya terlihat."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Ulangi itu untuk jumlah yang pasti, Selamanya untuk tanpa henti, dan Jika untuk memilih kapan sesuatu terjadi!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P11",
+  "judul": "Coding 3: game sederhana",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa memakai variabel skor.",
+    "Kamu bisa membuat game sederhana dengan tujuan dan aturan yang jelas.",
+    "Kamu bisa memeriksa sentuhan antar sprite dan membuat pesan menang."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Game yang baik",
+     "teks": "Game sederhana yang baik punya tujuan dan aturan yang jelas. Pemain perlu tahu apa yang harus dilakukan dan kapan ia menang. Mulailah dari game kecil dulu."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Variabel skor",
+     "teks": "Untuk menyimpan skor permainan, kita membuat variabel. Variabel adalah tempat menyimpan angka yang bisa berubah. Blok Atur skor ke mengisi angka awal, dan blok Ubah skor sebesar menambah atau mengurangi skor."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Reset skor",
+     "teks": "Agar game bisa diulang dari awal, atur skor ke 0 setiap kali bendera hijau diklik. Letakkan blok Atur skor ke 0 di bagian paling atas programmu."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menyentuh",
+     "teks": "Blok Menyentuh ... ? mengecek apakah dua sprite bersentuhan. Cocok untuk menangkap benda atau menabrak lawan. Pasang di dalam blok Jika."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Game tangkap benda",
+     "langkah": [
+      {
+       "teks": "Buat sprite pemain yang digerakkan dengan tombol panah, memakai blok Ketika tombol ditekan dan blok Ubah x sebesar."
+      },
+      {
+       "teks": "Buat sprite benda yang jatuh dari atas: atur posisinya di bagian atas lalu ulangi Ubah y sebesar nilai negatif."
+      },
+      {
+       "teks": "Beri x yang acak dengan blok Angka acak supaya posisinya berubah-ubah."
+      },
+      {
+       "teks": "Di dalam Selamanya, pakai Jika benda Menyentuh sprite lain (pemain), lalu Ubah skor sebesar angka yang diminta dan kembalikan benda ke atas."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Labirin sederhana",
+     "teks": "Pilih latar labirin. Gerakkan sprite dengan tombol panah. Pakai blok Jika dengan syarat Menyentuh dinding untuk mengembalikan sprite ke posisi awal. Tujuannya adalah bintang di labirin: bila sprite Menyentuh tujuan (bintang), pemain menang."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Pesan menang",
+     "teks": "Pakai blok Jika dengan syarat skor lebih besar atau sama dengan (angka target) pada blok perbandingan. Di dalamnya pasang blok Katakan Kamu menang! dan blok Mainkan suara. Tambahkan blok Hentikan semua bila permainan perlu berhenti."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Mulai dari game kecil yang bisa dimainkan, lalu tambahkan satu fitur setiap kali. Selamat membuat game pertamamu!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L2-P12",
+  "judul": "Proyek akhir: presentasi topik pilihan",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat presentasi lengkap tentang topik pilihanmu.",
+    "Kamu bisa berlatih dan mempresentasikannya dengan jelas.",
+    "Kamu bisa memberi dan menerima masukan dengan sopan."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Susunan presentasi",
+     "teks": "Presentasi yang baik tersusun atas pembukaan, isi, dan penutup. Pembukaan memperkenalkan topik, isi menjelaskan hal-hal pokoknya, dan penutup berisi kesimpulan atau ucapan terima kasih."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat presentasi",
+     "langkah": [
+      {
+       "teks": "Pilih topik yang kamu suka dan kuasai."
+      },
+      {
+       "teks": "Buat slide judul, slide isi, slide gambar, dan slide penutup."
+      },
+      {
+       "teks": "Pakai huruf besar, teks singkat, dan warna yang mudah dibaca."
+      },
+      {
+       "teks": "Tambahkan transisi dan animasi secukupnya, lalu simpan."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Latihan",
+     "teks": "Latih presentasimu beberapa kali sebelum tampil. Perhatikan lamanya agar sesuai waktu yang diberikan tutor."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Saat presentasi",
+     "teks": "Berbicaralah dengan jelas dan tidak terlalu cepat, sambil melihat pendengarmu, bukan hanya layar. Jelaskan isi slide dengan kata-katamu sendiri, jangan hanya membaca."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Memberi dan menerima masukan",
+     "teks": "Masukan untuk teman harus sopan. Sebutkan dulu hal yang bagus, lalu satu hal yang bisa diperbaiki. Saat menerima masukan, dengarkan dengan tenang dan ucapkan terima kasih."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Setelah selesai",
+     "teks": "Setelah presentasi selesai, simpan filemu dengan nama yang jelas. Jangan dihapus karena bisa dipakai lagi."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Gugup sebelum tampil itu normal. Tarik napas, senyum, dan mulai. Kamu pasti bisa!"
+    }
+   ]
+  }
+ }
+]

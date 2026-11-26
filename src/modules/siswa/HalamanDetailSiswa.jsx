@@ -62,8 +62,9 @@ export default async function HalamanDetailSiswa({ params }) {
   const { id } = await params;
   const dep = ambilDep();
   const [siswa, level, info] = await Promise.all([atau404(() => dep.siswaController.detail({ id })), dep.siswaController.pilihanLevel(), infoPermintaan()]);
-  const [riwayat, pembayaran, mengetik, latihan, postTest, sertifikat, karya] = await Promise.all([
+  const [riwayat, materiBaca, pembayaran, mengetik, latihan, postTest, sertifikat, karya] = await Promise.all([
     dep.sesiController.riwayatSiswa(siswa.id),
+    dep.materiController.statusBacaSiswa(siswa.id),
     dep.pembayaranController.daftarSiswa(siswa.id),
     dep.mengetikController.statistikSiswa(siswa.id),
     dep.latihanController.statistikSiswa(siswa.id),
@@ -89,7 +90,7 @@ export default async function HalamanDetailSiswa({ params }) {
       <Card>
         <Tabs
           tab={[
-            { id: 'riwayat', label: t('dataSiswa.tabRiwayat'), isi: <RiwayatSesiSiswa riwayat={riwayat} hrefSesi={(sesiId) => gabungJalur(info.basis, `/absensi/${sesiId}`)} /> },
+            { id: 'riwayat', label: t('dataSiswa.tabRiwayat'), isi: <RiwayatSesiSiswa riwayat={riwayat} materiBaca={materiBaca} hrefSesi={(sesiId) => gabungJalur(info.basis, `/absensi/${sesiId}`)} /> },
             { id: 'pembayaran', label: t('dataSiswa.tabPembayaran'), isi: <BagianPembayaran siswaId={siswa.id} daftar={pembayaran} adminkah={adminkah} denganTanggal /> },
             { id: 'latihan', label: t('dataSiswa.tabLatihan'), isi: <TabLatihanSiswa mengetik={mengetik} latihan={latihan} /> },
             { id: 'posttest', label: t('dataSiswa.tabPostTest'), isi: <TabPostTestSiswa riwayat={postTest} hrefDetail={(id) => gabungJalur(info.basis, `/post-test/${id}`)} /> },

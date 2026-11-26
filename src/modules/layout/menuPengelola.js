@@ -8,6 +8,7 @@ const MENU = [
   { jalur: '/absensi', label: 'menu.absensi', ikon: 'absensi', hanyaAdmin: false },
   { jalur: '/data-siswa', label: 'menu.siswa', ikon: 'siswa', hanyaAdmin: false },
   { jalur: '/level', label: 'menu.level', ikon: 'level', hanyaAdmin: false },
+  { jalur: '/materi', label: 'menu.materi', ikon: 'materi', hanyaAdmin: false },
   { jalur: '/template', label: 'menu.template', ikon: 'template', hanyaAdmin: false },
   { jalur: '/gambar', label: 'menu.gambar', ikon: 'gambar', hanyaAdmin: false },
   { jalur: '/post-test', label: 'menu.postTest', ikon: 'target', hanyaAdmin: false },

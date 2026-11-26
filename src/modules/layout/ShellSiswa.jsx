@@ -14,10 +14,15 @@ import PingSesi from './PingSesi';
 
 /** Menu latihan siswa: jalur (null = belum tersedia), kunci teks, ikon; `bebas` = terbuka walau belum diabsen. */
 const MENU_LATIHAN = [
+  // pustaka materi bisa dibuka sebelum maupun sesudah absen (isinya hanya pertemuan yang sudah dilalui)
+  { kunci: 'materi', jalur: '/materi', ikon: 'materi', bebas: true },
   { kunci: 'latihanMouse', jalur: '/latihan-mouse', ikon: 'mouse' },
   { kunci: 'puzzle', jalur: '/puzzle', ikon: 'puzzle' },
+  // Coding Zippy bisa dicoba tanpa sesi (hasil hanya tersimpan saat sesi berlangsung)
+  { kunci: 'codingZippy', jalur: '/coding-zippy', ikon: 'coding', bebas: true },
+  // Studio Zippy (Level 2) juga bisa dicoba tanpa sesi; proyek hanya bisa disimpan dan dikirim saat sesi berlangsung
+  { kunci: 'studio', jalur: '/studio', ikon: 'studio', bebas: true },
   { kunci: 'mengetik', jalur: '/mengetik', ikon: 'keyboard' },
-  { kunci: 'bahan', jalur: '/bahan', ikon: 'unduh' },
   // galeri karya bisa dilihat kapan saja; menambah karya tetap hanya saat sesi berlangsung
   { kunci: 'karya', jalur: '/karya', ikon: 'gambar', bebas: true },
 ];
@@ -35,14 +40,14 @@ function MenuTerkunci({ label, alasan }) {
 
 /**
  * Menu siswa: Beranda selalu aktif; menu latihan aktif selama sesi berlangsung, selain itu terkunci
- * ("minta absen dulu"). Karya selalu terbuka untuk dilihat.
+ * ("minta absen dulu"). Materi, Coding Zippy, dan Karya selalu terbuka.
  */
 function MenuSiswa({ basis, sesiAktif }) {
   const pathname = usePathname();
   const kelas = (aktif) => `inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-[var(--r-btn)] px-3 font-bold hover:bg-primary-soft ${aktif ? 'bg-primary-soft text-primary-text' : 'text-fg'}`;
   const item = [{ kunci: 'beranda', jalur: '/', ikon: 'beranda', label: t('siswa.beranda') }, ...MENU_LATIHAN.map((m) => ({ ...m, label: t(`sesiSiswa.menu.${m.kunci}`) }))];
   return (
-    <nav aria-label={t('siswa.menu')} className="order-last w-full overflow-x-auto sm:order-none sm:w-auto">
+    <nav aria-label={t('siswa.menu')} className="relative order-last w-full overflow-x-auto sm:order-none sm:w-auto">
       <ul className="flex gap-1">
         {item.map((m) => {
           const href = m.jalur ? gabungJalur(basis, m.jalur) : null;

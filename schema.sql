@@ -11,7 +11,7 @@
 -- Level, pertemuan, dan gambar di-seed lewat skrip (ID dibuat aplikasi), bukan di file ini.
 -- Seed gambar membaca docs/aset/prompt-gambar.csv (kode huruf kecil) dan mengisi flag punya_* dengan memindai
 -- folder public/aset/gambar/<kode>/ (outline, berwarna, puzzle, mewarnai).
--- Jumlah tabel: 25.
+-- Jumlah tabel: 31.
 --
 -- Fase pengerjaan (lihat project-context.md):
 --   A fondasi            : pengaturan, pengguna, percobaan_login, log_aktivitas
@@ -20,6 +20,9 @@
 --   D latihan dan tes    : pelajaran_mengetik, bank_teks_mengetik, hasil_mengetik, hasil_latihan, post_test, post_test_nilai
 --   E sertifikat         : sertifikat
 --   F galeri             : karya
+--   G materi pertemuan   : materi, materi_baca
+--   H coding zippy       : labirin_blockly (hasilnya disimpan di hasil_latihan, jenis 'blockly')
+--   I studio zippy       : proyek_coding, proyek_kiriman, kostum_unggahan (proyek siswa Level 2/3, salinannya yang dikirim ke tugas, dan kostum unggahan Level 3)
 --
 -- Catatan penghapusan: MySQL melarang ON DELETE CASCADE pada foreign key yang kolomnya menjadi
 -- dasar kolom generated (*_kunci). Karena itu FK siswa_id/siswa_level_id pada kode_akses, siswa_level,
@@ -27,7 +30,10 @@
 -- dilakukan oleh usecase dalam satu transaksi dengan urutan:
 --   sertifikat -> post_test (menghapus post_test_nilai dan tugas post test) -> login_perangkat
 --   -> sesi (menghapus tugas_siswa dan sesi_tutor) -> siswa_level -> kode_akses -> siswa
--- (hasil_mengetik, hasil_latihan, pembayaran, dan karya ikut terhapus otomatis lewat CASCADE dari siswa).
+-- (hasil_mengetik, hasil_latihan, pembayaran, karya, dan materi_baca ikut terhapus otomatis lewat CASCADE dari siswa;
+-- materi_baca tidak punya kolom generated, jadi CASCADE diizinkan dan tidak perlu langkah sendiri di urutan di atas;
+-- proyek_coding ikut terhapus lewat CASCADE dari siswa, dan proyek_kiriman lewat CASCADE dari tugas_siswa yang terhapus bersama sesi/post test;
+-- kostum_unggahan ikut terhapus lewat CASCADE dari siswa dan berkasnya dihapus aplikasi setelah commit, seperti berkas karya).
 --
 -- Yang SENGAJA belum ada (tahap lanjut): pengumuman, jadwal, badge/poin, ekspor.
 -- Login admin/tutor memakai cookie bertanda tangan (tanpa tabel sesi); login siswa memakai
@@ -204,7 +210,7 @@ CREATE TABLE template (
   pertemuan_id  BIGINT UNSIGNED NOT NULL,
   bagian_id     BIGINT UNSIGNED NULL,
   kode          VARCHAR(40)  NOT NULL,                 -- contoh: L2-P8-SUM-01
-  tipe          ENUM('mengetik','pilihan_ganda','excel','word','powerpoint','paint','scratch','coding','game_mouse','puzzle','lainnya') NOT NULL,
+  tipe          ENUM('mengetik','pilihan_ganda','excel','word','powerpoint','paint','scratch','coding','game_mouse','puzzle','blockly','coding_proyek','lainnya') NOT NULL,
   penilaian     ENUM('otomatis_jawaban','dicek_tutor') NOT NULL,
   kesulitan     TINYINT UNSIGNED NOT NULL DEFAULT 1,   -- dipakai saat Ganti tugas (mis. pilih yang lebih mudah)
   teks          TEXT         NOT NULL,                 -- memuat penanda {nama_parameter}
@@ -432,15 +438,44 @@ CREATE TABLE hasil_mengetik (
   CONSTRAINT fk_hasil_mengetik_pelajaran FOREIGN KEY (pelajaran_id) REFERENCES pelajaran_mengetik (id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- Hasil game latihan mouse dan puzzle yang dikerjakan di web. Dipakai untuk menilai tugas
--- bertipe game_mouse/puzzle secara otomatis (kunci.jenis cocok dengan jenis di sini).
+-- Labirin latihan Coding Zippy (Blockly buatan sendiri, Level 1). Di-seed dari seed/labirin-blockly.json (upsert per kode).
+-- grid (JSON): daftar string baris, '.' jalan dan '#' dinding; koordinat x ke kanan, y ke bawah, mulai dari 0.
+-- mulai {x, y, arah}, bintang {x, y}; batas_blok menghitung semua blok termasuk ulangi dan isinya.
+-- blok_tersedia: tipe blok yang tampil di toolbox (lihat src/modules/shared/blockly/daftarBlok.js).
+-- contoh_solusi hanya untuk uji dan tidak pernah dikirim ke siswa.
+CREATE TABLE labirin_blockly (
+  id             BIGINT UNSIGNED NOT NULL,
+  kode           VARCHAR(40)  NOT NULL,
+  nama           VARCHAR(100) NOT NULL,                -- dicocokkan dengan kunci.labirin tugas bertipe blockly
+  urutan         SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  lebar          TINYINT UNSIGNED NOT NULL,
+  tinggi         TINYINT UNSIGNED NOT NULL,
+  grid           JSON         NOT NULL,
+  mulai          JSON         NOT NULL,
+  bintang        JSON         NOT NULL,
+  batas_blok     SMALLINT UNSIGNED NOT NULL,
+  blok_tersedia  JSON         NOT NULL,
+  petunjuk       TEXT         NULL,
+  contoh_solusi  JSON         NULL,
+  aktif          TINYINT(1)   NOT NULL DEFAULT 1,
+  created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_labirin_blockly_kode (kode),
+  UNIQUE KEY uq_labirin_blockly_nama (nama)
+) ENGINE=InnoDB;
+-- Hasil game latihan mouse, puzzle, dan Coding Zippy yang dikerjakan di web. Dipakai untuk menilai tugas
+-- bertipe game_mouse/puzzle/blockly secara otomatis (kunci.jenis cocok dengan jenis di sini).
 -- skor = jumlah poin pada game mouse; keping dan gambar_id dipakai untuk puzzle.
+-- blockly: hanya percobaan yang berhasil disimpan (selesai = 1) dan sudah dinilai ulang di server; labirin_id menunjuk
+-- labirin, detail berisi {"jumlahBlok":n,"jumlahLangkah":n}.
 CREATE TABLE hasil_latihan (
   id            BIGINT UNSIGNED NOT NULL,
   siswa_id      BIGINT UNSIGNED NOT NULL,
   sesi_id       BIGINT UNSIGNED NULL,
-  jenis         ENUM('mouse_klik','mouse_klik_ganda','mouse_drag','mouse_klik_kanan','mouse_scroll','puzzle') NOT NULL,
+  jenis         ENUM('mouse_klik','mouse_klik_ganda','mouse_drag','mouse_klik_kanan','mouse_scroll','puzzle','blockly') NOT NULL,
   gambar_id     BIGINT UNSIGNED NULL,
+  labirin_id    BIGINT UNSIGNED NULL,
   keping        TINYINT UNSIGNED NULL,
   skor          INT UNSIGNED NULL,
   selesai       TINYINT(1)   NOT NULL DEFAULT 0,
@@ -451,7 +486,8 @@ CREATE TABLE hasil_latihan (
   KEY idx_hasil_latihan_siswa (siswa_id, jenis, created_at),
   CONSTRAINT fk_hasil_latihan_siswa  FOREIGN KEY (siswa_id)  REFERENCES siswa (id) ON DELETE CASCADE,
   CONSTRAINT fk_hasil_latihan_sesi   FOREIGN KEY (sesi_id)   REFERENCES sesi (id) ON DELETE SET NULL,
-  CONSTRAINT fk_hasil_latihan_gambar FOREIGN KEY (gambar_id) REFERENCES gambar (id) ON DELETE SET NULL
+  CONSTRAINT fk_hasil_latihan_gambar FOREIGN KEY (gambar_id) REFERENCES gambar (id) ON DELETE SET NULL,
+  CONSTRAINT fk_hasil_latihan_labirin FOREIGN KEY (labirin_id) REFERENCES labirin_blockly (id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- Satu percobaan post test pada satu level. Hanya sekali dikerjakan per percobaan;
@@ -570,4 +606,88 @@ CREATE TABLE karya (
   KEY idx_karya_waktu (created_at),                    -- Fase F: galeri pengelola terbaru dahulu
   CONSTRAINT fk_karya_siswa FOREIGN KEY (siswa_id) REFERENCES siswa (id) ON DELETE CASCADE,
   CONSTRAINT fk_karya_sesi  FOREIGN KEY (sesi_id)  REFERENCES sesi (id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- 7. MATERI PERTEMUAN (fitur materi)
+-- ---------------------------------------------------------------------
+-- Materi bacaan per pertemuan 1-12 (pertemuan 13 post test tidak punya materi). Satu materi per pertemuan.
+-- isi (JSON): { "tujuan": [teks], "bagian": [ {tipe: paragraf|langkah|zippy|gambar, ...} ] }; format lengkap di README.
+-- Diisi dari seed/materi-level-<n>.json oleh db:seed (upsert per pertemuan_id) atau diubah admin lewat halaman Materi.
+CREATE TABLE materi (
+  id            BIGINT UNSIGNED NOT NULL,
+  pertemuan_id  BIGINT UNSIGNED NOT NULL,
+  judul         VARCHAR(200) NOT NULL,
+  isi           JSON         NOT NULL,
+  aktif         TINYINT(1)   NOT NULL DEFAULT 1,
+  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_materi_pertemuan (pertemuan_id),
+  CONSTRAINT fk_materi_pertemuan FOREIGN KEY (pertemuan_id) REFERENCES pertemuan (id)
+) ENGINE=InnoDB;
+
+-- Penanda "Saya sudah paham" per siswa per pertemuan (membuka tugas pertemuan itu; tidak dikunci ulang).
+CREATE TABLE materi_baca (
+  id            BIGINT UNSIGNED NOT NULL,
+  siswa_id      BIGINT UNSIGNED NOT NULL,
+  pertemuan_id  BIGINT UNSIGNED NOT NULL,
+  dibaca_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_materi_baca (siswa_id, pertemuan_id),
+  KEY idx_materi_baca_pertemuan (pertemuan_id),
+  CONSTRAINT fk_materi_baca_siswa     FOREIGN KEY (siswa_id)     REFERENCES siswa (id) ON DELETE CASCADE,
+  CONSTRAINT fk_materi_baca_pertemuan FOREIGN KEY (pertemuan_id) REFERENCES pertemuan (id)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- 8. STUDIO ZIPPY (Level 2)
+-- ---------------------------------------------------------------------
+-- Proyek Studio Zippy milik siswa (panggung dengan sprite dan blok kode buatan sendiri). isi (JSON) berformat
+-- { versi, latar, variabel, sprite[ { id, subjek, x, y, arah, kostum, tampil, skrip[] } ] }; format lengkap di README
+-- dan src/modules/shared/blockly/daftarBlokStudio.js. Maksimal 256 KB per proyek (dijaga aplikasi). tingkat memilih
+-- kumpulan blok yang tersedia (l2 sekarang; l3 menyusul). Tanpa kolom generated, jadi CASCADE dari siswa diizinkan
+-- dan menghapus siswa otomatis menghapus proyeknya (tidak perlu langkah sendiri di urutan hapus siswa).
+CREATE TABLE proyek_coding (
+  id          BIGINT UNSIGNED NOT NULL,
+  siswa_id    BIGINT UNSIGNED NOT NULL,
+  nama        VARCHAR(60)  NOT NULL,
+  tingkat     VARCHAR(10)  NOT NULL DEFAULT 'l2',
+  isi         JSON         NOT NULL,
+  dibuat_pada DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  diubah_pada DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_proyek_coding_nama (siswa_id, nama),
+  CONSTRAINT fk_proyek_coding_siswa FOREIGN KEY (siswa_id) REFERENCES siswa (id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Salinan beku proyek yang dikirim siswa ke sebuah tugas (template tipe coding_proyek) atau butir post test, supaya
+-- perubahan proyek setelahnya tidak mengubah apa yang dinilai tutor. Satu salinan per tugas (kirim ulang menimpanya).
+-- Ikut terhapus bersama tugas_siswa (CASCADE), jadi ikut hilang saat siswa dihapus lewat sesi/post test.
+CREATE TABLE proyek_kiriman (
+  id            BIGINT UNSIGNED NOT NULL,
+  tugas_id      BIGINT UNSIGNED NOT NULL,
+  nama          VARCHAR(60)  NOT NULL,
+  tingkat       VARCHAR(10)  NOT NULL DEFAULT 'l2',
+  isi           JSON         NOT NULL,
+  dikirim_pada  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_proyek_kiriman_tugas (tugas_id),
+  CONSTRAINT fk_proyek_kiriman_tugas FOREIGN KEY (tugas_id) REFERENCES tugas_siswa (id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Kostum unggahan Studio Zippy Level 3: gambar yang digambar siswa di Paint, diperkecil di browser (sisi terpanjang
+-- 256 px, PNG), lalu diunggah. Berkas di uploads/kostum/<siswa_id>/<token>.png|jpg (maksimal 200 KB). Proyek di
+-- proyek_coding.isi dan proyek_kiriman.isi hanya menyimpan rujukan ID ini (sprite.kostumUnggahan), bukan isi gambar.
+-- Kostum yang dirujuk sebuah proyek_kiriman tidak bisa dihapus siswa (dijaga aplikasi). Tanpa kolom generated, jadi CASCADE
+-- dari siswa diizinkan; berkasnya dihapus aplikasi setelah transaksi hapus siswa berhasil (seperti berkas karya).
+CREATE TABLE kostum_unggahan (
+  id           BIGINT UNSIGNED NOT NULL,
+  siswa_id     BIGINT UNSIGNED NOT NULL,
+  berkas_path  VARCHAR(255) NOT NULL,
+  ukuran       INT UNSIGNED NOT NULL,
+  dibuat_pada  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_kostum_unggahan_siswa (siswa_id),
+  CONSTRAINT fk_kostum_unggahan_siswa FOREIGN KEY (siswa_id) REFERENCES siswa (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

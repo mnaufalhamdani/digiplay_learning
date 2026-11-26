@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation';
 import { ambilDep } from '@/di/container';
 import { wajibSiswa } from '@/modules/auth/auth.guard';
 import { infoPermintaan } from '@/utils/konteksPermintaan';
+import { gabungJalur } from '@/utils/jalurArea';
 import { t } from '@/utils/i18n';
 import { keamananConfig } from '@/config/keamanan.config';
 import { NOMOR_POST_TEST } from '@/enums';
@@ -29,11 +31,14 @@ function BelumAbsen({ nama }) {
 /**
  * Beranda siswa (modul sesi, C6): saat sesi berlangsung tampil status sesi, kemajuan, dan daftar tugas;
  * selain itu mode lihat saja. Halaman ikut berubah sendiri lewat ping saat tutor mengabsen/menutup sesi.
+ * Bila materi pertemuan ini belum ditandai paham, siswa diarahkan ke materi lebih dulu (tugas terkunci di server).
  */
 export default async function HalamanBerandaSiswa() {
   const sesiSiswa = await wajibSiswa();
   const dep = ambilDep();
   const [branding, info, sesi] = await Promise.all([dep.pengaturanController.branding(), infoPermintaan(), dep.sesiController.berandaSiswa(null, sesiSiswa)]);
+  // materi tampil lebih dulu sebelum daftar tugas
+  if (sesi?.materi.terkunci) redirect(gabungJalur(info.basis, `/materi/${sesi.pertemuanId}`));
   // pertemuan post test: kartu Mulai/Lanjutkan Post Test (D2)
   const postTest = sesi?.pertemuanNomor === NOMOR_POST_TEST ? await dep.posttestController.statusBeranda(null, sesiSiswa) : null;
   return (

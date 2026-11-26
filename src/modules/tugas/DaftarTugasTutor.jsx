@@ -9,6 +9,7 @@ import Card from '@/modules/shared/ui/Card';
 import EmptyState from '@/modules/shared/ui/EmptyState';
 import Ikon from '@/modules/shared/ui/Ikon';
 import Toast from '@/modules/shared/ui/Toast';
+import PratinjauKiriman from '@/modules/studio/PratinjauKiriman';
 import { gantiTugasTutor, ubahStatusTugas } from './tugas.actions';
 
 /** Nada lencana per status tugas. */
@@ -102,6 +103,8 @@ function KartuTugasTutor({ tugas, nomor, ...props }) {
       {tugas.gambar.length > 0 && <p className="text-muted">{t('detailSesi.gambar', { daftar: tugas.gambar.map((g) => `${g.nama} (${g.jenis})`).join(', ') })}</p>}
       {tugas.penilaian === PENILAIAN.OTOMATIS && !diganti && <HasilOtomatis tugas={tugas} />}
       {tugas.penilaian === PENILAIAN.TUTOR && <Rubrik rubrik={tugas.rubrik} />}
+      {/* proyek Studio Zippy yang dikirim siswa: pratinjau panggung hanya-baca, dijalankan tutor */}
+      {tugas.tipe === 'coding_proyek' && !diganti && <PratinjauKiriman tugasId={tugas.id} />}
       {tugas.dinilai_nama && tugas.status === STATUS_TUGAS.SELESAI && <p className="text-[0.9em] text-muted">{t('detailSesi.ditandaiOleh', { nama: tugas.dinilai_nama })}</p>}
       {!diganti && <AksiTugas tugas={tugas} {...props} />}
     </Card>

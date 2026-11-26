@@ -2,7 +2,7 @@ import { t } from './i18n.js';
 import { adalahAppError } from './appError.js';
 import { evaluasiEkspresi, variabelEkspresi } from './evaluasiEkspresi.js';
 import { renderTemplate } from './templateRender.js';
-import { DAFTAR_PENILAIAN, JENIS_GAMBAR, JENIS_GAME_MOUSE, KEPING_PUZZLE, PENILAIAN, TIPE_DICEK_TUTOR_SAJA, TIPE_TEMPLATE } from '../enums/index.js';
+import { DAFTAR_PENILAIAN, JENIS_GAMBAR, JENIS_BLOCKLY, JENIS_GAMBAR_UNDUH, JENIS_GAME_MOUSE, KEPING_PUZZLE, PENILAIAN, TIPE_DICEK_TUTOR_SAJA, TIPE_TEMPLATE } from '../enums/index.js';
 
 // Validasi template sebelum disimpan (seed dan halaman Template). Hasilnya daftar pesan galat (kosong = valid).
 
@@ -51,6 +51,27 @@ function periksaParameter(parameter, galat) {
   }
 }
 
+/** Nama parameter yang memilih gambar bahan unduhan (jenis mewarnai atau berwarna). */
+function parameterBahan(parameter) {
+  return Object.entries(parameter)
+    .filter(([, aturan]) => aturan?.dari === 'gambar' && JENIS_GAMBAR_UNDUH.includes(aturan.jenis))
+    .map(([nama]) => nama);
+}
+
+/**
+ * Aturan instruksi bahan: tidak menyebut "menu Bahan" (unduhan ada langsung di instruksi), tidak menyebut nama subjek
+ * bahan unduhan (penandanya tidak boleh ada di teks), dan harus memakai kata "bahan" agar tombol Unduh bahan bermakna.
+ */
+function periksaBahan(tpl, parameter, galat) {
+  if (/menu\s+bahan/i.test(tpl.teks ?? '')) galat.add(t('template.galat.menuBahan'));
+  const bahan = parameterBahan(parameter);
+  // tanpa gambar unduhan tidak ada aturan lain
+  if (bahan.length === 0) return;
+  const dalamTeks = namaPenanda([tpl.teks ?? '']);
+  for (const nama of bahan) if (dalamTeks.has(nama)) galat.add(t('template.galat.namaBahanDiTeks', { nama }));
+  if (!/\bbahan\b/i.test(tpl.teks ?? '')) galat.add(t('template.galat.bahanTanpaKata'));
+}
+
 /** Setiap penanda punya parameter, dan setiap parameter dipakai (teks, opsi, kunci, ekspresi, atau jika). */
 function periksaPenanda(tpl, parameter, galat) {
   const kunci = objekBiasa(tpl.kunci) ? tpl.kunci : {};
@@ -58,7 +79,8 @@ function periksaPenanda(tpl, parameter, galat) {
   const variabel = [...variabelEkspresi(kunci.ekspresi), ...variabelEkspresi(kunci.jika)];
   for (const nama of penanda) if (!Object.hasOwn(parameter, nama)) galat.add(t('template.galat.penandaTanpaParameter', { nama }));
   for (const nama of variabel) if (!Object.hasOwn(parameter, nama)) galat.add(t('template.galat.variabelTanpaParameter', { nama }));
-  const terpakai = new Set([...penanda, ...variabel]);
+  // gambar bahan unduhan dipilih lewat parameter tetapi namanya sengaja tidak ditulis di instruksi
+  const terpakai = new Set([...penanda, ...variabel, ...parameterBahan(parameter)]);
   for (const nama of Object.keys(parameter)) if (!terpakai.has(nama)) galat.add(t('template.galat.parameterTidakTerpakai', { nama }));
 }
 
@@ -72,6 +94,8 @@ function periksaKunciOtomatis(tpl, kunci, galat) {
   if (tpl.tipe === 'mengetik' && (typeof kunci.teks_ketik !== 'string' || kunci.teks_ketik.trim() === '')) galat.add(t('template.galat.teksKetik'));
   if (tpl.tipe === 'game_mouse' && (!JENIS_GAME_MOUSE.includes(kunci.jenis) || kunci.min_skor == null)) galat.add(t('template.galat.gameMouse'));
   if (tpl.tipe === 'puzzle' && !KEPING_PUZZLE.includes(kunci.keping)) galat.add(t('template.galat.keping'));
+  // Coding Zippy: dicocokkan dengan hasil_latihan.jenis dan nama labirin yang berhasil diselesaikan
+  if (tpl.tipe === 'blockly' && (kunci.jenis !== JENIS_BLOCKLY || typeof kunci.labirin !== 'string' || kunci.labirin.trim() === '')) galat.add(t('template.galat.blockly'));
 }
 
 /** Aturan pilihan ganda (4 opsi, kunci.benar 0-3) dan kunci per tipe. */
@@ -138,6 +162,7 @@ export function validasiTemplate(tpl, gambarTersedia, acak) {
   const parameter = tpl.parameter ?? {};
   periksaParameter(parameter, galat);
   periksaPenanda(tpl, parameter, galat);
+  periksaBahan(tpl, parameter, galat);
   periksaKunci(tpl, galat);
   // render hanya bila aturan statis sudah benar
   if (galat.size === 0) periksaRender(tpl, gambarTersedia, acak, galat);

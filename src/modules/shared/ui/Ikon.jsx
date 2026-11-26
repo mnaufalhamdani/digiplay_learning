@@ -1,5 +1,18 @@
 'use client';
 import {
+  ArrowFatUpIcon,
+  FilePlusIcon,
+  FilmSlateIcon,
+  FlagIcon,
+  FloppyDiskIcon,
+  FolderOpenIcon,
+  PaperPlaneTiltIcon,
+  SpeakerHighIcon,
+  SpeakerSlashIcon,
+  StopIcon,
+  BookOpenTextIcon,
+  CodeIcon,
+  LightbulbIcon,
   CertificateIcon,
   LinkIcon,
   CursorClickIcon,
@@ -66,6 +79,19 @@ import { useArea } from './AreaContext';
 
 /** Daftar ikon yang dipakai aplikasi, dipanggil lewat nama Indonesia. Tambahkan di sini bila perlu ikon baru. */
 const DAFTAR_IKON = {
+  materi: BookOpenTextIcon,
+  coding: CodeIcon,
+  bendera: FlagIcon,
+  berhenti: StopIcon,
+  bisu: SpeakerSlashIcon,
+  suara: SpeakerHighIcon,
+  simpan: FloppyDiskIcon,
+  buka: FolderOpenIcon,
+  kirim: PaperPlaneTiltIcon,
+  proyek_baru: FilePlusIcon,
+  studio: FilmSlateIcon,
+  petunjuk: LightbulbIcon,
+  panah_hadap: ArrowFatUpIcon,
   sertifikat: CertificateIcon,
   tautan: LinkIcon,
   bintang: StarIcon,

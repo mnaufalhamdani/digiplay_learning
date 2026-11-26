@@ -69,7 +69,7 @@
     },
     {
      "nomor": 11,
-     "judul": "Coding visual 1 (Scratch Jr / Code.org)",
+     "judul": "Coding visual 1 (blok kode)",
      "jenis": "materi",
      "tujuan": null
     },
@@ -143,19 +143,19 @@
     },
     {
      "nomor": 9,
-     "judul": "Scratch 1: sprite, gerak, suara",
+     "judul": "Coding 1: sprite, gerak, suara",
      "jenis": "materi",
      "tujuan": null
     },
     {
      "nomor": 10,
-     "judul": "Scratch 2: percabangan dan perulangan",
+     "judul": "Coding 2: percabangan dan perulangan",
      "jenis": "materi",
      "tujuan": null
     },
     {
      "nomor": 11,
-     "judul": "Scratch 3: game sederhana",
+     "judul": "Coding 3: game sederhana",
      "jenis": "materi",
      "tujuan": null
     },
@@ -177,7 +177,7 @@
    "kode": "L3",
    "nama": "Lanjutan",
    "urutan": 3,
-   "deskripsi": "Sudah menguasai Word, PowerPoint, Excel, dan Scratch dasar",
+   "deskripsi": "Sudah menguasai Word, PowerPoint, Excel, dan coding dasar",
    "pertemuan": [
     {
      "nomor": 1,

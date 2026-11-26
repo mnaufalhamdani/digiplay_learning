@@ -17,7 +17,7 @@ import {
 } from '@/enums';
 
 /** Kunci tugas yang aman dikirim ke browser siswa (petunjuk target, bukan jawaban). */
-const KUNCI_UNTUK_SISWA = ['jenis', 'min_skor', 'keping', 'teks_ketik', 'min_akurasi', 'min_wpm'];
+const KUNCI_UNTUK_SISWA = ['jenis', 'min_skor', 'keping', 'teks_ketik', 'min_akurasi', 'min_wpm', 'labirin'];
 
 /**
  * Penuntasan otomatis dari status tugas (C7): tugas diganti diabaikan; semua selesai -> tuntas;
@@ -45,6 +45,8 @@ export function cocokHasil(tugas, hasil) {
   const kunci = tugas.ph.kunci ?? {};
   if (tugas.tipe === 'game_mouse') return { cocok: kunci.jenis === hasil.jenis && Number(hasil.skor) >= Number(kunci.min_skor) };
   if (tugas.tipe === 'puzzle') return { cocok: Number(kunci.keping) === Number(hasil.keping) && Boolean(hasil.selesai) && tugas.ph.gambar?.[0]?.kode === hasil.kode };
+  // Coding Zippy: hasil berhasil (sudah dinilai di server) untuk labirin yang namanya sama dengan yang diminta tugas
+  if (tugas.tipe === 'blockly') return { cocok: kunci.jenis === hasil.jenis && kunci.labirin === hasil.labirin };
   // mengetik: hanya hasil mode latihan untuk teks tugas itu sendiri
   if (hasil.mode !== 'latihan' || rapiTeks(kunci.teks_ketik) !== rapiTeks(hasil.teks)) return { cocok: false };
   const minWpm = Number(kunci.min_wpm) || 0;
@@ -73,7 +75,7 @@ function jawabanTampil(tugas) {
 }
 
 /** Nama berkas unduhan yang ramah, mis. "mewarnai-bola-sepak.png" (hanya huruf kecil, angka, tanda hubung). */
-function namaUnduhan(jenis, nama) {
+export function namaUnduhan(jenis, nama) {
   const slug = String(nama ?? '')
     .toLowerCase()
     .normalize('NFKD')
@@ -86,7 +88,7 @@ function namaUnduhan(jenis, nama) {
  * Usecase tugas: generate tugas saat absen, jawaban otomatis, Ganti tugas, Lewati, perubahan status oleh tutor,
  * penuntasan otomatis, dan unduh bahan gambar.
  */
-export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gambarUsecase, pengaturanUsecase, catatAktivitas, idGen, acak, folderGambar, db }) {
+export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gambarUsecase, pengaturanUsecase, materiUsecase, catatAktivitas, idGen, acak, folderGambar, db }) {
   /** Salinan array dengan urutan acak (Fisher-Yates, RNG disuntikkan). */
   function acakUrutan(daftar) {
     const hasil = [...daftar];
@@ -140,6 +142,10 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
   /** Aksi siswa hanya boleh selama sesinya berlangsung. */
   function pastikanSesiBerlangsung(tugas) {
     if (tugas.sesi_status !== STATUS_SESI.BERLANGSUNG) throw new AppError(t('tugas.sesiSelesai'), 409);
+  }
+  /** Tugas siswa terkunci bila materi pertemuannya ada tetapi belum ditandai "Saya sudah paham" (materi belum ada: tidak terkunci). */
+  async function pastikanMateriDibaca(tugas, conn = null) {
+    if (!(await materiUsecase.tugasTerbuka(tugas.siswa_id, tugas.pertemuan_id, conn))) throw new AppError(t('tugas.materiBelumDibaca'), 403);
   }
   /** Menghitung ulang penuntasan otomatis sesi yang sudah selesai (status tugas diubah tutor setelah pulang). */
   async function segarkanPenuntasan(tugas, conn) {
@@ -218,6 +224,8 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
       return db.transaction(async (conn) => {
         const tugas = await wajibTugasSiswa(tugasId, siswaId, conn);
         pastikanSesiBerlangsung(tugas);
+        // materi pertemuan belum dibaca: tugas masih terkunci
+        await pastikanMateriDibaca(tugas, conn);
         // tugas di aplikasi lain, game, atau mengetik tidak dijawab lewat kolom ini
         if (tugas.penilaian !== PENILAIAN.OTOMATIS || !TIPE_DIJAWAB_SISWA.includes(tugas.tipe)) throw new AppError(t('tugas.bukanJawaban'), 400);
         // tugas yang sudah selesai/dilewati/diganti tidak dinilai ulang
@@ -236,6 +244,8 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
       return db.transaction(async (conn) => {
         const lama = pelaku.siswaId ? await wajibTugasSiswa(tugasId, pelaku.siswaId, conn) : await wajibTugas(tugasId, conn);
         pastikanSesiBerlangsung(lama);
+        // hanya siswa yang terkunci materi; tutor boleh mengganti tugas kapan saja selama sesi berlangsung
+        if (pelaku.siswaId) await pastikanMateriDibaca(lama, conn);
         // tugas yang sudah selesai atau sudah diganti tidak perlu diganti lagi
         if (lama.status === STATUS_TUGAS.SELESAI || lama.status === STATUS_TUGAS.DIGANTI) throw new AppError(t('tugas.tidakBisaDiganti'), 409);
         const terpakai = await tugasModel.templateTerpakai(lama.sesi_id, conn);
@@ -267,7 +277,10 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
       return db.transaction(async (conn) => {
         const tugasSelesai = [];
         let hampir = null;
-        for (const b of await tugasModel.belumTipe(sesiId, hasil.tipe, conn)) {
+        const belum = await tugasModel.belumTipe(sesiId, hasil.tipe, conn);
+        // materi pertemuan belum dibaca: tugas terkunci, jadi hasil latihan bebas tidak boleh menyelesaikannya
+        if (belum.length > 0 && !(await materiUsecase.tugasTerbuka(siswaId, belum[0].pertemuan_id, conn))) return { tugasSelesai, hampir };
+        for (const b of belum) {
           const cek = cocokHasil(bentukDasar(b), hasil);
           if (cek.cocok) {
             await tugasModel.tandaiSelesaiOtomatis(b.id, conn);
@@ -282,15 +295,33 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
       const b = tugasId ? await tugasModel.cariId(tugasId) : null;
       // tugas siswa lain, sudah selesai, atau sesinya ditutup: halaman dibuka dalam mode bebas
       if (!b || b.siswa_id !== siswaId || b.status !== STATUS_TUGAS.BELUM || b.sesi_status !== STATUS_SESI.BERLANGSUNG) return null;
+      // materi pertemuan belum dibaca: tugas terkunci, halaman dibuka tanpa tugas (mode bebas)
+      if (!(await materiUsecase.tugasTerbuka(siswaId, b.pertemuan_id))) return null;
       const tugas = bentukDasar(b);
       const kunci = Object.fromEntries(Object.entries(tugas.ph.kunci ?? {}).filter(([k]) => KUNCI_UNTUK_SISWA.includes(k)));
       return { id: tugas.id, tipe: tugas.tipe, soal: tugas.soal_teks, kunci, gambar: tugas.ph.gambar ?? [] };
+    },
+    /**
+     * Menerima proyek Studio Zippy yang dikirim siswa ke tugas bertipe coding_proyek (dipanggil studioUsecase dalam
+     * transaksinya, yang menyimpan salinan proyeknya). Aturan sama dengan tugas lain: milik siswa itu, sesi berlangsung,
+     * materi sudah dipahami, dan belum dinilai tutor. Nama proyek dicatat sebagai jawaban tugas. Boleh dikirim ulang.
+     */
+    async terimaProyek(siswaId, tugasId, nama, conn) {
+      const tugas = await wajibTugasSiswa(tugasId, siswaId, conn);
+      pastikanSesiBerlangsung(tugas);
+      await pastikanMateriDibaca(tugas, conn);
+      // hanya tugas proyek Studio Zippy yang menerima kiriman proyek
+      if (tugas.tipe !== 'coding_proyek') throw new AppError(t('tugas.bukanProyek'), 400);
+      // sudah ditandai selesai/dilewati/diganti: kiriman tidak lagi mengubah apa yang dinilai
+      if (tugas.status !== STATUS_TUGAS.BELUM) throw new AppError(t('tugas.sudahTidakBelum'), 409);
+      await tugasModel.simpanKiriman(tugasId, nama, conn);
     },
     /** Siswa melewati tugas (status dilewati; tidak memblokir Pulang). */
     async lewati(tugasId, siswaId) {
       await db.transaction(async (conn) => {
         const tugas = await wajibTugasSiswa(tugasId, siswaId, conn);
         pastikanSesiBerlangsung(tugas);
+        await pastikanMateriDibaca(tugas, conn);
         // hanya tugas yang belum dikerjakan yang bisa dilewati
         if (tugas.status !== STATUS_TUGAS.BELUM) throw new AppError(t('tugas.sudahTidakBelum'), 409);
         await tugasModel.ubahStatus(tugasId, STATUS_TUGAS.DILEWATI, null, conn);
@@ -321,6 +352,8 @@ export function buatTugasUsecase({ tugasModel, sesiModel, templateUsecase, gamba
       const tugas = await tugasModel.cariId(tugasId);
       // tugas siswa lain diperlakukan sama dengan tidak ada
       if (!tugas || tugas.siswa_id !== siswaId) throw new AppError(t('tugas.tidakAda'), 404);
+      // bahan tugas ikut terkunci sampai materi dibaca
+      await pastikanMateriDibaca(tugas);
       const gambar = (bentukDasar(tugas).ph.gambar ?? []).find((g) => g.kode === kode && JENIS_GAMBAR_UNDUH.includes(g.jenis));
       if (!gambar) throw new AppError(t('tugas.bahanTidakAda'), 404);
       const buffer = await bacaBerkasGambar(folderGambar, gambar.kode, gambar.jenis);

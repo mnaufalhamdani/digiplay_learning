@@ -36,9 +36,14 @@ export async function kumpulPostTest() {
   return jalankanPostTest(AKSES.SISWA, 'kumpul', null);
 }
 
-/** Tutor/admin mengisi nilai bagian praktik. */
-export async function simpanNilaiPostTest(input) {
-  return jalankanPostTest(AKSES.PENGGUNA, 'simpanNilai', input);
+/** Tutor/admin menilai satu butir praktik (skor dan catatan). */
+export async function nilaiButirPostTest(input) {
+  return jalankanPostTest(AKSES.PENGGUNA, 'nilaiButir', input);
+}
+
+/** Tutor/admin memfinalisasi post test setelah semua butir praktik dinilai. */
+export async function finalisasiPostTest(input) {
+  return jalankanPostTest(AKSES.PENGGUNA, 'finalisasi', input);
 }
 
 /** Tutor/admin membuka tes ulang. */

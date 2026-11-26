@@ -1,5 +1,5 @@
 'use client';
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { t } from '@/utils/i18n';
 import { gabungJalur } from '@/utils/jalurArea';
@@ -15,6 +15,32 @@ import Maskot from '@/modules/shared/ui/domain/Maskot';
 import AreaMengetik from './AreaMengetik';
 import HujanKata from './HujanKata';
 import { ambilKataGame, ambilTeksAcak, ambilTeksAdaptif, simpanHasilMengetik } from './mengetik.actions';
+
+/**
+ * Gambar kecil posisi jari (jari berwarna per zona) sebagai pengingat. Panel bisa dibuka-tutup: terbuka di layar lebar
+ * (di samping area ketik) dan tertutup di layar sempit (di bawah area ketik) agar area ketik tidak terdorong keluar layar. Bila berkasnya
+ * gagal dimuat, panel disembunyikan lewat `onGagal` (tanpa ikon gambar rusak).
+ */
+function PosisiJari({ url, onGagal }) {
+  const ref = useRef(null);
+  const [buka, setBuka] = useState(false);
+  const panggilGagal = useRef(onGagal);
+  panggilGagal.current = onGagal;
+  // layar lebar: panel terbuka sejak awal; ditentukan sekali setelah mount karena server tidak tahu lebar layar
+  useEffect(() => {
+    setBuka(window.matchMedia('(min-width: 1024px)').matches);
+    const img = ref.current;
+    // gambar bisa sudah gagal dimuat sebelum React terpasang (onError terlewat)
+    if (img?.complete && img.naturalWidth === 0) panggilGagal.current();
+  }, []);
+  return (
+    <details open={buka} onToggle={(e) => setBuka(e.currentTarget.open)} className="rounded-lg border border-line bg-panel p-3">
+      <summary className="min-h-11 cursor-pointer font-bold leading-[2.75rem]">{t('mengetik.posisiJariJudul')}</summary>
+      {/* eslint-disable-next-line @next/next/no-img-element -- PNG lokal statis, tidak perlu optimasi next/image */}
+      <img ref={ref} src={url} alt={t('mengetik.posisiJariAlt')} width={2752} height={1536} loading="lazy" onError={onGagal} className="mt-2 h-auto w-full select-none rounded-md object-contain" draggable={false} />
+    </details>
+  );
+}
 
 /** Bintang 0-3 sebagai ikon disertai teks. */
 function Bintang({ jumlah }) {
@@ -109,7 +135,7 @@ function PilihanLatihan({ pilih, setPesan, memuat, mulai }) {
  * Halaman Mengetik siswa (D1.3): pelajaran bertahap, latihan adaptif, tes bebas, Hujan Kata, dan tautan Kemajuan.
  * `tugas` terisi bila dibuka dari kartu tugas (langsung mengetik `kunci.teks_ketik` mode latihan).
  */
-export default function KlienMengetik({ pelajaran, tugas }) {
+export default function KlienMengetik({ pelajaran, tugas, gambarJari = null }) {
   const router = useRouter();
   const { basis } = useArea();
   const awal = tugas ? { judul: tugas.soal, teks: tugas.kunci.teks_ketik, mode: 'latihan', target: tugas.kunci } : null;
@@ -117,7 +143,9 @@ export default function KlienMengetik({ pelajaran, tugas }) {
   const [putaran, setPutaran] = useState(0);
   const [hasil, setHasil] = useState(null);
   const [pesan, setPesan] = useState('');
+  const [jariGagal, setJariGagal] = useState(false);
   const [memuat, mulai] = useTransition();
+  const tampilJari = Boolean(gambarJari) && !jariGagal;
   /** Membuka satu latihan. */
   function pilih(x) {
     setPesan('');
@@ -149,22 +177,26 @@ export default function KlienMengetik({ pelajaran, tugas }) {
         </p>
       )}
       {aktif ? (
-        <Card className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-[1.2em] font-bold">{aktif.judul}</h2>
-            <Button varian="hantu" ikon="kembali" onClick={() => setAktif(null)}>
-              {t('mengetik.kembaliMenu')}
-            </Button>
-          </div>
-          {aktif.target && <p className="font-semibold">{t('mengetik.targetTugas', { akurasi: aktif.target.min_akurasi ?? 0, wpm: aktif.target.min_wpm ?? 0 })}</p>}
-          {hasil ? (
-            <HasilPutaran hasil={hasil} aktif={aktif} ulang={() => pilih(aktif)} kembali={() => setAktif(null)} />
-          ) : aktif.mode === 'game' ? (
-            <HujanKata key={putaran} kata={aktif.kata} onSelesai={selesai} />
-          ) : (
-            <AreaMengetik key={putaran} teks={aktif.teks} onSelesai={selesai} nonaktif={memuat} />
-          )}
-        </Card>
+        // gambar posisi jari di kanan bawah area ketik (layar lebar) atau di bawahnya (layar sempit); kolom hanya dibagi bila gambarnya ada
+        <div className={tampilJari ? 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end' : ''}>
+          <Card className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-[1.2em] font-bold">{aktif.judul}</h2>
+              <Button varian="hantu" ikon="kembali" onClick={() => setAktif(null)}>
+                {t('mengetik.kembaliMenu')}
+              </Button>
+            </div>
+            {aktif.target && <p className="font-semibold">{t('mengetik.targetTugas', { akurasi: aktif.target.min_akurasi ?? 0, wpm: aktif.target.min_wpm ?? 0 })}</p>}
+            {hasil ? (
+              <HasilPutaran hasil={hasil} aktif={aktif} ulang={() => pilih(aktif)} kembali={() => setAktif(null)} />
+            ) : aktif.mode === 'game' ? (
+              <HujanKata key={putaran} kata={aktif.kata} onSelesai={selesai} />
+            ) : (
+              <AreaMengetik key={putaran} teks={aktif.teks} onSelesai={selesai} nonaktif={memuat} />
+            )}
+          </Card>
+          {tampilJari && <PosisiJari url={gambarJari} onGagal={() => setJariGagal(true)} />}
+        </div>
       ) : (
         <>
           <PilihanLatihan pilih={pilih} setPesan={setPesan} memuat={memuat} mulai={mulai} />

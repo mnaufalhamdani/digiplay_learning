@@ -6,7 +6,7 @@ import { gabungJalur, jalurQuery } from '@/utils/jalurArea';
 import { atau404 } from '@/utils/atau404';
 import { formatWaktu } from '@/utils/format';
 import { t } from '@/utils/i18n';
-import { PENILAIAN, STATUS_POST_TEST } from '@/enums';
+import { PENILAIAN } from '@/enums';
 import Badge from '@/modules/shared/ui/Badge';
 import Card from '@/modules/shared/ui/Card';
 import EmptyState from '@/modules/shared/ui/EmptyState';
@@ -15,8 +15,8 @@ import TabelResponsif from '@/modules/shared/ui/TabelResponsif';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
 import StatusSertifikatPostTest from '@/modules/sertifikat/StatusSertifikatPostTest';
 import BukaTesUlang from './BukaTesUlang';
-import FormNilaiBagian from './FormNilaiBagian';
 import LencanaPostTest from './LencanaPostTest';
+import PenilaianPraktik from './PenilaianPraktik';
 
 /** Tab daftar post test. */
 const TAB = ['menunggu', 'berlangsung', 'selesai'];
@@ -50,7 +50,7 @@ export async function HalamanDaftarPostTest({ searchParams }) {
   );
 }
 
-/** Satu butir di detail: soal, jawaban dan benar/salah (otomatis) atau penanda siap dinilai dan rubrik (praktik). */
+/** Satu butir di detail: soal, jawaban dan benar/salah (otomatis) atau status penilaian tutor (praktik; dinilai di panel Butir praktik). */
 function ButirPengelola({ x, nomor }) {
   const otomatis = x.penilaian === PENILAIAN.OTOMATIS;
   return (
@@ -71,24 +71,21 @@ function ButirPengelola({ x, nomor }) {
           </span>
         </p>
       ) : (
-        <>
-          <Badge nada={x.siapDinilai ? 'sukses' : 'netral'}>{t(x.siapDinilai ? 'posttest.siapDinilai' : 'posttest.belumSiap')}</Badge>
-          <ul className="list-disc pl-6 text-[0.95em]">
-            {x.rubrik.map((r) => (
-              <li key={r.kriteria}>
-                {r.kriteria} ({r.poin})
-              </li>
-            ))}
-          </ul>
-        </>
+        <p className="flex flex-wrap items-center gap-2">
+          <Badge nada={x.dinilai ? 'sukses' : 'peringatan'}>{t(x.dinilai ? 'posttest.butirDinilai' : 'posttest.butirMenunggu')}</Badge>
+          {x.dinilai && (
+            <strong>
+              {x.skor} / {x.maks}
+            </strong>
+          )}
+        </p>
       )}
     </li>
   );
 }
 
-/** Kartu satu bagian: nilai, sumber, butirnya, dan kolom nilai untuk bagian praktik. */
-function KartuBagian({ pt, b, butir }) {
-  const praktik = b.sumber === 'praktik_tutor';
+/** Kartu satu bagian: nilai, sumber, dan butirnya. */
+function KartuBagian({ b, butir }) {
   return (
     <Card className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -107,13 +104,11 @@ function KartuBagian({ pt, b, butir }) {
         </ol>
       )}
       {b.sumber === 'tes_mengetik' && <p className="text-muted">{t('posttest.mengetikOtomatis')}</p>}
-      {/* nilai praktik diisi setelah dikumpulkan; bagian yang tidak diulang tidak punya butir di percobaan ini */}
-      {praktik && butir.length > 0 && <FormNilaiBagian ptId={pt.id} bagianId={b.id} awal={b.nilai} nonaktif={pt.status !== STATUS_POST_TEST.SELESAI} />}
     </Card>
   );
 }
 
-/** Detail post test (pengelola, D2.6-D2.7): nilai per bagian, butir, penilaian praktik, dan Buka tes ulang. */
+/** Detail post test (pengelola): butir praktik yang perlu dinilai, nilai per bagian, butir, dan Buka tes ulang. */
 export async function HalamanDetailPostTest({ params }) {
   await wajibPengguna();
   const { id } = await params;
@@ -141,8 +136,9 @@ export async function HalamanDetailPostTest({ params }) {
         {pt.bisaTesUlang && <BukaTesUlang ptId={pt.id} bagian={pt.bagian} bawaan={pt.bagianUlangBawaan} />}
       </div>
       <StatusSertifikatPostTest status={statusSertifikat} siswaId={pt.siswa_id} levelId={pt.level_id} />
+      <PenilaianPraktik pt={pt} />
       {pt.bagian.map((b) => (
-        <KartuBagian key={b.id} pt={pt} b={b} butir={pt.butir.filter((x) => x.bagian_id === b.id)} />
+        <KartuBagian key={b.id} b={b} butir={pt.butir.filter((x) => x.bagian_id === b.id)} />
       ))}
     </div>
   );

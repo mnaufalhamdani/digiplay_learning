@@ -16,7 +16,7 @@ const SYARAT_TAB = {
   selesai: 'pt.nilai_total IS NOT NULL',
 };
 /** Kolom butir post test (tugas_siswa) beserta template dan bagiannya. */
-const KOLOM_BUTIR = `ts.id, ts.post_test_id, ts.sesi_id, ts.template_id, ts.soal_teks, ts.parameter_hasil, ts.jawaban, ts.benar, ts.created_at,
+const KOLOM_BUTIR = `ts.id, ts.post_test_id, ts.sesi_id, ts.template_id, ts.soal_teks, ts.parameter_hasil, ts.jawaban, ts.benar, ts.dinilai_oleh, ts.created_at,
   t.kode AS template_kode, t.tipe, t.penilaian, t.bagian_id`;
 
 /** Model post test: post_test, post_test_nilai, dan butir post test di tugas_siswa. */
@@ -113,7 +113,7 @@ export function buatPosttestModel({ db }) {
     },
     /** Semua butir satu percobaan urut dibuat. */
     butir(postTestId, conn) {
-      return db.rows(`SELECT ${KOLOM_BUTIR} FROM tugas_siswa ts JOIN template t ON t.id = ts.template_id WHERE ts.post_test_id = ? ORDER BY ts.created_at, ts.id`, [postTestId], conn);
+      return db.rows(`SELECT ${KOLOM_BUTIR}, p.nama AS dinilai_nama FROM tugas_siswa ts JOIN template t ON t.id = ts.template_id LEFT JOIN pengguna p ON p.id = ts.dinilai_oleh WHERE ts.post_test_id = ? ORDER BY ts.created_at, ts.id`, [postTestId], conn);
     },
     /** Satu butir beserta pemilik dan status percobaannya, dikunci untuk penyimpanan jawaban. */
     cariButir(tugasId, conn) {
@@ -124,6 +124,10 @@ export function buatPosttestModel({ db }) {
         [tugasId],
         conn,
       );
+    },
+    /** Menyimpan penilaian tutor satu butir praktik: skor dan catatan ada di parameter_hasil, penilainya di dinilai_oleh. */
+    simpanPenilaianButir(tugasId, { parameterHasil, dinilaiOleh }, conn) {
+      return db.exec('UPDATE tugas_siswa SET parameter_hasil = ?, dinilai_oleh = ? WHERE id = ?', [parameterHasil, dinilaiOleh, tugasId], conn);
     },
     /** Menyimpan jawaban butir dan hasil pemeriksaannya (`benar` tidak pernah dikirim ke siswa selama tes). */
     simpanJawaban(tugasId, { jawaban, benar, parameterHasil }, conn) {

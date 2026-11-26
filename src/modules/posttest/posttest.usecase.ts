@@ -3,9 +3,12 @@ import { AppError, adalahAppError } from '@/utils/appError';
 import { adalahDuplikat } from '@/utils/galatDb';
 import { uraiJson, teksJson } from '@/utils/json';
 import { hitungNilaiMengetik } from '@/utils/mengetik';
+import { bacaBerkasGambar } from '@/utils/berkasGambar';
+import { hasilBerkas } from '@/utils/responseHandler';
 import { jawabanHarapan, periksaJawaban, renderTemplate } from '@/utils/templateRender';
 import { t } from '@/utils/i18n';
-import { AKSI_LOG, KUNCI_PENGATURAN, MODE_MENGETIK, NOMOR_POST_TEST, PENILAIAN, SUMBER_NILAI, STATUS_POST_TEST, WAKTU_POST_TEST } from '@/enums';
+import { namaUnduhan } from '@/modules/tugas/tugas.usecase';
+import { AKSI_LOG, JENIS_GAMBAR_UNDUH, KUNCI_PENGATURAN, MODE_MENGETIK, NOMOR_POST_TEST, PENILAIAN, SUMBER_NILAI, STATUS_POST_TEST, WAKTU_POST_TEST } from '@/enums';
 
 /** Pembulatan 2 desimal. */
 const bulat2 = (n) => Math.round(Number(n) * 100) / 100;
@@ -32,6 +35,18 @@ function bentukBagian(b) {
   return { ...b, bobot: Number(b.bobot), jumlah_soal: Number(b.jumlah_soal), target_wpm: b.target_wpm == null ? null : Number(b.target_wpm) };
 }
 
+/** Skor maksimum satu butir praktik: jumlah poin rubrik, atau 100 bila rubrik kosong/rusak. */
+function maksButir(rubrik) {
+  const total = (Array.isArray(rubrik) ? rubrik : []).reduce((n, r) => n + (Number(r.poin) || 0), 0);
+  // rubrik tanpa poin yang bisa dijumlahkan: skala bawaan 0-100
+  return total > 0 ? total : 100;
+}
+
+/** Gambar bahan unduhan (mewarnai/berwarna) pada parameter_hasil sebuah butir: [{ kode, nama, jenis }]. */
+function bahanButir(ph) {
+  return (ph.gambar ?? []).filter((g) => JENIS_GAMBAR_UNDUH.includes(g.jenis));
+}
+
 /** Butir dengan parameter_hasil diurai. */
 function bentukButir(b) {
   return { ...b, ph: uraiJson(b.parameter_hasil) ?? {}, benar: b.benar == null ? null : Boolean(b.benar) };
@@ -41,7 +56,7 @@ function bentukButir(b) {
  * Usecase post test (D2): mulai, waktu dijaga server (denyut), jawaban tanpa umpan balik, kumpul dan penilaian
  * otomatis, finalisasi kelulusan, penilaian bagian praktik oleh tutor, dan tes ulang per bagian.
  */
-export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, mengetikUsecase, mengetikModel, gambarUsecase, pengaturanUsecase, sertifikatUsecase, logUsecase, catatAktivitas, idGen, acak, db }) {
+export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, mengetikUsecase, mengetikModel, gambarUsecase, pengaturanUsecase, sertifikatUsecase, logUsecase, catatAktivitas, idGen, acak, folderGambar, db }) {
   /** Salinan array berurutan acak (Fisher-Yates, RNG disuntikkan). */
   function acakUrutan(daftar) {
     const hasil = [...daftar];
@@ -185,7 +200,9 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       }
       for (const x of butir.map(bentukButir).filter((y) => y.bagian_id === b.id)) {
         const tutor = x.penilaian === PENILAIAN.TUTOR;
-        daftar.push({ id: x.id, jenis: tutor ? 'tutor' : x.tipe === 'pilihan_ganda' ? 'pilihan_ganda' : 'isian', bagian: info, soal: x.soal_teks, opsi: x.ph.opsi ?? [], jawaban: x.jawaban, siapDinilai: Boolean(x.ph.siapDinilai), terjawab: tutor ? Boolean(x.ph.siapDinilai) : x.jawaban != null });
+        // bahan unduhan hanya kode dan jenis (tanpa nama subjek); dinilai = tutor sudah menyimpan skor (skornya tidak dikirim)
+        const dinilai = Boolean(x.ph.penilaianTutor);
+        daftar.push({ id: x.id, jenis: tutor ? 'tutor' : x.tipe === 'pilihan_ganda' ? 'pilihan_ganda' : 'isian', tipe: x.tipe, bagian: info, soal: x.soal_teks, opsi: x.ph.opsi ?? [], jawaban: x.jawaban, siapDinilai: Boolean(x.ph.siapDinilai), dinilai, gambar: bahanButir(x.ph).map((g) => ({ kode: g.kode, jenis: g.jenis })), terjawab: tutor ? Boolean(x.ph.siapDinilai) || dinilai : x.jawaban != null });
       }
     }
     return daftar.map((x, i) => ({ ...x, nomor: i + 1 }));
@@ -281,7 +298,11 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       if (!pt?.dimulai) return { sisaDetik: 0, selesai: true };
       await posttestModel.denyut(pt.id, WAKTU_POST_TEST.maksTambahDetik);
       const baru = bentukPt(await posttestModel.cariId(pt.id));
-      if (baru.sisa_detik > 0) return { sisaDetik: baru.sisa_detik, selesai: false };
+      // butir praktik yang sudah dinilai tutor dikirim agar status di layar siswa berubah tanpa memuat ulang halaman
+      if (baru.sisa_detik > 0) {
+        const dinilai = (await posttestModel.butir(pt.id)).map(bentukButir).filter((x) => x.penilaian === PENILAIAN.TUTOR && x.ph.penilaianTutor).map((x) => x.id);
+        return { sisaDetik: baru.sisa_detik, selesai: false, dinilai };
+      }
       await kumpulkan(pt.id);
       return { sisaDetik: 0, selesai: true };
     },
@@ -302,9 +323,37 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       await db.transaction(async (conn) => {
         const b = await wajibButir(tugasId, siswaId, conn);
         if (b.penilaian !== PENILAIAN.TUTOR) throw new AppError(t('tugas.bukanJawaban'), 400);
+        // sudah dinilai tutor: penanda tidak bisa diubah lagi
+        if (b.ph.penilaianTutor) throw new AppError(t('posttest.sudahDinilai'), 409);
         await posttestModel.simpanJawaban(tugasId, { jawaban: b.jawaban, benar: null, parameterHasil: teksJson({ ...b.ph, siapDinilai: siap }) }, conn);
       });
       return { tersimpan: true };
+    },
+    /**
+     * Menerima proyek Studio Zippy yang dikirim siswa ke butir praktik bertipe coding_proyek (dipanggil studioUsecase
+     * dalam transaksinya, yang menyimpan salinan proyeknya). Aturan sama dengan butir praktik lain: tes sedang berjalan
+     * dan belum dinilai tutor. Mengirim proyek sekaligus menandai butir siap dinilai; nama proyek dicatat sebagai jawaban.
+     */
+    async terimaProyek(siswaId, tugasId, nama, conn) {
+      const b = await wajibButir(tugasId, siswaId, conn);
+      if (b.penilaian !== PENILAIAN.TUTOR || b.tipe !== 'coding_proyek') throw new AppError(t('tugas.bukanProyek'), 400);
+      // sudah dinilai tutor: kiriman tidak bisa diubah lagi
+      if (b.ph.penilaianTutor) throw new AppError(t('posttest.sudahDinilai'), 409);
+      await posttestModel.simpanJawaban(tugasId, { jawaban: nama, benar: null, parameterHasil: teksJson({ ...b.ph, siapDinilai: true }) }, conn);
+    },
+    /**
+     * Data halaman Studio Zippy untuk satu butir post test: instruksi, sisa waktu, dan nama proyek yang sudah dikirim.
+     * Titik acuan waktu diperbarui (seperti membuka halaman post test) sehingga waktu di luar halaman tidak terhitung.
+     * 404/409 bila butir bukan milik siswa, bukan butir proyek, atau tes tidak sedang berjalan.
+     */
+    async butirStudio(siswaId, tugasId) {
+      const b = await wajibButir(tugasId, siswaId, null);
+      if (b.penilaian !== PENILAIAN.TUTOR || b.tipe !== 'coding_proyek') throw new AppError(t('tugas.tidakAda'), 404);
+      const pt = await wajibPtJalan(siswaId);
+      // waktu sudah habis: tes dikumpulkan lewat halaman post test, bukan di sini
+      if (pt.sisa_detik <= 0) throw new AppError(t('posttest.tidakBerjalan'), 409);
+      await posttestModel.sentuh(pt.id);
+      return { id: b.id, soal: b.soal_teks, sisaDetik: pt.sisa_detik, levelNama: pt.level_nama, terkirim: b.jawaban ?? null, dinilai: Boolean(b.ph.penilaianTutor) };
     },
     /** Tes mengetik post test (sekali per percobaan): hasil disimpan bermode tes, nilai bagian langsung dihitung (tidak dikirim ke siswa). */
     async tesMengetik(siswaId, data) {
@@ -354,26 +403,98 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       const daftarButir = butir.map(bentukButir).map((x) => {
         const render = { opsi: x.ph.opsi, nilaiParameter: x.ph.nilai ?? {}, kunci: x.ph.kunci };
         const tampil = x.tipe === 'pilihan_ganda' ? (x.ph.opsi ?? []).find((o) => String(o.indeksAsli) === String(x.jawaban))?.teks ?? x.jawaban : x.jawaban;
-        return { id: x.id, bagian_id: x.bagian_id, tipe: x.tipe, penilaian: x.penilaian, template_kode: x.template_kode, soal: x.soal_teks, jawaban: tampil, benar: x.benar, siapDinilai: Boolean(x.ph.siapDinilai), harapan: x.penilaian === PENILAIAN.OTOMATIS ? jawabanHarapan({ tipe: x.tipe, kunci: x.ph.kunci }, render) : null, rubrik: x.ph.kunci?.rubrik ?? rubrikBawaan };
+        const nilaiTutor = x.ph.penilaianTutor ?? null;
+        const rubrik = x.ph.kunci?.rubrik ?? rubrikBawaan;
+        return {
+          id: x.id,
+          bagian_id: x.bagian_id,
+          tipe: x.tipe,
+          penilaian: x.penilaian,
+          template_kode: x.template_kode,
+          soal: x.soal_teks,
+          jawaban: tampil,
+          benar: x.benar,
+          siapDinilai: Boolean(x.ph.siapDinilai),
+          harapan: x.penilaian === PENILAIAN.OTOMATIS ? jawabanHarapan({ tipe: x.tipe, kunci: x.ph.kunci }, render) : null,
+          rubrik,
+          // penilaian tutor per butir: skor, skor maksimum (jumlah poin rubrik), catatan, dan nama penilai
+          maks: maksButir(rubrik),
+          dinilai: Boolean(nilaiTutor),
+          skor: nilaiTutor ? Number(nilaiTutor.skor) : null,
+          catatan: nilaiTutor?.catatan ?? '',
+          dinilai_nama: nilaiTutor ? x.dinilai_nama ?? null : null,
+          bahan: bahanButir(x.ph).map((g) => ({ nama: g.nama, jenis: g.jenis })),
+        };
       });
       const gagal = pt.bagian.filter((x) => x.nilai != null && x.nilai < lulusBagian).map((x) => x.id);
       const bisaTesUlang = pt.status === STATUS_POST_TEST.SELESAI && pt.lulus === false && terakhir?.id === pt.id;
-      return { ...pt, butir: daftarButir, bisaTesUlang, bagianUlangBawaan: gagal.length > 0 ? gagal : pt.bagian.map((x) => x.id) };
+      const praktik = daftarButir.filter((x) => x.penilaian === PENILAIAN.TUTOR);
+      const praktikMenunggu = praktik.filter((x) => !x.dinilai).length;
+      // Finalisasi hanya setelah dikumpulkan dan semua butir praktik dinilai; tanpa butir praktik tidak ada yang perlu difinalisasi
+      const bisaFinalisasi = pt.status === STATUS_POST_TEST.SELESAI && praktik.length > 0 && praktikMenunggu === 0;
+      return { ...pt, butir: daftarButir, praktikMenunggu, bisaFinalisasi, bisaTesUlang, bagianUlangBawaan: gagal.length > 0 ? gagal : pt.bagian.map((x) => x.id) };
     },
-    /** Tutor mengisi/merevisi nilai bagian praktik (0-100) setelah dikumpulkan; total dihitung ulang (D2.6). */
-    async simpanNilaiTutor(ptId, bagianId, nilai, penggunaId) {
+    /**
+     * Tutor menilai satu butir praktik (skor 0 sampai skor maksimum rubrik, catatan opsional). Boleh saat siswa sudah
+     * menandai siap dinilai (tes masih berjalan) atau setelah dikumpulkan; bisa direvisi. Dicatat ke log.
+     */
+    async nilaiButir(ptId, tugasId, { skor, catatan }, penggunaId) {
       return db.transaction(async (conn) => {
         const pt = bentukPt((await posttestModel.cariId(ptId, conn, true)) ?? {});
         if (!pt.id) throw new AppError(t('posttest.tidakAda'), 404);
-        // nilai praktik diisi setelah siswa mengumpulkan
+        const baris = await posttestModel.cariButir(tugasId, conn);
+        // butir milik post test lain diperlakukan sama dengan tidak ada
+        if (!baris || baris.post_test_id !== ptId) throw new AppError(t('posttest.butirTidakAda'), 404);
+        const butir = bentukButir(baris);
+        if (butir.penilaian !== PENILAIAN.TUTOR) throw new AppError(t('posttest.bukanButirPraktik'), 400);
+        // tes masih berjalan dan siswa belum memanggil tutor: karyanya belum final
+        if (pt.status === STATUS_POST_TEST.BERLANGSUNG && !butir.ph.siapDinilai) throw new AppError(t('posttest.belumBisaDinilai'), 409);
+        const maks = maksButir(butir.ph.kunci?.rubrik ?? (await pengaturanUsecase.rubrikBawaan()));
+        if (skor > maks) throw new AppError(t('posttest.skorDiLuar', { maks }), 400);
+        const lama = butir.ph.penilaianTutor ?? null;
+        const ph = { ...butir.ph, penilaianTutor: { skor, maks, catatan, dinilaiAt: new Date().toISOString() } };
+        await posttestModel.simpanPenilaianButir(tugasId, { parameterHasil: teksJson(ph), dinilaiOleh: penggunaId }, conn);
+        await catatAktivitas({ penggunaId, aksi: AKSI_LOG.NILAI_BUTIR_POST_TEST, entitas: 'post_test', entitasId: ptId, detail: { template: baris.template_kode, sebelum: lama ? Number(lama.skor) : null, sesudah: skor, maks } }, conn);
+        return { id: tugasId };
+      });
+    },
+    /**
+     * Finalisasi oleh tutor: semua butir praktik harus sudah dinilai. Nilai tiap bagian praktik = rata-rata skor butir
+     * (dalam skala 0-100), lalu nilai total dan kelulusan dihitung lewat finalisasi bersama (sertifikat terbit bila lulus).
+     * Boleh diulang setelah skor direvisi. Hasil: { id, final } (final null bila ada bagian lain yang belum bernilai).
+     */
+    async finalisasiTutor(ptId, penggunaId) {
+      return db.transaction(async (conn) => {
+        const pt = bentukPt((await posttestModel.cariId(ptId, conn, true)) ?? {});
+        if (!pt.id) throw new AppError(t('posttest.tidakAda'), 404);
+        // nilai praktik hanya final setelah siswa mengumpulkan
         if (pt.status !== STATUS_POST_TEST.SELESAI) throw new AppError(t('posttest.belumDikumpulkan'), 409);
-        const bagian = (await posttestModel.bagianLevel(pt.level_id, conn)).find((b) => b.id === bagianId);
-        if (!bagian || bagian.sumber !== 'praktik_tutor') throw new AppError(t('posttest.bukanPraktik'), 400);
-        const lama = (await posttestModel.nilai(ptId, conn)).find((n) => n.bagian_id === bagianId);
-        await posttestModel.simpanNilai({ id: idGen.generate(), postTestId: ptId, bagianId, nilai, sumber: SUMBER_NILAI.TUTOR, dinilaiOleh: penggunaId }, conn);
-        await catatAktivitas({ penggunaId, aksi: AKSI_LOG.NILAI_POST_TEST, entitas: 'post_test', entitasId: ptId, detail: { bagian: bagian.kode, sebelum: lama ? Number(lama.nilai) : null, sesudah: nilai } }, conn);
+        const [butir, bagian] = await Promise.all([posttestModel.butir(ptId, conn), posttestModel.bagianLevel(pt.level_id, conn)]);
+        const praktik = butir.map(bentukButir).filter((x) => x.penilaian === PENILAIAN.TUTOR);
+        const belum = praktik.filter((x) => !x.ph.penilaianTutor).length;
+        if (belum > 0) throw new AppError(t('posttest.belumSemuaDinilai', { jumlah: belum }), 409);
+        for (const b of bagian.filter((x) => x.sumber === 'praktik_tutor')) {
+          const milik = praktik.filter((x) => x.bagian_id === b.id);
+          // bagian praktik tanpa butir di percobaan ini (tes ulang bagian lain): nilai salinan percobaan sebelumnya tetap dipakai
+          if (milik.length === 0) continue;
+          const rata = milik.reduce((n, x) => n + (100 * Number(x.ph.penilaianTutor.skor)) / Number(x.ph.penilaianTutor.maks), 0) / milik.length;
+          await posttestModel.simpanNilai({ id: idGen.generate(), postTestId: ptId, bagianId: b.id, nilai: bulat2(rata), sumber: SUMBER_NILAI.TUTOR, dinilaiOleh: penggunaId }, conn);
+        }
         return { id: ptId, final: await finalisasi(ptId, conn) };
       });
+    },
+    /**
+     * Unduh bahan butir post test: subjek `kode` harus tercantum di parameter_hasil butir milik siswa itu dengan jenis
+     * mewarnai atau berwarna, dan post test harus sedang berjalan. Hasilnya berkas PNG sebagai attachment.
+     */
+    async unduh(siswaId, tugasId, kode) {
+      const b = await wajibButir(tugasId, siswaId, null);
+      const gambar = bahanButir(b.ph).find((g) => g.kode === kode);
+      if (!gambar) throw new AppError(t('tugas.bahanTidakAda'), 404);
+      const buffer = await bacaBerkasGambar(folderGambar, gambar.kode, gambar.jenis);
+      // berkas dihapus dari folder setelah butir dibuat
+      if (!buffer) throw new AppError(t('tugas.bahanTidakAda'), 404);
+      return hasilBerkas(buffer, 'image/png', namaUnduhan(gambar.jenis, gambar.nama));
     },
     /**
      * Tutor membuka tes ulang (D2.7) untuk bagian terpilih: percobaan baru belum dimulai (terakhir_aktif_at NULL),

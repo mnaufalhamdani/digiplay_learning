@@ -5,6 +5,9 @@ import { NOMOR_POST_TEST, STATUS_TUGAS } from '@/enums';
 import Card from '@/modules/shared/ui/Card';
 import EmptyState from '@/modules/shared/ui/EmptyState';
 import ProgressBar from '@/modules/shared/ui/ProgressBar';
+import { gabungJalur } from '@/utils/jalurArea';
+import { useArea } from '@/modules/shared/ui/AreaContext';
+import TautanTombol from '@/modules/shared/ui/TautanTombol';
 import Konfeti from '@/modules/shared/ui/domain/Konfeti';
 import Maskot from '@/modules/shared/ui/domain/Maskot';
 import StatusSesi from '@/modules/shared/ui/domain/StatusSesi';
@@ -16,6 +19,7 @@ import KartuPostTest from '@/modules/posttest/KartuPostTest';
  * Konfeti dan Zippy merayakan muncul saat semua tugas selesai (sekali per perubahan menjadi lengkap).
  */
 export default function DaftarTugasSiswa({ nama, sesi, postTest = null }) {
+  const { basis } = useArea();
   // tugas yang diganti tidak ditampilkan; penggantinya sudah ada di daftar
   const tugas = sesi.tugas.filter((x) => x.status !== STATUS_TUGAS.DIGANTI);
   const selesai = tugas.filter((x) => x.status === STATUS_TUGAS.SELESAI).length;
@@ -35,6 +39,12 @@ export default function DaftarTugasSiswa({ nama, sesi, postTest = null }) {
           <h1 className="font-display text-[1.6em] font-bold">{t('siswa.halo', { nama })}</h1>
           <p className="font-semibold">{t('sesiSiswa.pertemuan', { nomor: sesi.pertemuanNomor, judul: sesi.pertemuanJudul })}</p>
           <StatusSesi jamMasuk={sesi.jamMasuk} lamaDetik={sesi.lamaDetik} />
+          {/* membuka materi pertemuan ini dalam mode baca ulang; pertemuan tanpa materi tidak punya tombol ini */}
+          {sesi.materi.ada && (
+            <TautanTombol href={gabungJalur(basis, `/materi/${sesi.pertemuanId}`)} varian="secondary" ikon="materi">
+              {t('sesiSiswa.bacaMateri')}
+            </TautanTombol>
+          )}
         </div>
       </Card>
       {tugas.length > 0 && <ProgressBar nilai={selesai} maks={tugas.length} label={t('sesiSiswa.kemajuan', { selesai, total: tugas.length })} />}

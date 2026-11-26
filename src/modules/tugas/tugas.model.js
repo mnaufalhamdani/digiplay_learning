@@ -49,6 +49,10 @@ export function buatTugasModel({ db }) {
         conn,
       );
     },
+    /** Mencatat nama proyek Studio Zippy yang dikirim siswa sebagai jawaban tugas (status tidak berubah; tutor yang menilai). */
+    simpanKiriman(id, nama, conn) {
+      return db.exec('UPDATE tugas_siswa SET jawaban = ? WHERE id = ?', [nama, id], conn);
+    },
     /** Tugas latihan berstatus belum dengan tipe tertentu pada satu sesi, dikunci untuk penyelesaian otomatis. */
     belumTipe(sesiId, tipe, conn) {
       return db.rows(`SELECT ${KOLOM} ${DARI} WHERE ts.sesi_id = ? AND ts.post_test_id IS NULL AND ts.status = 'belum' AND t.tipe = ? FOR UPDATE`, [sesiId, tipe], conn);

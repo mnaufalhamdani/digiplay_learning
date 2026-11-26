@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 /**
  * Maskot Zippy dari /aset/maskot/zippy-<suasana>.png (potret 3:4; `wajah` persegi 1:1).
  * Bila berkas tidak ada, gambar disembunyikan tanpa error. Dekoratif kecuali `alt` diisi.
+ * `penuh`: gambar memenuhi lebar wadahnya tanpa margin (mis. Zippy di dalam petak papan labirin); `ukuran` hanya
+ * dipakai untuk menghitung tinggi bawaan.
  */
-export default function Maskot({ suasana = 'sapa', ukuran = 160, alt = '', className = '' }) {
+export default function Maskot({ suasana = 'sapa', ukuran = 160, alt = '', className = '', penuh = false }) {
   const [gagal, setGagal] = useState(false);
   const ref = useRef(null);
   const tinggi = suasana === 'wajah' ? ukuran : Math.round((ukuran * 4) / 3);
@@ -28,8 +30,8 @@ export default function Maskot({ suasana = 'sapa', ukuran = 160, alt = '', class
       width={ukuran}
       height={tinggi}
       onError={() => setGagal(true)}
-      className={`m-3 h-auto select-none object-contain ${className}`}
-      style={{ width: ukuran, minWidth: Math.min(ukuran, 96) }}
+      className={`h-auto select-none object-contain ${penuh ? '' : 'm-3'} ${className}`}
+      style={penuh ? { width: '100%' } : { width: ukuran, minWidth: Math.min(ukuran, 96) }}
       draggable={false}
     />
   );

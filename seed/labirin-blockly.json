@@ -1,0 +1,272 @@
+{
+ "keterangan": "Labirin latihan Blockly (Coding Zippy) Level 1. Grid: '.' jalan, '#' dinding. Program: maju, belok_kiri, belok_kanan, ulangi. batas_blok menghitung semua blok termasuk ulangi dan isinya. Koordinat x ke kanan, y ke bawah, mulai dari 0.",
+ "labirin": [
+  {
+   "kode": "jalan_lurus",
+   "nama": "Jalan Lurus",
+   "urutan": 1,
+   "lebar": 6,
+   "tinggi": 3,
+   "grid": [
+    "######",
+    "......",
+    "######"
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 1,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 5,
+    "y": 1
+   },
+   "batas_blok": 6,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan"
+   ],
+   "contoh_solusi": [
+    "maju",
+    "maju",
+    "maju",
+    "maju",
+    "maju"
+   ],
+   "petunjuk": "Zippy tinggal berjalan lurus ke bintang."
+  },
+  {
+   "kode": "belok_kanan",
+   "nama": "Belok Kanan",
+   "urutan": 2,
+   "lebar": 5,
+   "tinggi": 3,
+   "grid": [
+    "....#",
+    "###.#",
+    "###.#"
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 0,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 3,
+    "y": 2
+   },
+   "batas_blok": 8,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan"
+   ],
+   "contoh_solusi": [
+    "maju",
+    "maju",
+    "maju",
+    "belok_kanan",
+    "maju",
+    "maju"
+   ],
+   "petunjuk": "Jalannya berbelok. Pakai blok belok kanan."
+  },
+  {
+   "kode": "belok_kiri",
+   "nama": "Belok Kiri",
+   "urutan": 3,
+   "lebar": 5,
+   "tinggi": 3,
+   "grid": [
+    "###.#",
+    "###.#",
+    "....#"
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 2,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 3,
+    "y": 0
+   },
+   "batas_blok": 8,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan"
+   ],
+   "contoh_solusi": [
+    "maju",
+    "maju",
+    "maju",
+    "belok_kiri",
+    "maju",
+    "maju"
+   ],
+   "petunjuk": "Kali ini jalannya naik. Pakai blok belok kiri."
+  },
+  {
+   "kode": "zig_zag",
+   "nama": "Zig-zag",
+   "urutan": 4,
+   "lebar": 5,
+   "tinggi": 4,
+   "grid": [
+    "..###",
+    "#.###",
+    "#...#",
+    "###.."
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 0,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 4,
+    "y": 3
+   },
+   "batas_blok": 14,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan"
+   ],
+   "contoh_solusi": [
+    "maju",
+    "belok_kanan",
+    "maju",
+    "maju",
+    "belok_kiri",
+    "maju",
+    "maju",
+    "belok_kanan",
+    "maju",
+    "belok_kiri",
+    "maju"
+   ],
+   "petunjuk": "Jalannya berliku. Susun blok pelan-pelan."
+  },
+  {
+   "kode": "jalan_panjang",
+   "nama": "Jalan Panjang",
+   "urutan": 5,
+   "lebar": 10,
+   "tinggi": 3,
+   "grid": [
+    "##########",
+    "..........",
+    "##########"
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 1,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 9,
+    "y": 1
+   },
+   "batas_blok": 3,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan",
+    "ulangi"
+   ],
+   "contoh_solusi": [
+    {
+     "ulangi": 9,
+     "isi": [
+      "maju"
+     ]
+    }
+   ],
+   "petunjuk": "Jalannya panjang sekali. Pakai blok ulangi supaya blokmu sedikit."
+  },
+  {
+   "kode": "tangga",
+   "nama": "Tangga",
+   "urutan": 6,
+   "lebar": 5,
+   "tinggi": 4,
+   "grid": [
+    "..###",
+    "#..##",
+    "##..#",
+    "###.."
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 0,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 4,
+    "y": 3
+   },
+   "batas_blok": 6,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan",
+    "ulangi"
+   ],
+   "contoh_solusi": [
+    {
+     "ulangi": 3,
+     "isi": [
+      "maju",
+      "belok_kanan",
+      "maju",
+      "belok_kiri"
+     ]
+    },
+    "maju"
+   ],
+   "petunjuk": "Perhatikan polanya. Ada urutan yang berulang."
+  },
+  {
+   "kode": "keliling_kotak",
+   "nama": "Keliling Kotak",
+   "urutan": 7,
+   "lebar": 3,
+   "tinggi": 3,
+   "grid": [
+    "...",
+    "##.",
+    "..."
+   ],
+   "mulai": {
+    "x": 0,
+    "y": 0,
+    "arah": "kanan"
+   },
+   "bintang": {
+    "x": 0,
+    "y": 2
+   },
+   "batas_blok": 5,
+   "blok_tersedia": [
+    "maju",
+    "belok_kiri",
+    "belok_kanan",
+    "ulangi"
+   ],
+   "contoh_solusi": [
+    {
+     "ulangi": 3,
+     "isi": [
+      "maju",
+      "maju",
+      "belok_kanan"
+     ]
+    }
+   ],
+   "petunjuk": "Zippy mengelilingi kotak. Pola apa yang berulang?"
+  }
+ ]
+}

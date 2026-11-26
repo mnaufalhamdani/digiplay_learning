@@ -1,5 +1,5 @@
 import { validasi } from '@/utils/validasi';
-import { idPostTestSchema, jawabSchema, nilaiTutorSchema, siapDinilaiSchema, tabSchema, tesMengetikSchema, tesUlangSchema } from './posttest.schema';
+import { idButirSchema, idPostTestSchema, jawabSchema, nilaiButirSchema, siapDinilaiSchema, tabSchema, tesMengetikSchema, tesUlangSchema, unduhButirSchema } from './posttest.schema';
 
 /**
  * Controller post test: validasi input lalu teruskan ke usecase. Hak akses ditegakkan di action/route;
@@ -27,6 +27,8 @@ export function buatPosttestController({ posttestUsecase }) {
     },
     /** Hasil tes mengetik post test. */
     tesMengetik: (input, sesi) => posttestUsecase.tesMengetik(sesi.siswaId, validasi(tesMengetikSchema, input)),
+    /** Data halaman Studio Zippy untuk satu butir post test (dipanggil halaman server, bukan action). */
+    butirStudio: (input, sesi) => posttestUsecase.butirStudio(sesi.siswaId, validasi(idButirSchema, input).tugasId),
     /** Siswa mengumpulkan. */
     kumpul: (_input, sesi) => posttestUsecase.kumpulOlehSiswa(sesi.siswaId),
     /** Daftar pengelola per tab (`tab` dari query string; tidak sah -> menunggu). */
@@ -35,10 +37,17 @@ export function buatPosttestController({ posttestUsecase }) {
     detail: (input) => posttestUsecase.detail(validasi(idPostTestSchema, input).id),
     /** Riwayat post test seorang siswa (ID sudah divalidasi halaman detail siswa). */
     riwayatSiswa: (siswaId) => posttestUsecase.riwayatSiswa(siswaId),
-    /** Tutor mengisi/merevisi nilai bagian praktik. */
-    simpanNilai(input, sesi) {
-      const { id, bagianId, nilai } = validasi(nilaiTutorSchema, input);
-      return posttestUsecase.simpanNilaiTutor(id, bagianId, nilai, sesi.id);
+    /** Tutor menilai (atau merevisi) satu butir praktik: skor dan catatan. */
+    nilaiButir(input, sesi) {
+      const { id, tugasId, skor, catatan } = validasi(nilaiButirSchema, input);
+      return posttestUsecase.nilaiButir(id, tugasId, { skor, catatan }, sesi.id);
+    },
+    /** Tutor memfinalisasi post test setelah semua butir praktik dinilai. */
+    finalisasi: (input, sesi) => posttestUsecase.finalisasiTutor(validasi(idPostTestSchema, input).id, sesi.id),
+    /** Siswa mengunduh bahan butir post test (route HTTP). */
+    unduh(input, sesi) {
+      const { tugasId, kode } = validasi(unduhButirSchema, input);
+      return posttestUsecase.unduh(sesi.siswaId, tugasId, kode);
     },
     /** Tutor membuka tes ulang. */
     bukaTesUlang(input, sesi) {

@@ -1,0 +1,776 @@
+[
+ {
+  "kodePertemuan": "L1-P01",
+  "judul": "Mengenal komputer, menyalakan dan mematikan",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa menyebutkan nama bagian-bagian komputer.",
+    "Kamu bisa menyalakan dan mematikan komputer dengan benar.",
+    "Kamu tahu cara duduk dan menjaga mata saat memakai komputer."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Halo, aku Zippy!",
+     "teks": "Hari ini kita kenalan dengan komputer. Komputer adalah mesin pintar yang bisa membantu kita menggambar, menulis, dan belajar. Yuk, kita kenali bagian-bagiannya dulu!"
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Monitor",
+     "teks": "Monitor adalah layar komputer. Gambar dan tulisan muncul di monitor, jadi kita bisa melihatnya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Keyboard",
+     "teks": "Keyboard dipakai untuk mengetik huruf dan angka. Bentuknya papan dengan banyak tombol."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mouse",
+     "teks": "Mouse dipakai untuk menunjuk dan memilih sesuatu di layar. Saat mouse kamu geser, tanda panah di layar ikut bergerak."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "CPU",
+     "teks": "CPU adalah kotak yang menjadi otak komputer. Di sinilah komputer berpikir dan menyimpan banyak hal. Pada beberapa komputer, otaknya menyatu di balik monitor."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Speaker dan Printer",
+     "teks": "Speaker mengeluarkan suara, misalnya musik. Printer mencetak gambar atau tulisan di komputer menjadi kertas."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Cara menyalakan komputer",
+     "langkah": [
+      {
+       "teks": "Pastikan kabel listrik sudah tersambung. Minta bantuan kakak tutor bila belum yakin."
+      },
+      {
+       "teks": "Cari tombol power. Gambarnya lingkaran dengan garis kecil di atasnya."
+      },
+      {
+       "teks": "Tekan tombol power satu kali, lalu tunggu layar menyala."
+      },
+      {
+       "teks": "Kalau layar sudah menampilkan desktop, komputer siap dipakai."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Cara mematikan komputer",
+     "langkah": [
+      {
+       "teks": "Simpan dulu pekerjaanmu, lalu tutup semua program."
+      },
+      {
+       "teks": "Klik tombol Start di bagian bawah layar."
+      },
+      {
+       "teks": "Pilih Shut down, lalu tunggu sampai layar mati."
+      },
+      {
+       "teks": "Jangan mencabut kabel listrik atau menutup layar saja, ya. Itu bisa membuat komputer rusak."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Duduk yang sehat",
+     "teks": "Duduklah dengan punggung tegak dan kaki menapak lantai. Letakkan layar sejajar dengan matamu. Supaya mata tidak lelah: jangan terlalu dekat dengan layar, istirahat sebentar sambil melihat ke tempat jauh, pastikan ruangan cukup terang, dan jangan memakai komputer terlalu lama."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kalau lupa urutannya, ingat ya: menyalakan pakai tombol power, mematikan pakai Start lalu Shut down!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P02",
+  "judul": "Mouse: klik, drag and drop",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa menggerakkan mouse dan memakai tombol kiri, kanan, dan roda.",
+    "Kamu bisa klik, klik dua kali, klik kanan, scroll, dan drag and drop.",
+    "Kamu bisa membuka dan menutup program dengan mouse."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Kenalan dengan mouse",
+     "teks": "Mouse punya dua tombol dan satu roda di tengah. Pegang mouse dengan tangan yang nyaman, letakkan jari telunjuk di tombol kiri dan jari tengah di tombol kanan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Klik",
+     "teks": "Klik artinya menekan tombol kiri mouse satu kali. Klik dipakai untuk memilih sesuatu, misalnya sebuah ikon."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Klik dua kali",
+     "teks": "Klik dua kali artinya menekan tombol kiri mouse dua kali dengan cepat. Dengan cara ini kita membuka sebuah ikon atau program. Kalau tidak terbuka, coba lebih cepat dan jangan menggeser mouse."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Klik kanan",
+     "teks": "Klik kanan artinya menekan tombol kanan mouse satu kali. Biasanya akan muncul menu berisi pilihan-pilihan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Scroll",
+     "teks": "Putar roda di tengah mouse untuk menggulung halaman ke atas dan ke bawah."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Drag and drop",
+     "langkah": [
+      {
+       "teks": "Arahkan panah mouse ke benda yang mau dipindah."
+      },
+      {
+       "teks": "Tekan dan tahan tombol kiri mouse."
+      },
+      {
+       "teks": "Geser mouse ke tempat yang kamu mau sambil terus menahan tombol."
+      },
+      {
+       "teks": "Lepaskan tombol kiri mouse. Bendanya pindah!"
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menutup program",
+     "langkah": [
+      {
+       "teks": "Cari tombol X di pojok kanan atas jendela."
+      },
+      {
+       "teks": "Klik tombol X satu kali untuk menutupnya."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Semakin sering berlatih, semakin lincah tanganmu! Mainkan game di menu Latihan Mouse dan susun puzzle di menu Puzzle ya."
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P03",
+  "judul": "Keyboard: huruf dan angka",
+  "isi": {
+   "tujuan": [
+    "Kamu mengenal tombol huruf, angka, dan tombol-tombol penting.",
+    "Kamu tahu fungsi Spacebar, Shift, dan Backspace.",
+    "Kamu tahu posisi jari yang benar di baris home row."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Keyboard dan tombolnya",
+     "teks": "Keyboard punya tombol huruf, tombol angka, dan tombol khusus. Kita tidak perlu menghafal semuanya sekarang. Kenali dulu yang paling sering dipakai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Spacebar",
+     "teks": "Spacebar adalah tombol panjang di bagian bawah keyboard. Tekan untuk membuat jarak antar kata."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Shift",
+     "teks": "Tahan tombol Shift sambil menekan sebuah huruf agar huruf itu menjadi huruf besar."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Backspace",
+     "teks": "Backspace menghapus huruf di sebelah kiri kursor. Pakai saat kamu salah mengetik."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Enter",
+     "teks": "Enter dipakai untuk pindah ke baris baru."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Home row",
+     "teks": "Home row adalah baris huruf tempat jari-jarimu beristirahat saat mulai mengetik. Jari kiri di A S D F, jari kanan di J K L dan titik koma. Pada tombol F dan J ada tonjolan kecil sebagai penanda, jadi jarimu bisa menemukannya tanpa melihat."
+    },
+    {
+     "tipe": "gambar",
+     "src": "aset/mengetik/posisi-jari.png",
+     "keterangan": "Posisi jari di atas keyboard"
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Latihan mengetik dengan benar",
+     "langkah": [
+      {
+       "teks": "Letakkan jari-jarimu di home row."
+      },
+      {
+       "teks": "Lihat layar, bukan keyboard, kalau kamu sudah mulai hafal."
+      },
+      {
+       "teks": "Ketik pelan dan teliti dulu. Cepat itu nomor dua, benar itu nomor satu."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Mulai dari yang teliti. Kalau sudah terbiasa, jarimu akan menemukan tombolnya sendiri!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P04",
+  "judul": "Mengetik kata dan kalimat sederhana",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa mengetik kata dan kalimat dengan benar.",
+    "Kamu tahu kapan memakai huruf besar, titik, dan tanda tanya.",
+    "Kamu bisa mengetik di Notepad dan pindah baris dengan Enter."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Dari huruf ke kata",
+     "teks": "Kalau huruf sudah lancar, sekarang kita mengetik kata, lalu kalimat. Ingat posisi jarimu di home row."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Huruf besar",
+     "teks": "Awal setiap kalimat ditulis dengan huruf besar. Nama orang dan nama tempat juga memakai huruf besar. Untuk membuat huruf besar, tahan Shift sambil menekan hurufnya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tanda baca",
+     "teks": "Titik dipakai di akhir kalimat biasa. Tanda tanya dipakai di akhir kalimat pertanyaan. Tanda seru dipakai untuk seruan."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengetik di Notepad",
+     "langkah": [
+      {
+       "teks": "Buka program Notepad. Minta bantuan kakak tutor bila belum ketemu."
+      },
+      {
+       "teks": "Ketik kalimatmu dengan huruf besar di depan dan titik di akhir."
+      },
+      {
+       "teks": "Tekan Enter untuk pindah ke baris baru."
+      },
+      {
+       "teks": "Bacalah ulang tulisanmu dan perbaiki yang salah dengan Backspace."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Contoh perkenalan diri",
+     "teks": "Namaku Budi. Aku suka menggambar. Aku bersekolah di kelas tiga. Kamu bisa menulis perkenalan dirimu sendiri dengan cara yang sama."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menulis daftar",
+     "teks": "Untuk membuat daftar, ketik satu nama per baris. Tekan Enter setiap selesai satu nama."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Huruf besar di awal, titik di akhir. Itu rahasia kalimat yang rapi!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P05",
+  "judul": "Desktop, folder, dan file",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu apa itu desktop, ikon, folder, dan file.",
+    "Kamu bisa membuat, mengganti nama, dan menyalin folder atau file.",
+    "Kamu tahu fungsi Recycle Bin."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Desktop",
+     "teks": "Desktop adalah layar utama komputer, tempat ikon-ikon berada. Seperti meja kerjamu yang berisi barang-barang."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "File dan folder",
+     "teks": "File adalah hasil kerjamu, misalnya gambar atau tulisan. Folder adalah tempat untuk mengelompokkan file agar rapi, seperti laci atau map."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuat folder baru",
+     "langkah": [
+      {
+       "teks": "Klik kanan di bagian kosong desktop."
+      },
+      {
+       "teks": "Pilih New, lalu pilih Folder."
+      },
+      {
+       "teks": "Ketik nama folder, lalu tekan Enter."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengganti nama folder (rename)",
+     "langkah": [
+      {
+       "teks": "Klik kanan folder yang mau diganti namanya."
+      },
+      {
+       "teks": "Pilih Rename."
+      },
+      {
+       "teks": "Ketik nama baru, lalu tekan Enter."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Folder di dalam folder",
+     "teks": "Kita bisa membuat folder baru di dalam folder lain. Buka foldernya dengan klik dua kali, lalu buat folder baru di dalamnya dengan cara yang sama."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyalin file (copy)",
+     "langkah": [
+      {
+       "teks": "Klik kanan file yang mau disalin, lalu pilih Copy."
+      },
+      {
+       "teks": "Buka folder tujuan."
+      },
+      {
+       "teks": "Klik kanan di bagian kosong folder itu, lalu pilih Paste."
+      },
+      {
+       "teks": "File aslinya tetap ada, dan salinannya ada di folder tujuan."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Recycle Bin",
+     "teks": "File yang sudah dihapus disimpan sementara di Recycle Bin. Seperti tempat sampah yang masih bisa kita periksa dulu."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Beri nama folder yang jelas supaya gampang dicari!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P06",
+  "judul": "Paint 1: menggambar bebas",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuka Paint dan mengenal alat-alatnya.",
+    "Kamu bisa menggambar dan mewarnai memakai Pensil, Brush, dan Shapes.",
+    "Kamu bisa membatalkan langkah yang salah dengan Undo."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Paint",
+     "teks": "Paint adalah program untuk menggambar di komputer. Kamu bisa menggambar apa saja, seperti di kertas, tetapi bisa dihapus dan diulang."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Pencil dan Brush",
+     "teks": "Pensil (Pencil) dipakai untuk menggambar garis bebas. Brush membuat garis yang lebih tebal dan bisa berbeda-beda bentuknya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Shapes",
+     "teks": "Shapes dipakai untuk membuat bentuk seperti lingkaran, persegi, dan segitiga dengan rapi."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Palet warna",
+     "teks": "Warna dipilih dari palet warna. Klik warna yang kamu suka, lalu mulai menggambar atau mewarnai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Eraser dan Undo",
+     "teks": "Eraser (penghapus) menghapus bagian gambar yang salah. Undo, tombol panah melengkung ke kiri, membatalkan langkah terakhir. Kalau salah, jangan panik, klik Undo saja!"
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Magnifier",
+     "teks": "Magnifier (kaca pembesar) memperbesar gambar, supaya kamu bisa mewarnai bagian yang kecil."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mewarnai gambar dari bahan",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan."
+      },
+      {
+       "teks": "Buka gambar yang sudah terunduh di Paint."
+      },
+      {
+       "teks": "Pilih warna di palet, lalu warnai dengan Pensil atau Brush."
+      },
+      {
+       "teks": "Lihat contoh warna di pojok kiri bawah gambar bila ada."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Gambar yang bagus tidak harus cepat. Pilih warna yang kamu suka dan nikmati prosesnya!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P07",
+  "judul": "Paint 2: mewarnai dan membuat poster",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa mewarnai dengan alat Fill dan menulis dengan alat Text.",
+    "Kamu bisa menyimpan gambar dan membukanya lagi.",
+    "Kamu bisa membuat poster yang rapi."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Fill (ember cat)",
+     "teks": "Fill berbentuk ember cat. Pilih warna, klik Fill, lalu klik area gambar yang mau diisi. Satu area langsung berwarna. Pastikan garis area tertutup rapat supaya warna tidak bocor ke tempat lain."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Text",
+     "teks": "Alat Text berbentuk huruf A. Klik alat Text, klik di gambar, lalu ketik tulisanmu. Warna tulisan bisa dipilih dari palet warna."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyimpan gambar",
+     "langkah": [
+      {
+       "teks": "Buka menu File, lalu pilih Save atau Simpan."
+      },
+      {
+       "teks": "Ketik nama file yang mudah diingat."
+      },
+      {
+       "teks": "Pilih tempat menyimpannya, misalnya Desktop, lalu klik Save."
+      },
+      {
+       "teks": "Untuk membuktikan gambar tersimpan, tutup Paint lalu buka lagi file itu."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Membuat poster",
+     "teks": "Poster yang bagus punya gambar, judul besar, dan warna yang serasi. Letakkan judul di tempat yang mudah terlihat, dan jangan terlalu banyak warna supaya tetap rapi."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Jangan lupa simpan! Gambar yang tidak disimpan bisa hilang saat Paint ditutup."
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P08",
+  "judul": "Word 1: mengetik dan menyimpan dokumen",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuka Word dan mengetik di dalamnya.",
+    "Kamu bisa menyimpan dokumen dan membukanya lagi.",
+    "Kamu bisa membuat huruf tebal dan membatalkan langkah dengan Undo."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Microsoft Word",
+     "teks": "Word adalah program untuk menulis surat, cerita, dan laporan. Tulisan yang kamu ketik muncul di halaman putih."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengetik di Word",
+     "langkah": [
+      {
+       "teks": "Buka Word, lalu pilih halaman kosong (Blank document)."
+      },
+      {
+       "teks": "Ketik judul di baris pertama, lalu tekan Enter."
+      },
+      {
+       "teks": "Ketik namamu dan kelasmu di baris kedua."
+      },
+      {
+       "teks": "Tulis paragraf. Awal kalimat huruf besar, akhir kalimat titik."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tebal dan Undo",
+     "teks": "Tombol B membuat huruf menjadi tebal (bold). Blok dulu tulisannya, lalu klik B. Tombol Undo, panah melengkung ke kiri, membatalkan langkah terakhir."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyimpan dokumen",
+     "langkah": [
+      {
+       "teks": "Tekan Ctrl dan S bersamaan."
+      },
+      {
+       "teks": "Ketik nama dokumen, lalu pilih tempatnya, misalnya Desktop."
+      },
+      {
+       "teks": "Klik Save."
+      }
+     ]
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membuka dan menambah tulisan",
+     "langkah": [
+      {
+       "teks": "Buka dokumen yang pernah kamu simpan dengan klik dua kali."
+      },
+      {
+       "teks": "Klik di akhir tulisan, lalu ketik kalimat baru."
+      },
+      {
+       "teks": "Simpan lagi dengan Ctrl dan S."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Biasakan menekan Ctrl dan S setiap selesai menulis supaya karyamu aman!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P09",
+  "judul": "Word 2: format huruf dan menyisipkan gambar",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa mengubah jenis, ukuran, dan warna huruf.",
+    "Kamu bisa membuat tulisan tebal, miring, bergaris bawah, dan rata tengah.",
+    "Kamu bisa menyisipkan gambar ke dokumen."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Tab Home",
+     "teks": "Alat untuk merapikan tulisan ada di tab Home. Blok dulu tulisan yang mau diubah, baru pilih alatnya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Jenis dan ukuran huruf",
+     "teks": "Jenis huruf (font) dan ukuran huruf (Font Size) dipilih di tab Home. Ukuran angka besar membuat huruf lebih besar."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tebal, miring, garis bawah",
+     "teks": "B membuat huruf tebal (bold). I membuat huruf miring (italic). U membuat huruf bergaris bawah (underline)."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Warna huruf dan rata tengah",
+     "teks": "Warna huruf dipilih lewat tombol Font Color. Tombol Center membuat tulisan rata tengah, cocok untuk judul."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Menyisipkan gambar",
+     "langkah": [
+      {
+       "teks": "Pada tugas, tekan tombol Unduh bahan."
+      },
+      {
+       "teks": "Di Word, klik tab Insert."
+      },
+      {
+       "teks": "Pilih Pictures, lalu pilih gambar yang tadi terunduh."
+      },
+      {
+       "teks": "Tulis satu kalimat keterangan di bawah gambar."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Judul yang rata tengah, tebal, dan berukuran besar akan terlihat keren!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P10",
+  "judul": "Internet sehat",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu cara membuat kata sandi yang baik.",
+    "Kamu tahu data apa saja yang tidak boleh dibagikan di internet.",
+    "Kamu tahu apa yang harus dilakukan bila bertemu hal yang membuatmu takut."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Internet",
+     "teks": "Internet seperti dunia besar yang berisi banyak informasi, gambar, dan permainan. Seperti di dunia nyata, ada tempat yang aman dan ada yang tidak. Karena itu kita belajar menjaga diri."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Kata sandi",
+     "teks": "Kata sandi (password) harus rahasia dan sulit ditebak. Jangan memakai namamu saja, jangan menuliskannya di tempat yang mudah dilihat, dan jangan dibagikan ke teman. Hanya orang tuamu dan guru yang boleh membantu menyimpannya."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Rahasia pribadi",
+     "teks": "Jangan memberikan alamat rumah, nomor telepon, dan nama sekolahmu kepada orang asing di internet. Hobi dan warna kesukaan boleh diceritakan, tetapi tetap hati-hati."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Orang asing",
+     "teks": "Bila ada orang asing yang menanyakan alamat rumahmu atau mengajakmu bertemu, jangan dijawab. Segera beri tahu orang tua atau guru."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Melihat hal yang tidak nyaman",
+     "teks": "Bila kamu melihat gambar atau tulisan yang membuatmu takut atau tidak nyaman, tutup halamannya dan segera beri tahu orang dewasa. Kamu tidak salah."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mencari informasi bersama tutor",
+     "teks": "Kita bisa mencari informasi dan gambar di internet bersama kakak tutor. Bacalah dengan teliti, lalu ceritakan apa yang kamu temukan dan nama situs yang kamu pakai. Pilih situs atau aplikasi yang aman untuk anak."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Internet itu seru kalau dipakai dengan aman. Kalau ragu, tanya orang dewasa dulu!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P11",
+  "judul": "Coding visual 1 (blok kode)",
+  "isi": {
+   "tujuan": [
+    "Kamu tahu bahwa program adalah urutan perintah untuk komputer.",
+    "Kamu bisa menyusun blok kode agar karakter bergerak sesuai tujuan.",
+    "Kamu tahu fungsi blok ulangi."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Apa itu coding?",
+     "teks": "Coding adalah cara kita memberi perintah kepada komputer. Urutan perintah itu disebut program atau kode. Komputer tidak bisa menebak, jadi perintahnya harus jelas dan berurutan."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Blok kode",
+     "teks": "Pada coding visual, perintah berbentuk blok berwarna seperti puzzle. Kamu tinggal menyusun blok, tanpa mengetik rumit. Karakter yang kita gerakkan, seperti Zippy, mengikuti urutan blok yang kamu susun."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Urutan itu penting",
+     "teks": "Kalau urutan blok salah, hasilnya tidak sesuai yang kita inginkan. Misalnya belok dulu sebelum maju, Zippy bisa nyasar. Tidak apa-apa salah. Kita periksa urutannya lalu coba lagi."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Blok ulangi",
+     "teks": "Blok ulangi dipakai untuk mengulang perintah beberapa kali. Daripada menyusun blok maju lima kali, cukup pakai blok ulangi sebanyak lima kali. Kodemu jadi lebih pendek dan rapi."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Membantu Zippy",
+     "langkah": [
+      {
+       "teks": "Lihat dulu jalan dari Zippy ke tujuannya."
+      },
+      {
+       "teks": "Susun blok perintah dari atas ke bawah sesuai urutan jalan."
+      },
+      {
+       "teks": "Jalankan programnya dan lihat hasilnya."
+      },
+      {
+       "teks": "Kalau belum berhasil, perbaiki urutan blok, lalu coba lagi."
+      }
+     ]
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Seorang programmer hebat pun sering salah dulu. Yang penting kamu tidak menyerah!"
+    }
+   ]
+  }
+ },
+ {
+  "kodePertemuan": "L1-P12",
+  "judul": "Proyek akhir: kartu ucapan atau poster",
+  "isi": {
+   "tujuan": [
+    "Kamu bisa membuat kartu ucapan atau poster dari awal sampai selesai.",
+    "Kamu bisa menyimpan dan mempresentasikan karyamu.",
+    "Kamu bisa memberi saran yang sopan untuk karya teman."
+   ],
+   "bagian": [
+    {
+     "tipe": "paragraf",
+     "judul": "Rencanakan dulu",
+     "teks": "Pilih karya yang mau kamu buat: kartu ucapan atau poster. Pikirkan temanya, gambar apa yang dipakai, dan tulisan apa yang cocok."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Ciri karya yang bagus",
+     "teks": "Karya yang bagus rapi, punya judul, dan warnanya serasi. Gambar dan tulisannya tidak terlalu kecil, dan tidak saling menutupi."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Langkah membuat karya",
+     "langkah": [
+      {
+       "teks": "Buka Paint atau Word sesuai pilihanmu."
+      },
+      {
+       "teks": "Buat gambar atau sisipkan gambar."
+      },
+      {
+       "teks": "Tambahkan judul besar dan tulisan ucapan yang rapi."
+      },
+      {
+       "teks": "Periksa lagi, lalu simpan karyamu dengan nama yang jelas."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Presentasi",
+     "teks": "Ceritakan karyamu kepada tutor dan teman: apa yang kamu buat, kenapa memilihnya, dan bagaimana caranya. Bicaralah pelan dan jelas."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Memberi saran",
+     "teks": "Saran untuk teman harus sopan. Mulailah dengan hal yang bagus dari karyanya, lalu sebutkan satu hal yang bisa diperbaiki dengan kata-kata yang baik."
+    },
+    {
+     "tipe": "zippy",
+     "teks": "Kamu sudah belajar banyak! Karyamu pantas dibanggakan. Semangat!"
+    }
+   ]
+  }
+ }
+]

@@ -1,3 +1,5 @@
+import { access } from 'node:fs/promises';
+import path from 'node:path';
 import { ambilDep } from '@/di/container';
 import { t } from '@/utils/i18n';
 import ShellSiswa from '@/modules/layout/ShellSiswa';
@@ -10,15 +12,26 @@ import LihatSaja from '@/modules/sesi/LihatSaja';
 import KlienMengetik from './KlienMengetik';
 import PetaPanasKeyboard from './PetaPanasKeyboard';
 
+/** URL gambar posisi jari bila berkasnya ada di public/aset/mengetik; null bila belum disediakan. */
+async function urlPosisiJari(folderAset) {
+  try {
+    await access(path.join(folderAset, 'mengetik', 'posisi-jari.png'));
+    return '/aset/mengetik/posisi-jari.png';
+  } catch {
+    // berkas belum disediakan pemilik: gambar tidak ditampilkan (bukan galat)
+    return null;
+  }
+}
+
 /** Halaman Mengetik (siswa). Di luar sesi berlangsung: mode lihat saja. `?tugas=` membuka teks tugas mengetik. */
 export async function HalamanMengetik({ searchParams }) {
   const k = await konteksSiswa();
   const dep = ambilDep();
   const { tugas: tugasId } = await searchParams;
-  const [pelajaran, tugas] = k.sesi ? await Promise.all([dep.mengetikController.pelajaran(null, k.sesiSiswa), dep.tugasController.untukLatihan(String(tugasId ?? ''), k.sesiSiswa)]) : [[], null];
+  const [pelajaran, tugas, gambarJari] = k.sesi ? await Promise.all([dep.mengetikController.pelajaran(null, k.sesiSiswa), dep.tugasController.untukLatihan(String(tugasId ?? ''), k.sesiSiswa), urlPosisiJari(dep.folderAset)]) : [[], null, null];
   return (
     <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
-      {k.sesi ? <KlienMengetik pelajaran={pelajaran} tugas={tugas?.tipe === 'mengetik' ? tugas : null} /> : <LihatSaja judul={t('sesiSiswa.menu.mengetik')} />}
+      {k.sesi ? <KlienMengetik pelajaran={pelajaran} tugas={tugas?.tipe === 'mengetik' ? tugas : null} gambarJari={gambarJari} /> : <LihatSaja judul={t('sesiSiswa.menu.mengetik')} />}
     </ShellSiswa>
   );
 }

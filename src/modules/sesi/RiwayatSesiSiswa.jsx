@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { t } from '@/utils/i18n';
-import { formatDurasi, formatJam, formatTanggal } from '@/utils/format';
+import { formatDurasi, formatJam, formatTanggal, formatWaktu } from '@/utils/format';
 import { STATUS_SESI } from '@/enums';
 import Badge from '@/modules/shared/ui/Badge';
 import EmptyState from '@/modules/shared/ui/EmptyState';
@@ -21,8 +21,17 @@ function RingkasanKehadiran({ k }) {
   );
 }
 
+/** Keterangan materi per pertemuan: waktu "Saya sudah paham", "belum dibaca", atau "-" bila pertemuan tidak punya materi. */
+function KeteranganMateri({ dibacaAt }) {
+  // undefined: pertemuan ini tidak punya materi aktif (mis. post test atau belum diisi)
+  if (dibacaAt === undefined) return '-';
+  // materi ada tetapi siswa belum menekan "Saya sudah paham"
+  if (dibacaAt === null) return <Badge nada="peringatan">{t('riwayat.materiBelum')}</Badge>;
+  return <Badge nada="sukses">{t('riwayat.materiDibaca', { waktu: formatWaktu(dibacaAt) })}</Badge>;
+}
+
 /** Tab Riwayat di detail siswa (C9): tabel sesi semua level beserta ringkasan kehadiran level berjalan. */
-export default function RiwayatSesiSiswa({ riwayat, hrefSesi }) {
+export default function RiwayatSesiSiswa({ riwayat, hrefSesi, materiBaca = {} }) {
   const kolom = [
     { label: t('riwayat.tanggal'), isi: (s) => <Link href={hrefSesi(s.id)} className="font-semibold text-primary-text underline">{formatTanggal(s.tanggal)}</Link> },
     { label: t('riwayat.pertemuan'), isi: (s) => `${s.level_kode} · P${s.pertemuan_nomor} ${s.pertemuan_judul}` },
@@ -34,6 +43,7 @@ export default function RiwayatSesiSiswa({ riwayat, hrefSesi }) {
     { label: t('riwayat.tutor'), isi: (s) => s.tutor.map((x) => x.nama).join(', ') || '-' },
     { label: t('riwayat.penuntasan'), isi: (s) => <LencanaPenuntasan nilai={s.penuntasan_akhir} sumber={s.penuntasan_sumber} /> },
     { label: t('riwayat.tugas'), isi: (s) => `${s.tugas_selesai}/${s.tugas_total}` },
+    { label: t('riwayat.materi'), isi: (s) => <KeteranganMateri dibacaAt={materiBaca[s.pertemuan_id]} /> },
   ];
   return (
     <div className="space-y-4">

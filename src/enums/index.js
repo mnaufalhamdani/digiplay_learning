@@ -40,10 +40,15 @@ export const TIPE_TEMPLATE = Object.freeze([
   'coding',
   'game_mouse',
   'puzzle',
+  'blockly',
+  'coding_proyek',
   'lainnya',
 ]);
-/** Tipe template yang hanya bisa dikerjakan di aplikasi lain, jadi tidak bisa dinilai otomatis. */
-export const TIPE_DICEK_TUTOR_SAJA = Object.freeze(['word', 'powerpoint', 'paint', 'scratch', 'coding', 'lainnya']);
+/**
+ * Tipe template yang hanya bisa dikerjakan di aplikasi lain, jadi tidak bisa dinilai otomatis. `coding_proyek` dikerjakan
+ * di Studio Zippy, tetapi proyeknya bebas sehingga tetap dinilai tutor (siswa mengirim proyek, tutor menjalankan dan menilai).
+ */
+export const TIPE_DICEK_TUTOR_SAJA = Object.freeze(['word', 'powerpoint', 'paint', 'scratch', 'coding', 'coding_proyek', 'lainnya']);
 /** Mode penilaian template (ENUM template.penilaian). */
 export const PENILAIAN = Object.freeze({ OTOMATIS: 'otomatis_jawaban', TUTOR: 'dicek_tutor' });
 export const DAFTAR_PENILAIAN = Object.values(PENILAIAN);
@@ -79,13 +84,18 @@ export const STATUS_TUGAS_TUTOR = Object.freeze(['belum', 'selesai', 'dilewati']
 /** Tipe tugas yang jawabannya diketik/dipilih siswa di web lalu diperiksa otomatis. */
 export const TIPE_DIJAWAB_SISWA = Object.freeze(['pilihan_ganda', 'excel']);
 /** Tipe tugas yang dikerjakan di menu latihan web (diaktifkan di Fase D). */
-export const TIPE_LATIHAN_WEB = Object.freeze(['game_mouse', 'puzzle', 'mengetik']);
+export const TIPE_LATIHAN_WEB = Object.freeze(['game_mouse', 'puzzle', 'mengetik', 'blockly']);
 /** Jenis gambar yang bisa diunduh siswa sebagai bahan (puzzle dimainkan di web). */
 export const JENIS_GAMBAR_UNDUH = Object.freeze(['mewarnai', 'berwarna']);
 /** Mode hasil mengetik (ENUM hasil_mengetik.mode). 'tes' hanya untuk post test. */
 export const MODE_MENGETIK = Object.freeze({ PELAJARAN: 'pelajaran', LATIHAN: 'latihan', GAME: 'game', TES: 'tes' });
 /** Jenis hasil latihan web (ENUM hasil_latihan.jenis). */
 export const JENIS_LATIHAN = Object.freeze([...JENIS_GAME_MOUSE, 'puzzle']);
+/**
+ * Jenis hasil Coding Zippy (ENUM hasil_latihan.jenis, juga kunci.jenis tugas blockly). Sengaja tidak masuk JENIS_LATIHAN:
+ * hasilnya hanya boleh disimpan lewat modul blockly yang menilai program di server, bukan lewat simpanLatihan.
+ */
+export const JENIS_BLOCKLY = 'blockly';
 /** Batas kewajaran hasil latihan yang dikirim browser (dicek ulang di server). */
 export const BATAS_LATIHAN = Object.freeze({ maksWpm: 250, minDurasiMengetik: 3, maksSkorPerDetik: 5, maksPanjangTeks: 600, durasiBebasDetik: 60 });
 /** Status post test (tabel post_test). */
@@ -169,6 +179,7 @@ export const AKSI_LOG = Object.freeze({
   UBAH_BAGIAN_POST_TEST: 'ubah_bagian_post_test',
   TAMBAH_TEMPLATE: 'tambah_template',
   UBAH_TEMPLATE: 'ubah_template',
+  UBAH_MATERI: 'ubah_materi',
   AKTIFKAN_GAMBAR: 'aktifkan_gambar',
   NONAKTIFKAN_GAMBAR: 'nonaktifkan_gambar',
   PINDAI_GAMBAR: 'pindai_gambar',
@@ -192,6 +203,7 @@ export const AKSI_LOG = Object.freeze({
   KUMPUL_POST_TEST: 'kumpul_post_test',
   FINALISASI_POST_TEST: 'finalisasi_post_test',
   NILAI_POST_TEST: 'nilai_post_test',
+  NILAI_BUTIR_POST_TEST: 'nilai_butir_post_test',
   BUKA_TES_ULANG: 'buka_tes_ulang',
   BANK_SOAL_KURANG: 'bank_soal_kurang',
   TERBIT_SERTIFIKAT: 'terbit_sertifikat',

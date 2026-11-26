@@ -14,6 +14,7 @@ import OpsiJawaban from '@/modules/shared/ui/domain/OpsiJawaban';
 import { gabungJalur } from '@/utils/jalurArea';
 import { useArea } from '@/modules/shared/ui/AreaContext';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
+import BagianProyekTugas from '@/modules/studio/BagianProyekTugas';
 import { gantiTugasSiswa, kirimJawaban, lewatiTugas } from './tugas.actions';
 
 /** Nada lencana per status tugas (selalu berteks). */
@@ -70,6 +71,8 @@ const LATIHAN_WEB = {
   game_mouse: { jalur: '/latihan-mouse', label: 'sesiSiswa.main' },
   puzzle: { jalur: '/puzzle', label: 'sesiSiswa.kerjakan' },
   mengetik: { jalur: '/mengetik', label: 'sesiSiswa.kerjakan' },
+  // Coding Zippy: halaman daftar meneruskan ke labirin yang diminta tugas (lihat HalamanCodingZippy)
+  blockly: { jalur: '/coding-zippy', label: 'sesiSiswa.kerjakan' },
 };
 
 /** Tombol menuju game/puzzle/mengetik dengan tugas ini; target skor game ikut ditampilkan. */
@@ -90,6 +93,8 @@ function TombolLatihanWeb({ tugas }) {
 function BagianKerja({ tugas, ...props }) {
   // game mouse, puzzle, dan mengetik dikerjakan di halaman latihannya dan selesai otomatis
   if (TIPE_LATIHAN_WEB.includes(tugas.tipe)) return <TombolLatihanWeb tugas={tugas} />;
+  // proyek coding dikerjakan di Studio Zippy lalu dikirim; tutor yang menilai
+  if (tugas.tipe === 'coding_proyek') return <BagianProyekTugas tugas={tugas} />;
   if (tugas.penilaian === PENILAIAN.TUTOR) {
     return (
       <Badge nada="info">
@@ -101,15 +106,16 @@ function BagianKerja({ tugas, ...props }) {
   return <IsianJawaban tugas={tugas} {...props} />;
 }
 
-/** Tombol unduh bahan gambar (mewarnai.png / berwarna.png) milik tugas ini. */
+/** Tombol Unduh bahan (mewarnai.png / berwarna.png) milik tugas ini, tepat di bawah instruksi. */
 function TombolUnduh({ tugas }) {
   const bahan = tugas.gambar.filter((g) => JENIS_GAMBAR_UNDUH.includes(g.jenis));
   // tugas tanpa gambar yang bisa diunduh
   if (bahan.length === 0) return null;
-  return bahan.map((g) => (
+  return bahan.map((g, i) => (
     <a key={g.kode} href={`/api/v1/tugas/unduh?tugasId=${tugas.id}&kode=${encodeURIComponent(g.kode)}`} download className="inline-flex min-h-11 items-center gap-2 rounded-[var(--r-btn)] border-2 border-line bg-panel px-4 font-bold hover:bg-primary-soft">
       <Ikon nama="unduh" />
-      {t('sesiSiswa.unduhBahan', { nama: g.nama })}
+      {/* nama subjek tidak ditampilkan; bahan lebih dari satu dibedakan dengan nomor */}
+      {bahan.length > 1 ? t('sesiSiswa.unduhBahanKe', { nomor: i + 1 }) : t('sesiSiswa.unduhBahan')}
     </a>
   ));
 }
