@@ -17,7 +17,7 @@ export default async function HalamanMateriSiswa({ params }) {
   const { pertemuanId } = await params;
   const materi = await atau404(() => ambilDep().materiController.untukSiswa({ pertemuanId }, k.sesiSiswa));
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
       <article className="mx-auto max-w-3xl space-y-6 sm:space-y-8">
         <header className="flex items-center gap-3">
           <Maskot suasana="semangat" ukuran={88} />

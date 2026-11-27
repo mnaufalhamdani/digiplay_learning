@@ -15,7 +15,7 @@ function bentukPelajaran(p) {
 
 /**
  * Usecase mengetik (D1): pelajaran bertahap, latihan adaptif, tes bebas, game Hujan Kata, kemajuan,
- * dan penyimpanan hasil yang dihitung ulang di server. Latihan hanya saat sesi berlangsung.
+ * dan penyimpanan hasil yang dihitung ulang di server. Menyimpan hasil hanya saat sesi berlangsung; mencoba latihan boleh tanpa sesi.
  */
 export function buatMengetikUsecase({ mengetikModel, sesiModel, tugasUsecase, idGen, acak }) {
   /** Sesi berlangsung siswa atau 403 (di luar sesi latihan hanya mode lihat saja). */
@@ -23,6 +23,12 @@ export function buatMengetikUsecase({ mengetikModel, sesiModel, tugasUsecase, id
     const sesi = await sesiModel.berlangsungSiswa(siswaId);
     if (!sesi) throw new AppError(t('latihan.butuhSesi'), 403);
     return sesi;
+  }
+  /** Level bank teks: dari sesi berlangsung bila ada, selain itu dari level berjalan siswa (null bila tidak ada). */
+  async function levelBank(siswaId) {
+    const sesi = await sesiModel.berlangsungSiswa(siswaId);
+    // di luar sesi (belum absen / sudah pulang) level diambil dari level berjalan siswa
+    return sesi ? sesi.level_id : mengetikModel.levelBerjalan(siswaId);
   }
   /** Pelajaran beserta status terbuka, hasil terbaik, dan bintang untuk seorang siswa. */
   async function pelajaranSiswa(siswaId) {
@@ -83,25 +89,22 @@ export function buatMengetikUsecase({ mengetikModel, sesiModel, tugasUsecase, id
     },
     /** Teks latihan adaptif dari tombol yang paling sering salah pada 10 hasil terakhir; null bila belum ada data. */
     async adaptif(siswaId) {
-      const sesi = await wajibSesi(siswaId);
       const terakhir = await mengetikModel.hasilTerakhir(siswaId, JUMLAH.adaptif);
       const tombol = tombolLemah(gabungDetailTombol(terakhir.map((h) => uraiJson(h.detail_tombol))));
       // belum ada tombol yang cukup sering salah
       if (tombol.length === 0) return { tombol, teks: null };
-      const [bank, pelajaran] = await Promise.all([mengetikModel.teksBank(sesi.level_id), mengetikModel.daftarPelajaran()]);
+      const [bank, pelajaran] = await Promise.all([levelBank(siswaId).then((levelId) => mengetikModel.teksBank(levelId)), mengetikModel.daftarPelajaran()]);
       return { tombol, teks: susunTeksAdaptif(tombol, [...bank, ...pelajaran.map((p) => p.teks_latihan)], acak) };
     },
     /** Satu teks acak dari bank level siswa (tes bebas). */
     async teksAcak(siswaId) {
-      const sesi = await wajibSesi(siswaId);
-      const bank = await mengetikModel.teksBank(sesi.level_id);
+      const bank = await mengetikModel.teksBank(await levelBank(siswaId));
       if (bank.length === 0) throw new AppError(t('mengetik.bankKosong'), 404);
       return { teks: bank[acak(bank.length)] };
     },
     /** Kata-kata sederhana (huruf saja, 2-8 karakter) dari bank untuk game Hujan Kata. */
     async kataGame(siswaId) {
-      const sesi = await wajibSesi(siswaId);
-      const bank = await mengetikModel.teksBank(sesi.level_id);
+      const bank = await mengetikModel.teksBank(await levelBank(siswaId));
       const kata = [...new Set(bank.flatMap((tk) => tk.toLowerCase().split(/[^a-z]+/)))].filter((k) => String(k).length >= 2 && String(k).length <= 8);
       return { kata };
     },

@@ -60,7 +60,7 @@ export default async function HalamanDaftarMateriSiswa() {
   const k = await konteksSiswa();
   const daftar = await ambilDep().materiController.daftarSiswa(null, k.sesiSiswa);
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-center gap-3">
           <Maskot suasana="semangat" ukuran={88} />

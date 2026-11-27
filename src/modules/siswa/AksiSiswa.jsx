@@ -14,12 +14,14 @@ import TextField from '@/modules/shared/ui/TextField';
 import Toast from '@/modules/shared/ui/Toast';
 import TampilanKode from './TampilanKode';
 import { gantiKodeSiswa, gantiLevelSiswa, hapusSiswa, ubahStatusSiswa } from './siswa.actions';
-
 /**
  * Kartu kode dan semua aksi sensitif di detail siswa. Setiap aksi memakai ConfirmDialog.
+ * `bagian` memilih yang ditampilkan agar bisa ditaruh di tempat berbeda pada halaman (tiap pemakaian punya dialognya sendiri):
+ * 'aksi' = hanya tombol Ganti level, Nonaktifkan, dan Hapus (sejajar dengan nama siswa); 'kode' = hanya kartu Kode akses;
+ * null = keduanya (kartu kode lalu kartu aksi).
  * `dialog` = jenis aksi yang sedang dikonfirmasi: kode_siswa, kode_ortu, level, status, hapus.
  */
-export default function AksiSiswa({ siswa, opsiLevel, adminkah }) {
+export default function AksiSiswa({ siswa, opsiLevel, adminkah, bagian = null }) {
   const router = useRouter();
   const { basis } = useArea();
   const [dialog, setDialog] = useState(null);
@@ -67,45 +69,55 @@ export default function AksiSiswa({ siswa, opsiLevel, adminkah }) {
       ya: () => jalankan(hapusSiswa, { id: siswa.id, konfirmasiNama: namaKetik }, t('dataSiswa.berhasilHapus'), () => router.replace(gabungJalur(basis, '/data-siswa'))),
     },
   }[dialog];
+  /** Tombol Ganti level, Nonaktifkan/Aktifkan, dan Hapus. */
+  const tombolAksi = (
+    <div className="flex flex-wrap gap-2">
+      <Button varian="secondary" ikon="level" onClick={() => buka('level')}>
+        {t('dataSiswa.gantiLevel')}
+      </Button>
+      <Button varian={aktif ? 'hantu' : 'secondary'} ikon={aktif ? 'nonaktifkan' : 'aktifkan'} onClick={() => buka('status')}>
+        {t(aktif ? 'dataSiswa.nonaktifkan' : 'dataSiswa.aktifkan')}
+      </Button>
+      {/* hapus siswa hanya untuk admin; tutor tidak melihat tombolnya */}
+      {adminkah && (
+        <Button varian="bahaya" ikon="hapus" onClick={() => buka('hapus')}>
+          {t('dataSiswa.hapus')}
+        </Button>
+      )}
+    </div>
+  );
   return (
     <>
-      <Card className="space-y-5">
-        <h2 className="text-[1.15em] font-bold">{t('dataSiswa.kodeAkses')}</h2>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div className="space-y-2">
-            <TampilanKode label={t('dataSiswa.kodeSiswa')} kode={siswa.kode.siswa} bisaSembunyi />
-            <Button varian="hantu" ikon="acak" onClick={() => buka('kode_siswa')}>
-              {t('dataSiswa.gantiKodeSiswa')}
-            </Button>
+      {bagian !== 'aksi' && (
+        <Card className="space-y-5">
+          <h2 className="text-[1.15em] font-bold">{t('dataSiswa.kodeAkses')}</h2>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2">
+              <TampilanKode label={t('dataSiswa.kodeSiswa')} kode={siswa.kode.siswa} bisaSembunyi />
+              <Button varian="hantu" ikon="acak" onClick={() => buka('kode_siswa')}>
+                {t('dataSiswa.gantiKodeSiswa')}
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <TampilanKode label={t('dataSiswa.kodeOrtu')} kode={siswa.kode.ortu} bisaSembunyi />
+              <Button varian="hantu" ikon="acak" onClick={() => buka('kode_ortu')}>
+                {t('dataSiswa.gantiKodeOrtu')}
+              </Button>
+            </div>
           </div>
-          <div className="space-y-2">
-            <TampilanKode label={t('dataSiswa.kodeOrtu')} kode={siswa.kode.ortu} bisaSembunyi />
-            <Button varian="hantu" ikon="acak" onClick={() => buka('kode_ortu')}>
-              {t('dataSiswa.gantiKodeOrtu')}
-            </Button>
-          </div>
-        </div>
-        <TautanTombol href={gabungJalur(basis, `/kartu-kode/${siswa.id}`)} target="_blank" rel="noopener" varian="secondary" ikon="cetak">
-          {t('dataSiswa.cetakKartu')}
-        </TautanTombol>
-      </Card>
-      <Card className="space-y-3">
-        <h2 className="text-[1.15em] font-bold">{t('dataSiswa.aksi')}</h2>
-        <div className="flex flex-wrap gap-2">
-          <Button varian="secondary" ikon="level" onClick={() => buka('level')}>
-            {t('dataSiswa.gantiLevel')}
-          </Button>
-          <Button varian={aktif ? 'hantu' : 'secondary'} ikon={aktif ? 'nonaktifkan' : 'aktifkan'} onClick={() => buka('status')}>
-            {t(aktif ? 'dataSiswa.nonaktifkan' : 'dataSiswa.aktifkan')}
-          </Button>
-          {/* hapus siswa hanya untuk admin; tutor tidak melihat tombolnya */}
-          {adminkah && (
-            <Button varian="bahaya" ikon="hapus" onClick={() => buka('hapus')}>
-              {t('dataSiswa.hapus')}
-            </Button>
-          )}
-        </div>
-      </Card>
+          <TautanTombol href={gabungJalur(basis, `/kartu-kode/${siswa.id}`)} target="_blank" rel="noopener" varian="secondary" ikon="cetak">
+            {t('dataSiswa.cetakKartu')}
+          </TautanTombol>
+        </Card>
+      )}
+      {/* tanpa pemilihan bagian: kartu Aksi tersendiri; 'aksi': hanya tombol (ditaruh sejajar nama siswa oleh halaman) */}
+      {bagian === null && (
+        <Card className="space-y-3">
+          <h2 className="text-[1.15em] font-bold">{t('dataSiswa.aksi')}</h2>
+          {tombolAksi}
+        </Card>
+      )}
+      {bagian === 'aksi' && tombolAksi}
       <ConfirmDialog
         terbuka={Boolean(konfig)}
         judul={konfig?.judul ?? ''}

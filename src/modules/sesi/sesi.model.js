@@ -46,9 +46,75 @@ export function buatSesiModel({ db }) {
       const baris = await db.first("SELECT COUNT(*) AS n FROM sesi WHERE status = 'berlangsung'");
       return Number(baris?.n ?? 0);
     },
+    /** Tanggal hari ini menurut database dan tanggal sesi tertua (null bila belum ada sesi); dasar batas filter bulan dashboard. */
+    async batasWaktu() {
+      const baris = await db.first('SELECT CURDATE() AS hari, (SELECT MIN(tanggal) FROM sesi) AS tertua');
+      return { hari: baris.hari, tertua: baris.tertua ?? null };
+    },
+    /** Sesi berlangsung hari ini untuk kartu dashboard: jumlah siswa, jumlah tutor berbeda, dan tiga siswa terlama beserta pertemuannya. */
+    async ringkasBerlangsungHariIni() {
+      const [hitung, contoh] = await Promise.all([
+        // DISTINCT se.id karena join sesi_tutor menggandakan baris per tutor
+        db.first(
+          `SELECT COUNT(DISTINCT se.id) AS siswa, COUNT(DISTINCT st.pengguna_id) AS tutor
+           FROM sesi se LEFT JOIN sesi_tutor st ON st.sesi_id = se.id WHERE se.status = 'berlangsung' AND se.tanggal = CURDATE()`,
+        ),
+        db.rows(
+          `SELECT se.id, s.nama AS siswa_nama, p.nomor AS pertemuan_nomor, l.kode AS level_kode ${DARI}
+           WHERE se.status = 'berlangsung' AND se.tanggal = CURDATE() ORDER BY se.jam_masuk, se.id LIMIT 3`,
+        ),
+      ]);
+      return { siswa: Number(hitung?.siswa ?? 0), tutor: Number(hitung?.tutor ?? 0), contoh };
+    },
+    /** Jumlah baris sesi 7 hari terakhir (hari ini dan 6 hari sebelumnya) dan 7 hari sebelum itu, dalam satu query. */
+    async perbandingan7Hari() {
+      const baris = await db.first(
+        `SELECT COALESCE(SUM(tanggal > CURDATE() - INTERVAL 7 DAY), 0) AS ini, COALESCE(SUM(tanggal <= CURDATE() - INTERVAL 7 DAY), 0) AS sebelumnya
+         FROM sesi WHERE tanggal > CURDATE() - INTERVAL 14 DAY AND tanggal <= CURDATE()`,
+      );
+      return { ini: Number(baris?.ini ?? 0), sebelumnya: Number(baris?.sebelumnya ?? 0) };
+    },
+    /** Jumlah baris sesi per tanggal pada satu bulan (`awalBulan` = YYYY-MM-01); `levelId` memfilter level pertemuan (kosong = semua). */
+    sesiPerHari(awalBulan, levelId = null) {
+      // join pertemuan hanya bila level difilter agar query tanpa filter tetap memakai indeks tanggal saja
+      const level = levelId ? 'JOIN pertemuan p ON p.id = se.pertemuan_id AND p.level_id = ?' : '';
+      return db.rows(
+        `SELECT se.tanggal, COUNT(*) AS n FROM sesi se ${level}
+         WHERE se.tanggal >= ? AND se.tanggal < DATE_ADD(?, INTERVAL 1 MONTH) GROUP BY se.tanggal`,
+        [...(levelId ? [levelId] : []), awalBulan, awalBulan],
+      );
+    },
+    /**
+     * Jumlah sesi per minggu (1 = tanggal 1-7 ... 5 = 29-akhir bulan) dan hasil penuntasan (pilihan tutor, bila tidak ada
+     * hasil otomatis) pada satu bulan; sesi tanpa penuntasan (masih berlangsung atau tanpa tugas) tidak dihitung.
+     */
+    penuntasanPerMinggu(awalBulan, levelId = null) {
+      const level = levelId ? 'JOIN pertemuan p ON p.id = se.pertemuan_id AND p.level_id = ?' : '';
+      return db.rows(
+        `SELECT (DAYOFMONTH(se.tanggal) - 1) DIV 7 + 1 AS minggu, COALESCE(se.penuntasan_tutor, se.penuntasan_otomatis) AS hasil, COUNT(*) AS n
+         FROM sesi se ${level}
+         WHERE se.tanggal >= ? AND se.tanggal < DATE_ADD(?, INTERVAL 1 MONTH) AND COALESCE(se.penuntasan_tutor, se.penuntasan_otomatis) IS NOT NULL
+         GROUP BY minggu, hasil`,
+        [...(levelId ? [levelId] : []), awalBulan, awalBulan],
+      );
+    },
+    /** Jumlah sesi yang masih berlangsung padahal tanggalnya sebelum hari ini (lupa ditutup). */
+    async jumlahBerlangsungLama() {
+      const baris = await db.first("SELECT COUNT(*) AS n FROM sesi WHERE status = 'berlangsung' AND tanggal < CURDATE()");
+      return Number(baris?.n ?? 0);
+    },
     /** Riwayat sesi seorang siswa (semua level), terbaru lebih dulu. */
     riwayatSiswa(siswaId) {
       return db.rows(`SELECT ${KOLOM} ${DARI} WHERE se.siswa_id = ? ORDER BY se.jam_masuk DESC`, [siswaId]);
+    },
+    /** Satu halaman riwayat sesi seorang siswa (kolom, join, dan urutan sama dengan riwayatSiswa; id sebagai pemisah agar halaman stabil). */
+    riwayatSiswaHalaman(siswaId, { batas, offset }) {
+      return db.rows(`SELECT ${KOLOM} ${DARI} WHERE se.siswa_id = ? ORDER BY se.jam_masuk DESC, se.id DESC LIMIT ? OFFSET ?`, [siswaId, batas, offset]);
+    },
+    /** Jumlah seluruh sesi seorang siswa (semua level) untuk paginasi riwayat. */
+    async hitungRiwayatSiswa(siswaId) {
+      const baris = await db.first('SELECT COUNT(*) AS n FROM sesi WHERE siswa_id = ?', [siswaId]);
+      return Number(baris?.n ?? 0);
     },
     /** Pertemuan satu level beserta jumlah sesi siswa pada keikutsertaan level itu. */
     pertemuanLevel(levelId, siswaLevelId, conn) {

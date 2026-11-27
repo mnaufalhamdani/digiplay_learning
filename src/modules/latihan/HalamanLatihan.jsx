@@ -1,9 +1,7 @@
 import { ambilDep } from '@/di/container';
-import { t } from '@/utils/i18n';
-import { KATEGORI_GAMBAR } from '@/enums';
+import { KATEGORI_GAMBAR, MENU_GAME } from '@/enums';
 import ShellSiswa from '@/modules/layout/ShellSiswa';
-import { konteksSiswa } from '@/modules/sesi/konteksSiswa';
-import LihatSaja from '@/modules/sesi/LihatSaja';
+import { konteksSiswa, wajibMenuTerbuka } from '@/modules/sesi/konteksSiswa';
 import KlienLatihanMouse from './KlienLatihanMouse';
 import KlienPuzzle from './KlienPuzzle';
 
@@ -14,24 +12,28 @@ async function tugasDariQuery(searchParams, sesiSiswa, tipe) {
   return data?.tipe === tipe ? data : null;
 }
 
-/** Halaman Latihan Mouse (siswa); di luar sesi berlangsung mode lihat saja. */
+/** Halaman Latihan Mouse (siswa); tetap bisa dimainkan tanpa sesi berlangsung, tetapi hasilnya tidak disimpan. */
 export async function HalamanLatihanMouse({ searchParams }) {
   const k = await konteksSiswa();
+  // game mouse terbuka setelah tugas game_mouse pertama muncul (satu tugas membuka kelima game)
+  wajibMenuTerbuka(k, MENU_GAME.LATIHAN_MOUSE);
+  // tugas hanya relevan saat sesi berlangsung; tanpa sesi dimainkan sebagai mode bebas
   const tugas = k.sesi ? await tugasDariQuery(searchParams, k.sesiSiswa, 'game_mouse') : null;
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
-      {k.sesi ? <KlienLatihanMouse tugas={tugas} /> : <LihatSaja judul={t('sesiSiswa.menu.latihanMouse')} />}
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
+      <KlienLatihanMouse tugas={tugas} sesiAktif={Boolean(k.sesi)} />
     </ShellSiswa>
   );
 }
 
-/** Halaman Puzzle (siswa); di luar sesi berlangsung mode lihat saja. `?tugas=` memakai gambar dan keping dari tugas. */
+/** Halaman Puzzle (siswa); tetap bisa dimainkan tanpa sesi berlangsung, tetapi hasilnya tidak disimpan. `?tugas=` memakai gambar dan keping dari tugas. */
 export async function HalamanPuzzle({ searchParams }) {
   const k = await konteksSiswa();
+  // tugas hanya relevan saat sesi berlangsung; tanpa sesi dimainkan sebagai mode bebas
   const tugas = k.sesi ? await tugasDariQuery(searchParams, k.sesiSiswa, 'puzzle') : null;
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
-      {k.sesi ? <KlienPuzzle tugas={tugas} kategori={KATEGORI_GAMBAR} /> : <LihatSaja judul={t('sesiSiswa.menu.puzzle')} />}
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
+      <KlienPuzzle tugas={tugas} kategori={KATEGORI_GAMBAR} sesiAktif={Boolean(k.sesi)} />
     </ShellSiswa>
   );
 }

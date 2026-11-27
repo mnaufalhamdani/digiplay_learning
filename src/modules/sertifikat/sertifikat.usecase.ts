@@ -20,6 +20,8 @@ function namaLevelSnapshot(pt) {
  * permintaan, dan verifikasi publik lewat token acak. Hanya satu sertifikat `terbit` per (siswa, level).
  */
 export function buatSertifikatUsecase({ sertifikatModel, pengaturanUsecase, logUsecase, pdfSertifikat, catatAktivitas, idGen, db, logger, urlSiswa }) {
+  let peringatanTandaTanganHilang = false; // peringatan berkas tanda tangan hilang ditulis sekali per proses
+
   /** Alamat halaman verifikasi publik untuk sebuah token (isi QR dan tautan yang disalin). */
   const urlVerifikasi = (token) => `${urlSiswa.replace(/\/+$/, '')}/verifikasi/${token}`;
 
@@ -88,12 +90,32 @@ export function buatSertifikatUsecase({ sertifikatModel, pengaturanUsecase, logU
     }
   }
 
-  /** Logo dari pengaturan sebagai Buffer; null bila belum diunggah atau berkasnya hilang. */
+  /** Logo PDF sebagai Buffer (selalu ada kecuali berkas bawaan hilang); null bila tidak terbaca. */
   async function logoAman() {
     try {
-      return (await pengaturanUsecase.bacaLogo()).buffer;
+      // Logo sertifikat, lalu Logo utama, lalu logo landscape bawaan (hanya PNG/JPEG yang bisa dibaca pdfkit)
+      return (await pengaturanUsecase.logoSertifikat()).buffer;
     } catch {
-      // tanpa logo PDF tetap dibuat
+      // bahkan berkas bawaan tidak terbaca: PDF tetap dibuat tanpa logo
+      return null;
+    }
+  }
+
+  /**
+   * Gambar tanda tangan dari pengaturan sebagai Buffer; null bila belum diunggah atau berkasnya hilang dari disk.
+   * Berkas yang hilang dicatat ke log sekali per proses; unduhan PDF tidak boleh gagal karena tanda tangan.
+   */
+  async function tandaTanganAman(p) {
+    // belum pernah diunggah: kondisi normal, tanpa peringatan
+    if (!p[KUNCI_PENGATURAN.TANDA_TANGAN_PATH]) return null;
+    try {
+      return (await pengaturanUsecase.bacaTandaTangan()).buffer;
+    } catch {
+      // pengaturan menunjuk berkas yang sudah tidak ada: PDF tetap dibuat tanpa tanda tangan
+      if (!peringatanTandaTanganHilang) {
+        peringatanTandaTanganHilang = true;
+        logger.warn('Berkas tanda tangan sertifikat tidak ditemukan di disk; PDF dibuat tanpa tanda tangan.');
+      }
       return null;
     }
   }
@@ -192,6 +214,7 @@ export function buatSertifikatUsecase({ sertifikatModel, pengaturanUsecase, logU
         namaPelatihan: branding.namaPelatihan,
         namaPerusahaan: branding.namaPerusahaan,
         logo: await logoAman(),
+        tandaTangan: await tandaTanganAman(p),
         penandatanganNama: p[KUNCI_PENGATURAN.PENANDATANGAN_NAMA],
         penandatanganJabatan: p[KUNCI_PENGATURAN.PENANDATANGAN_JABATAN],
         dibatalkan: s.status === STATUS_SERTIFIKAT.DIBATALKAN,

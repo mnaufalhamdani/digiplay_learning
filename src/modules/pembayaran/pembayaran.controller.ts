@@ -1,4 +1,5 @@
 import { validasi } from '@/utils/validasi';
+import { queryHalaman } from '@/utils/schemaDasar';
 import { hapusPembayaranSchema, tambahPembayaranSchema } from './pembayaran.schema';
 
 /** Controller pembayaran: validasi input lalu teruskan ke usecase. Hak akses ditegakkan di action/halaman. */
@@ -11,6 +12,8 @@ export function buatPembayaranController({ pembayaranUsecase }) {
     },
     /** Daftar pembayaran seorang siswa (ID sudah divalidasi oleh pemanggil halaman). */
     daftarSiswa: (siswaId) => pembayaranUsecase.daftarSiswa(siswaId),
+    /** Satu halaman pembayaran seorang siswa; nomor halaman tak sah (bukan angka, < 1) menjadi 1. */
+    halamanSiswa: (siswaId, nomorHalaman) => pembayaranUsecase.halamanSiswa(siswaId, validasi(queryHalaman, nomorHalaman)),
     /** Daftar pembayaran satu sesi. */
     daftarSesi: (sesiId) => pembayaranUsecase.daftarSesi(sesiId),
     /** Admin menghapus pembayaran. */

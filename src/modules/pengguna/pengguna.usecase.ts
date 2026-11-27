@@ -3,7 +3,8 @@ import { AppError } from '@/utils/appError';
 import { adalahDuplikat } from '@/utils/galatDb';
 import { hashPassword, cocokPassword } from '@/utils/kripto';
 import { t } from '@/utils/i18n';
-import { AKSI_LOG, PERAN } from '@/enums';
+import { hitungPaginasi } from '@/utils/paginasi';
+import { AKSI_LOG, PERAN, UKURAN_HALAMAN } from '@/enums';
 
 /** Usecase pengguna: kelola akun admin/tutor (tanpa hapus) dan ubah password sendiri. */
 export function buatPenggunaUsecase({ penggunaModel, db, idGen, catatAktivitas }) {
@@ -24,6 +25,13 @@ export function buatPenggunaUsecase({ penggunaModel, db, idGen, catatAktivitas }
   return {
     /** Semua akun untuk halaman Pengguna. */
     daftar: () => penggunaModel.daftar(),
+    /** Satu halaman akun untuk halaman Pengguna; nomor halaman di luar jangkauan dirapikan ke halaman terakhir. */
+    async halaman(nomorHalaman) {
+      const total = await penggunaModel.hitung();
+      const pg = hitungPaginasi(total, nomorHalaman, UKURAN_HALAMAN);
+      const baris = await penggunaModel.halaman(pg);
+      return { baris, total, halaman: pg.halaman, totalHalaman: pg.totalHalaman };
+    },
     /** Satu akun (tanpa hash password). */
     detail: (id) => wajibAda(id),
     /** Membuat akun baru; email yang sudah dipakai ditolak dengan pesan ramah. */
@@ -69,6 +77,22 @@ export function buatPenggunaUsecase({ penggunaModel, db, idGen, catatAktivitas }
       await penggunaModel.ubahPassword(id, await hashPassword(password));
       await catatAktivitas({ penggunaId: pelakuId, aksi: AKSI_LOG.RESET_PASSWORD, entitas: 'pengguna', entitasId: id });
       return { id };
+    },
+    /** Pengguna mengubah nama/email dirinya sendiri; peran dan status tidak tersentuh. */
+    async ubahProfil(penggunaId, { nama, email }) {
+      await db.transaction(async (conn) => {
+        const lama = await wajibAda(penggunaId, conn);
+        try {
+          await penggunaModel.ubahProfil(penggunaId, { nama, email }, conn);
+        } catch (error) {
+          // indeks unik email bentrok: email itu sudah dipakai akun lain
+          if (adalahDuplikat(error, 'uq_pengguna_email')) throw new AppError(t('pengguna.emailDipakai'), 409, [{ kolom: 'email', pesan: t('pengguna.emailDipakai') }]);
+          throw error;
+        }
+        const detail = { sebelum: { nama: lama.nama, email: lama.email }, sesudah: { nama, email } };
+        await catatAktivitas({ penggunaId, aksi: AKSI_LOG.UBAH_PENGGUNA, entitas: 'pengguna', entitasId: penggunaId, detail }, conn);
+      });
+      return { id: penggunaId };
     },
     /** Pengguna mengganti password sendiri; wajib password lama yang benar. */
     async ubahPasswordSendiri(penggunaId, { passwordLama, passwordBaru }) {

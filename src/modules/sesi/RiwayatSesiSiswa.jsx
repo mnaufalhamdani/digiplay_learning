@@ -48,7 +48,8 @@ export default function RiwayatSesiSiswa({ riwayat, hrefSesi, materiBaca = {} })
   return (
     <div className="space-y-4">
       <RingkasanKehadiran k={riwayat.kehadiran} />
-      {riwayat.sesi.length === 0 ? <EmptyState judul={t('riwayat.kosong')} ikon="absensi" /> : <TabelResponsif kolom={kolom} baris={riwayat.sesi} />}
+      {/* kosong dinilai dari total seluruh sesi (riwayat.total ada pada versi per halaman), bukan hanya baris di halaman ini */}
+      {(riwayat.total ?? riwayat.sesi.length) === 0 ? <EmptyState judul={t('riwayat.kosong')} ikon="absensi" /> : <TabelResponsif kolom={kolom} baris={riwayat.sesi} />}
     </div>
   );
 }

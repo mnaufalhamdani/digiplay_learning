@@ -435,7 +435,7 @@
     {
      "tipe": "paragraf",
      "judul": "Catatan unggah kostum",
-     "teks": "Kostum baru bisa diunggah setelah kakak tutor mencatat kehadiranmu. Ukuran dan jumlah kostum unggahan ada batasnya, dan Studio Zippy akan memberi tahu bila terlalu besar atau sudah penuh. Kostum yang sudah ikut terkirim ke tugas tidak bisa dihapus."
+     "teks": "Kostum baru bisa diunggah setelah tutor mencatat kehadiranmu. Ukuran dan jumlah kostum unggahan ada batasnya, dan Studio Zippy akan memberi tahu bila terlalu besar atau sudah penuh. Kostum yang sudah ikut terkirim ke tugas tidak bisa dihapus."
     },
     {
      "tipe": "zippy",
@@ -668,7 +668,7 @@
     {
      "tipe": "paragraf",
      "judul": "Rintangan makin cepat",
-     "teks": "Buat variabel kecepatan. Pada blok yang menggerakkan rintangan, isi angkanya dengan blok variabel kecepatan. Setiap naik level, Ubah kecepatan sebesar angka kecil supaya rintangan bergerak lebih cepat."
+     "teks": "Buat variabel kecepatan. Pada blok yang menggerakkan rintangan, isi angkanya dengan blok variabel kecepatan. Setiap naik level, Ubah kecepatan sebesar angka kecil supaya rintangan bergerak lebih cepat. Cara lain agar level makin sulit adalah menambah jumlah rintangan."
     },
     {
      "tipe": "paragraf",
@@ -778,6 +778,11 @@
      "teks": "<h1> untuk judul paling besar. <p> untuk paragraf. <img> untuk menyisipkan gambar. <ul> untuk daftar berpoin, dengan <li> untuk tiap itemnya. <a> untuk tautan (link)."
     },
     {
+     "tipe": "paragraf",
+     "judul": "Kerangka halaman",
+     "teks": "Setiap halaman web punya kerangka. Tag <html> membungkus seluruh halaman. Tag <head> berisi hal yang tidak tampil di halaman, seperti judul tab dalam <title> dan gaya CSS dalam <style>. Tag <body> berisi semua yang tampil: judul, paragraf, gambar, daftar, dan tautan. Contoh kerangka sederhana: <html><head><title>Halamanku</title></head><body><h1>Halo</h1><p>Ini halaman pertamaku.</p></body></html>. Kamu boleh menulis tiap tag di baris baru supaya mudah dibaca."
+    },
+    {
      "tipe": "langkah",
      "judul": "Membuat halaman HTML pertamamu",
      "langkah": [
@@ -798,17 +803,35 @@
     {
      "tipe": "paragraf",
      "judul": "Menyisipkan gambar",
-     "teks": "Tekan tombol Unduh bahan pada tugas. Simpan gambarnya satu folder dengan berkas HTML-mu, lalu panggil memakai tag <img> dengan nama berkas gambar itu."
+     "teks": "Tekan tombol Unduh bahan pada tugas. Simpan gambarnya satu folder dengan berkas HTML-mu, lalu panggil memakai tag <img> yang berisi nama berkas gambar itu, contohnya <img src=\"namagambar.png\">. Nama berkasnya harus sama persis, termasuk huruf besar dan kecil serta akhiran seperti .png. Tag <img> tidak perlu penutup. Tulis tag ini di dalam <body>."
     },
     {
      "tipe": "paragraf",
      "judul": "Daftar dan tautan",
-     "teks": "Untuk daftar berpoin, bungkus item-itemnya dengan <ul>, dan tulis tiap item dengan <li>. Untuk tautan, pakai tag <a> yang berisi alamat tujuan."
+     "teks": "Untuk daftar berpoin, bungkus item-itemnya dengan <ul>, dan tulis tiap item dengan <li>. Contoh: <ul><li>Membaca</li><li>Menggambar</li></ul>. Untuk tautan, pakai tag <a> dengan alamat tujuan di dalam href, contohnya <a href=\"halaman2.html\">Ke halaman dua</a>. Tulisan di antara <a> dan </a> adalah yang diklik. Untuk situs di internet, isi href dengan alamat situsnya yang diawali https://. Untuk halaman buatanmu sendiri, isi href dengan nama berkas halaman itu yang disimpan di folder yang sama."
     },
     {
      "tipe": "paragraf",
      "judul": "CSS",
-     "teks": "CSS mengubah tampilan. Contoh: mengubah warna judul menjadi biru dan warna latar halaman menjadi kuning muda. Kamu bisa menulisnya di dalam tag <style> pada halamanmu, memakai pengaturan color untuk warna tulisan dan background-color untuk warna latar."
+     "teks": "CSS mengubah tampilan. Aturan CSS ditulis dengan pola: nama tag yang mau diubah, lalu tanda kurung kurawal, lalu pengaturan dan nilainya diakhiri titik koma. Contoh: h1 { color: blue; } mengubah warna judul menjadi biru. Contoh lain: body { background-color: lightyellow; } mengubah warna latar halaman menjadi kuning muda. Pengaturan color untuk warna tulisan dan background-color untuk warna latar. Warna ditulis dengan nama bahasa Inggris, misalnya blue, green, red, purple, lightblue, dan lightgray."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Mengubah warna dengan CSS",
+     "langkah": [
+      {
+       "teks": "Di dalam <head>, tulis tag <style> dan penutupnya </style>."
+      },
+      {
+       "teks": "Di antara keduanya, tulis aturan warna judul, misalnya h1 { color: blue; }."
+      },
+      {
+       "teks": "Tulis juga aturan warna latar, misalnya body { background-color: lightyellow; }."
+      },
+      {
+       "teks": "Simpan berkasnya, lalu muat ulang halaman di browser untuk melihat hasilnya."
+      }
+     ]
     },
     {
      "tipe": "zippy",

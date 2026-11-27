@@ -13,6 +13,7 @@ import ConfirmDialog from '@/modules/shared/ui/ConfirmDialog';
 import Ikon from '@/modules/shared/ui/Ikon';
 import Select from '@/modules/shared/ui/Select';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
+import TombolKembali from '@/modules/shared/ui/TombolKembali';
 import { DialogBukaProyek, DialogNamaProyek } from './DialogProyek';
 import { DialogSpriteTeks, DialogTingkat, DialogVariabel } from './DialogLevel3';
 import DialogSprite from './DialogSprite';
@@ -326,9 +327,14 @@ export default function KlienStudio({ pustaka, proyekAwal, sesiAktif, tugas, tin
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <TautanTombol href={gabungJalur(basis, tugas?.jenis === 'butir' ? '/post-test' : '/')} varian="hantu" ikon="kembali">
-          {t(tugas?.jenis === 'butir' ? 'studio.kembaliTes' : 'studio.kembaliBeranda')}
-        </TautanTombol>
+        {/* dari tugas atau butir post test: kembali ke halaman asal (dashboard/post test); dibuka dari menu: ke beranda */}
+        {tugas ? (
+          <TombolKembali cadangan={gabungJalur(basis, tugas.jenis === 'butir' ? '/post-test' : '/')} />
+        ) : (
+          <TautanTombol href={gabungJalur(basis, '/')} varian="hantu" ikon="kembali">
+            {t('umum.kembali')}
+          </TautanTombol>
+        )}
         <h1 className="font-display text-[1.6em] font-bold">{t('studio.judul')}</h1>
         <Badge nada={kotor ? 'peringatan' : 'netral'}>
           {meta.nama ?? t('studio.tanpaNama')}

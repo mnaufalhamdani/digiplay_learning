@@ -47,6 +47,36 @@ export function buatSiswaModel({ db }) {
       const baris = await db.first(`SELECT COUNT(*) AS n ${DARI} ${where}`, params);
       return Number(baris?.n ?? 0);
     },
+    /** Jumlah siswa aktif dan berapa yang tanggal daftarnya jatuh pada bulan berjalan (CURDATE database), dalam satu query. */
+    async ringkasanAktif() {
+      const baris = await db.first(
+        "SELECT COUNT(*) AS total, COALESCE(SUM(tanggal_daftar >= DATE_FORMAT(CURDATE(), '%Y-%m-01')), 0) AS baru FROM siswa WHERE status = 'aktif'",
+      );
+      return { total: Number(baris?.total ?? 0), baru: Number(baris?.baru ?? 0) };
+    },
+    /** Jumlah siswa aktif per level yang sedang berjalan untuk tiap level aktif (level tanpa siswa bernilai 0). */
+    perLevel() {
+      return db.rows(
+        `SELECT l.id, l.kode, l.nama, l.urutan, COUNT(s.id) AS n
+         FROM level l
+         LEFT JOIN siswa_level sl ON sl.level_id = l.id AND sl.status = 'berjalan'
+         LEFT JOIN siswa s ON s.id = sl.siswa_id AND s.status = 'aktif'
+         WHERE l.aktif = 1 GROUP BY l.id, l.kode, l.nama, l.urutan ORDER BY l.urutan, l.kode`,
+      );
+    },
+    /**
+     * Jumlah siswa aktif yang tidak punya sesi dalam `hari` hari terakhir (jam masuk dibandingkan agar indeks siswa+waktu
+     * terpakai). Siswa yang mendaftar kurang dari `hari` hari lalu dikecualikan: mereka belum sempat absen, bukan menghilang.
+     */
+    async jumlahTanpaSesi(hari) {
+      const baris = await db.first(
+        `SELECT COUNT(*) AS n FROM siswa s
+         WHERE s.status = 'aktif' AND s.tanggal_daftar <= CURDATE() - INTERVAL ? DAY
+           AND NOT EXISTS (SELECT 1 FROM sesi se WHERE se.siswa_id = s.id AND se.jam_masuk >= CURDATE() - INTERVAL ? DAY)`,
+        [hari, hari],
+      );
+      return Number(baris?.n ?? 0);
+    },
     /** Satu siswa beserta level berjalan; null bila tidak ada. */
     cariId(id, conn) {
       return db.first(`SELECT ${KOLOM} ${DARI} WHERE s.id = ?`, [id], conn);

@@ -11,10 +11,12 @@ import Badge from '@/modules/shared/ui/Badge';
 import Card from '@/modules/shared/ui/Card';
 import EmptyState from '@/modules/shared/ui/EmptyState';
 import Ikon from '@/modules/shared/ui/Ikon';
+import Paginasi from '@/modules/shared/ui/Paginasi';
 import TabelResponsif from '@/modules/shared/ui/TabelResponsif';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
 import StatusSertifikatPostTest from '@/modules/sertifikat/StatusSertifikatPostTest';
 import BukaTesUlang from './BukaTesUlang';
+import FormRingkasan from './FormRingkasan';
 import LencanaPostTest from './LencanaPostTest';
 import PenilaianPraktik from './PenilaianPraktik';
 
@@ -24,9 +26,10 @@ const TAB = ['menunggu', 'berlangsung', 'selesai'];
 /** Halaman daftar post test (pengelola, D2.6): tab Menunggu penilaian, Berlangsung, Selesai. */
 export async function HalamanDaftarPostTest({ searchParams }) {
   await wajibPengguna();
-  const { tab: tabMentah } = await searchParams;
+  const { tab: tabMentah, halaman: halamanMentah } = await searchParams;
   const tab = TAB.includes(tabMentah) ? tabMentah : 'menunggu';
-  const [daftar, info] = await Promise.all([ambilDep().posttestController.daftar(tab), infoPermintaan()]);
+  // nomor halaman divalidasi controller; di luar jangkauan dirapikan usecase ke halaman terakhir
+  const [data, info] = await Promise.all([ambilDep().posttestController.daftar(tab, halamanMentah), infoPermintaan()]);
   const href = (jalur) => gabungJalur(info.basis, jalur);
   const kolom = [
     { label: t('posttest.siswa'), isi: (p) => <Link href={href(`/post-test/${p.id}`)} className="font-semibold text-primary-text underline">{p.siswa_nama}</Link> },
@@ -45,7 +48,15 @@ export async function HalamanDaftarPostTest({ searchParams }) {
           </Link>
         ))}
       </nav>
-      {daftar.length === 0 ? <EmptyState judul={t('posttest.kosong')} ikon="target" /> : <TabelResponsif kolom={kolom} baris={daftar} />}
+      {/* tab tanpa data: tampilkan keadaan kosong tanpa navigasi halaman */}
+      {data.total === 0 ? (
+        <EmptyState judul={t('posttest.kosong')} ikon="target" />
+      ) : (
+        <>
+          <TabelResponsif kolom={kolom} baris={data.baris} />
+          <Paginasi halaman={data.halaman} totalHalaman={data.totalHalaman} total={data.total} hrefHalaman={(n) => href(jalurQuery('/post-test', { tab, halaman: n }))} />
+        </>
+      )}
     </div>
   );
 }
@@ -140,6 +151,8 @@ export async function HalamanDetailPostTest({ params }) {
       {pt.bagian.map((b) => (
         <KartuBagian key={b.id} b={b} butir={pt.butir.filter((x) => x.bagian_id === b.id)} />
       ))}
+      {/* paling bawah; teks di form sudah sama dengan yang tersimpan, jadi cukup prop pengubah terakhir yang menyegar */}
+      <FormRingkasan ptId={pt.id} ringkasan={pt.ringkasanTutor} />
     </div>
   );
 }

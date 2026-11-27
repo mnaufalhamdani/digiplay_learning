@@ -146,6 +146,10 @@ export function GameKlikKanan({ aktif, tambah }) {
     const r = e.currentTarget.getBoundingClientRect();
     setMenu({ x: e.clientX - r.left, y: e.clientY - r.top });
   }
+  /** Klik kiri di luar menu menutup menu; klik di dalam menu dibiarkan agar tombolnya sempat terpicu (onClick). */
+  function tutupMenu(e) {
+    if (e.button === 0 && !e.target.closest('[role="menu"]')) setMenu(null);
+  }
   /** Memilih "Buka": peti terbuka sebentar lalu terkunci lagi. */
   function buka() {
     setMenu(null);
@@ -154,7 +158,7 @@ export function GameKlikKanan({ aktif, tambah }) {
     setTimeout(() => setTerbuka(false), 700);
   }
   return (
-    <div className="absolute inset-0" onContextMenu={konteks} onPointerDown={(e) => e.button === 0 && setMenu(null)}>
+    <div className="absolute inset-0" onContextMenu={konteks} onPointerDown={tutupMenu}>
       <div className="absolute top-1/2 left-1/2 flex size-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-lg bg-panel text-[3em] shadow-lg">{terbuka ? '💎' : '🔒'}</div>
       <p className="absolute inset-x-0 top-3 text-center font-semibold">{t('game.klikKananPetunjuk')}</p>
       {menu && (
@@ -179,6 +183,7 @@ export function GameGulung({ aktif, tambah }) {
   const [tumbuh, setTumbuh] = useState(0); // 0..1
   const area = useRef(null);
   const sentuh = useRef(null);
+  const tumbuhRef = useRef(0); // nilai terbaru di luar state, agar poin tidak ditambahkan dari dalam updater setState
   const tambahRef = useRef(tambah);
   tambahRef.current = tambah;
   // listener wheel non-pasif agar halaman tidak ikut bergulir saat menggulung di area game
@@ -186,12 +191,11 @@ export function GameGulung({ aktif, tambah }) {
     const el = area.current;
     /** Menambah pertumbuhan; tahap penuh memberi poin lalu mulai dari awal. */
     function maju(jarak) {
-      setTumbuh((g) => {
-        const baru = g + Math.abs(jarak) / GULUNG_PER_TAHAP;
-        if (baru < 1) return baru;
-        tambahRef.current();
-        return 0;
-      });
+      const baru = tumbuhRef.current + Math.abs(jarak) / GULUNG_PER_TAHAP;
+      // tahap penuh: beri poin (di luar updater setState) lalu mulai dari awal
+      if (baru >= 1) tambahRef.current();
+      tumbuhRef.current = baru >= 1 ? 0 : baru;
+      setTumbuh(tumbuhRef.current);
     }
     /** Roda mouse. */
     function roda(e) {

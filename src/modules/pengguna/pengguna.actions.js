@@ -31,6 +31,10 @@ export async function resetPasswordPengguna(input) {
   return jalankanPengguna(AKSES.ADMIN, 'resetPassword', input);
 }
 
+/** Pengguna (admin atau tutor) mengubah nama/email sendiri. */
+export async function ubahProfilSendiri(input) {
+  return jalankanPengguna(AKSES.PENGGUNA, 'ubahProfil', input);
+}
 /** Pengguna (admin atau tutor) mengganti password sendiri. */
 export async function ubahPasswordSendiri(input) {
   return jalankanPengguna(AKSES.PENGGUNA, 'ubahPasswordSendiri', input);

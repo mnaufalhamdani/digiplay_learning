@@ -21,6 +21,10 @@ async function skemaSudahAda(conn) {
 const PEMBARUAN_KOLOM = [
   // Fase D2: bagian yang diulang pada tes ulang post test
   { tabel: 'post_test', kolom: 'bagian_ulang', definisi: 'JSON NULL AFTER dibuka_oleh' },
+  // Penyempurnaan Tahap 4: ringkasan penilaian keseluruhan siswa dari tutor (tampil di rapor orang tua setelah finalisasi)
+  { tabel: 'post_test', kolom: 'ringkasan_tutor', definisi: 'TEXT NULL AFTER bagian_ulang' },
+  { tabel: 'post_test', kolom: 'ringkasan_oleh', definisi: 'BIGINT UNSIGNED NULL AFTER ringkasan_tutor, ADD CONSTRAINT fk_post_test_ringkasan_oleh FOREIGN KEY (ringkasan_oleh) REFERENCES pengguna (id) ON DELETE SET NULL' },
+  { tabel: 'post_test', kolom: 'ringkasan_at', definisi: 'DATETIME NULL AFTER ringkasan_oleh' },
   // Coding Zippy: labirin yang diselesaikan (definisi memuat FK; tabel labirin_blockly dibuat lebih dulu oleh perbaruiTabel)
   { tabel: 'hasil_latihan', kolom: 'labirin_id', definisi: 'BIGINT UNSIGNED NULL AFTER gambar_id, ADD CONSTRAINT fk_hasil_latihan_labirin FOREIGN KEY (labirin_id) REFERENCES labirin_blockly (id) ON DELETE SET NULL' },
 ];
@@ -43,6 +47,7 @@ const PEMBARUAN_TABEL = ['materi', 'materi_baca', 'labirin_blockly', 'proyek_cod
 const PEMBARUAN_INDEKS = [
   { tabel: 'siswa', indeks: 'idx_siswa_dibuat', kolom: 'created_at' },
   { tabel: 'sesi', indeks: 'idx_sesi_status', kolom: 'status, jam_masuk' },
+  { tabel: 'sesi', indeks: 'idx_sesi_siswa_waktu', kolom: 'siswa_id, jam_masuk' },
   { tabel: 'post_test', indeks: 'idx_post_test_status', kolom: 'status, nilai_total' },
   { tabel: 'sertifikat', indeks: 'idx_sertifikat_waktu', kolom: 'diterbitkan_at' },
   { tabel: 'sertifikat', indeks: 'idx_sertifikat_status_waktu', kolom: 'status, diterbitkan_at' },

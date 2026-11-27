@@ -3,6 +3,7 @@ import { AppError } from '@/utils/appError';
 import { adalahDuplikat } from '@/utils/galatDb';
 import { karakterTerlarang, normalisasiKode } from '@/utils/kodeAkses';
 import { formatTanggal } from '@/utils/format';
+import { hitungPaginasi } from '@/utils/paginasi';
 import { t } from '@/utils/i18n';
 import {
   AKSI_LOG,
@@ -13,6 +14,7 @@ import {
   NOMOR_POST_TEST,
   STATUS_SESI,
   STATUS_SISWA,
+  UKURAN_HALAMAN,
 } from '@/enums';
 
 /** Baris sesi untuk tampilan: angka dan boolean dirapikan, penuntasan akhir beserta sumbernya. */
@@ -270,6 +272,31 @@ export function buatSesiUsecase({ sesiModel, tugasUsecase, materiUsecase, pembay
       const daftar = (await sesiModel.riwayatSiswa(siswaId)).map(bentukSesi);
       const [tutor, hadir] = await Promise.all([sesiModel.tutorSesi(daftar.map((s) => s.id)), siswa.siswa_level_id ? kehadiran(siswa.siswa_level_id) : null]);
       return { sesi: gabungTutor(daftar, tutor), kehadiran: hadir };
+    },
+    /**
+     * Riwayat sesi seorang siswa per halaman (UKURAN_HALAMAN baris), beserta kehadiran level berjalan dan sesi terbaru.
+     * `terakhir` selalu sesi paling baru siswa (tidak bergantung halaman yang dibuka), null bila belum pernah ada sesi.
+     */
+    async riwayatSiswaHalaman(siswaId, nomorHalaman = 1) {
+      const siswa = await siswaModel.cariId(siswaId);
+      if (!siswa) throw new AppError(t('dataSiswa.tidakAda'), 404);
+      const total = await sesiModel.hitungRiwayatSiswa(siswaId);
+      // halaman di luar jangkauan dirapikan ke halaman terakhir
+      const pg = hitungPaginasi(total, nomorHalaman, UKURAN_HALAMAN);
+      const daftar = (await sesiModel.riwayatSiswaHalaman(siswaId, { batas: pg.batas, offset: pg.offset })).map(bentukSesi);
+      // sesi terbaru = baris pertama halaman 1; bila sedang di halaman lain, ambil terpisah (LIMIT 1)
+      const barisTerbaru = pg.halaman === 1 ? daftar.slice(0, 1) : (await sesiModel.riwayatSiswaHalaman(siswaId, { batas: 1, offset: 0 })).map(bentukSesi);
+      // tutor digabung hanya untuk sesi di halaman ini dan sesi terbaru (tanpa duplikat id)
+      const idTutor = [...new Set([...daftar, ...barisTerbaru].map((s) => s.id))];
+      const [tutor, hadir] = await Promise.all([sesiModel.tutorSesi(idTutor), siswa.siswa_level_id ? kehadiran(siswa.siswa_level_id) : null]);
+      return {
+        sesi: gabungTutor(daftar, tutor),
+        kehadiran: hadir,
+        terakhir: gabungTutor(barisTerbaru, tutor)[0] ?? null,
+        total,
+        halaman: pg.halaman,
+        totalHalaman: pg.totalHalaman,
+      };
     },
   };
 }

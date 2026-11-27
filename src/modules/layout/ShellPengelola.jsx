@@ -28,7 +28,8 @@ function DaftarMenu({ menu, basis }) {
               <Link
                 href={href}
                 aria-current={aktif ? 'page' : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-md px-3 font-semibold ${aktif ? 'bg-primary-soft text-primary-text' : 'text-fg hover:bg-primary-soft'}`}
+                // token nav-*: latar menu navy di kedua tema; garis fokus memakai warna teks menu karena biru utama kurang terlihat di atas navy (tema terang)
+                className={`flex min-h-11 items-center gap-3 rounded-md px-3 font-semibold focus-visible:outline-nav-fg ${aktif ? 'bg-nav-active-bg text-nav-active-fg' : 'text-nav-fg hover:bg-nav-line'}`}
               >
                 <Ikon nama={m.ikon} />
                 {t(m.label)}
@@ -93,7 +94,7 @@ export default function ShellPengelola({ branding, basis, pengguna, menu, childr
         <div className="relative flex min-h-0 flex-1">
           {/* lapisan gelap di belakang drawer (layar sempit); klik untuk menutup */}
           {drawer && <div className="fixed inset-0 z-20 bg-[color-mix(in_srgb,var(--fg)_35%,transparent)] md:hidden" onClick={() => setDrawer(false)} aria-hidden="true" />}
-          <aside id="menu-samping" className={`${drawer ? 'block' : 'hidden'} fixed inset-y-0 left-0 z-20 mt-[3.75rem] w-64 overflow-y-auto border-r border-line bg-panel md:static md:mt-0 md:block md:shrink-0`}>
+          <aside id="menu-samping" className={`${drawer ? 'block' : 'hidden'} fixed inset-y-0 left-0 z-20 mt-[3.75rem] w-64 overflow-y-auto border-r border-nav-line bg-nav-bg md:static md:mt-0 md:block md:shrink-0`}>
             <DaftarMenu menu={menu} basis={basis} />
           </aside>
           <main className="min-w-0 flex-1 p-4 sm:p-6">

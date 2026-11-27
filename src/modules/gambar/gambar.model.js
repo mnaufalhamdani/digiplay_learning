@@ -5,22 +5,37 @@ const KOLOM = 'id, kode, kategori, nama, nama_en, punya_mewarnai, punya_berwarna
 /** Syarat SQL "lengkap": ketiga berkas yang dipakai tugas tersedia. */
 const SYARAT_LENGKAP = 'punya_mewarnai = 1 AND punya_berwarna = 1 AND punya_puzzle = 1';
 
+/** Klausa WHERE dan parameternya dari filter kategori dan kelengkapan ('lengkap' / 'belum_lengkap'). */
+function syaratDaftar({ kategori, kelengkapan }) {
+  const syarat = [];
+  const params = [];
+  if (kategori) {
+    syarat.push('kategori = ?');
+    params.push(kategori);
+  }
+  // kelengkapan dihitung dari tiga penanda berkas
+  if (kelengkapan === 'lengkap') syarat.push(`(${SYARAT_LENGKAP})`);
+  if (kelengkapan === 'belum_lengkap') syarat.push(`NOT (${SYARAT_LENGKAP})`);
+  return { where: syarat.length ? `WHERE ${syarat.join(' AND ')}` : '', params };
+}
 /** Model gambar: bank subjek gambar (tabel gambar). */
 export function buatGambarModel({ db }) {
   return {
-    /** Daftar subjek dengan filter kategori dan kelengkapan ('lengkap' / 'belum_lengkap'). */
-    daftar({ kategori, kelengkapan }) {
-      const syarat = [];
-      const params = [];
-      if (kategori) {
-        syarat.push('kategori = ?');
-        params.push(kategori);
-      }
-      // kelengkapan dihitung dari tiga penanda berkas
-      if (kelengkapan === 'lengkap') syarat.push(`(${SYARAT_LENGKAP})`);
-      if (kelengkapan === 'belum_lengkap') syarat.push(`NOT (${SYARAT_LENGKAP})`);
-      const where = syarat.length ? `WHERE ${syarat.join(' AND ')}` : '';
+    /** Daftar seluruh subjek sesuai filter tanpa LIMIT (dipakai modul lain, mis. studio). */
+    daftar(filter) {
+      const { where, params } = syaratDaftar(filter);
       return db.rows(`SELECT ${KOLOM} FROM gambar ${where} ORDER BY kategori, kode`, params);
+    },
+    /** Satu halaman subjek sesuai filter, urutan tetap kategori lalu kode (halaman Bank gambar). */
+    halaman(filter, { batas, offset }) {
+      const { where, params } = syaratDaftar(filter);
+      return db.rows(`SELECT ${KOLOM} FROM gambar ${where} ORDER BY kategori, kode LIMIT ? OFFSET ?`, [...params, batas, offset]);
+    },
+    /** Jumlah subjek sesuai filter yang sama dengan `halaman`. */
+    async hitung(filter) {
+      const { where, params } = syaratDaftar(filter);
+      const baris = await db.first(`SELECT COUNT(*) AS n FROM gambar ${where}`, params);
+      return Number(baris?.n ?? 0);
     },
     /** Semua subjek (untuk pindai ulang berkas). */
     semua(conn) {

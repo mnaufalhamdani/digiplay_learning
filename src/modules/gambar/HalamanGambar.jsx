@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { ambilDep } from '@/di/container';
 import { wajibPengguna } from '@/modules/auth/auth.guard';
 import { infoPermintaan } from '@/utils/konteksPermintaan';
-import { gabungJalur } from '@/utils/jalurArea';
+import { gabungJalur, jalurQuery } from '@/utils/jalurArea';
 import { t } from '@/utils/i18n';
 import { KATEGORI_GAMBAR, PERAN } from '@/enums';
 import Card from '@/modules/shared/ui/Card';
 import EmptyState from '@/modules/shared/ui/EmptyState';
 import FormFilter from '@/modules/shared/ui/FormFilter';
+import Paginasi from '@/modules/shared/ui/Paginasi';
 import Ikon from '@/modules/shared/ui/Ikon';
 import Select from '@/modules/shared/ui/Select';
 import { TombolPindaiGambar } from './AksiGambar';
@@ -39,10 +40,10 @@ function KartuGambar({ g, href }) {
   );
 }
 
-/** Halaman Gambar: kartu subjek dengan filter kategori dan kelengkapan; admin bisa memindai ulang berkas. */
+/** Halaman Gambar: kartu subjek dengan filter kategori dan kelengkapan serta paginasi; admin bisa memindai ulang berkas. */
 export default async function HalamanGambar({ searchParams }) {
   const sesi = await wajibPengguna();
-  const [{ baris, filter }, info] = await Promise.all([ambilDep().gambarController.daftar(await searchParams), infoPermintaan()]);
+  const [{ baris, filter, total, halaman, totalHalaman }, info] = await Promise.all([ambilDep().gambarController.daftar(await searchParams), infoPermintaan()]);
   const opsiKategori = [{ nilai: '', label: t('umum.semua') }, ...KATEGORI_GAMBAR.map((k) => ({ nilai: k, label: t(`gambar.kategori.${k}`) }))];
   const opsiKelengkapan = [
     { nilai: '', label: t('umum.semua') },
@@ -64,7 +65,6 @@ export default async function HalamanGambar({ searchParams }) {
         <EmptyState judul={t('gambar.kosong')} ikon="gambar" />
       ) : (
         <>
-          <p className="text-muted">{t('paginasi.jumlah', { total: baris.length })}</p>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {baris.map((g) => (
               <li key={g.id}>
@@ -72,6 +72,8 @@ export default async function HalamanGambar({ searchParams }) {
               </li>
             ))}
           </ul>
+          {/* filter ikut terbawa saat pindah halaman; tautan halaman memakai query yang sudah divalidasi */}
+          <Paginasi halaman={halaman} totalHalaman={totalHalaman} total={total} hrefHalaman={(n) => gabungJalur(info.basis, jalurQuery('/gambar', { ...filter, halaman: n }))} />
         </>
       )}
     </div>

@@ -2,10 +2,14 @@ import 'server-only';
 import { AppError } from '@/utils/appError';
 import { t } from '@/utils/i18n';
 import { hitungPaginasi } from '@/utils/paginasi';
-import { STATUS_SERTIFIKAT, STATUS_SISWA } from '@/enums';
+import { JUMLAH_PERTEMUAN_MATERI, KUNCI_PENGATURAN, STATUS_SERTIFIKAT, STATUS_SISWA, UKURAN_HALAMAN } from '@/enums';
+import { awalBulan, deretPembayaran, deretPenuntasan, deretSesiPerHari, normalisasiFilter } from './dashboard.helper';
 
-/** Banyaknya baris per halaman pada rapor orang tua (HP: daftar pendek). */
-const PER_HALAMAN_RAPOR = 10;
+/** Siswa aktif tanpa sesi selama sekian hari terakhir masuk daftar "Perlu perhatian". */
+const HARI_TANPA_SESI = 21;
+
+/** Banyaknya baris per halaman pada rapor orang tua: sama dengan semua daftar berpaginasi lain. */
+const PER_HALAMAN_RAPOR = UKURAN_HALAMAN;
 
 /**
  * Bentuk aman satu sesi untuk orang tua: tanpa ID tutor dan tanpa data internal; catatan tutor ikut bersama
@@ -44,7 +48,7 @@ function postTestOrtu(p) {
   };
 }
 
-/** Satu halaman dari daftar yang sudah dimuat (riwayat per siswa kecil, jadi dipotong di aplikasi). */
+/** Satu halaman dari daftar yang sudah dimuat. Tidak dipakai lagi oleh rapor: sesi dan pembayaran kini dipaginasi di database (LIMIT/OFFSET). */
 function potong(daftar, halaman, ukuran) {
   const pg = hitungPaginasi(daftar.length, halaman, ukuran);
   return { baris: daftar.slice(pg.offset, pg.offset + ukuran), total: daftar.length, halaman: pg.halaman, totalHalaman: pg.totalHalaman };
@@ -54,16 +58,72 @@ function potong(daftar, halaman, ukuran) {
  * Usecase rapor (agregator tanpa tabel sendiri): rapor orang tua (F1) yang seluruhnya dibatasi `siswaId` dari cookie,
  * dan ringkasan kartu beranda pengelola (F4). Mengambil data lewat usecase/model modul lain.
  */
-export function buatRaporUsecase({ siswaModel, sesiUsecase, posttestUsecase, mengetikUsecase, latihanUsecase, pembayaranUsecase, sertifikatUsecase, karyaUsecase, sesiModel, posttestModel, sertifikatModel, pembayaranModel }) {
+export function buatRaporUsecase({ siswaModel, sesiUsecase, posttestUsecase, mengetikUsecase, latihanUsecase, pembayaranUsecase, sertifikatUsecase, karyaUsecase, sesiModel, posttestModel, sertifikatModel, pembayaranModel, levelModel, pengaturanUsecase, logger }) {
+  /**
+   * Menjalankan satu bagian dashboard dan menyelamatkan galatnya: bagian yang gagal menjadi `{ galat: true }` (dan dicatat di
+   * log server) agar satu query yang gagal tidak merusak seluruh beranda.
+   */
+  async function aman(nama, ambil) {
+    try {
+      return { data: await ambil() };
+    } catch (error) {
+      logger.error(`Dashboard: bagian ${nama} gagal`, error);
+      return { galat: true };
+    }
+  }
+  /** Kartu "Sesi berlangsung sekarang" dan kartu angka (selalu kondisi saat ini, tidak mengikuti filter). */
+  async function kartuSaatIni(adminkah) {
+    const [sesiBerlangsung, siswa, sesi7, menunggu, pembayaran] = await Promise.all([
+      aman('sesiBerlangsung', () => sesiModel.ringkasBerlangsungHariIni()),
+      aman('siswaAktif', () => siswaModel.ringkasanAktif()),
+      aman('sesi7Hari', () => sesiModel.perbandingan7Hari()),
+      aman('postTestMenunggu', () => posttestModel.ringkasMenunggu()),
+      // tutor tidak boleh melihat rekap keuangan: jangan dihitung sama sekali
+      adminkah ? aman('pembayaranBulanIni', () => pembayaranModel.totalBulanIni()) : null,
+    ]);
+    return { sesiBerlangsung, siswaAktif: siswa, sesi7Hari: sesi7, postTestMenunggu: menunggu, pembayaranBulanIni: pembayaran };
+  }
+  /** Bagian grafik post test: belum tes (hari ini, hanya level) dan status post test pada bulan terpilih. */
+  async function grafikPostTest(filter) {
+    const minHadir = await pengaturanUsecase.angka(KUNCI_PENGATURAN.KEHADIRAN_MIN_POST_TEST);
+    const [belumTes, bulan] = await Promise.all([
+      posttestModel.jumlahBelumTes({ levelId: filter.levelId, minHadir, maksNomor: JUMLAH_PERTEMUAN_MATERI }),
+      posttestModel.statusBulan(awalBulan(filter.bulan), filter.levelId),
+    ]);
+    return { belumTes, ...bulan };
+  }
+  /** Bagian grafik pembayaran (admin): 6 bulan berakhir di bulan terpilih, serta siswa yang membayar dan belum pada bulan itu. */
+  async function grafikPembayaran(filter) {
+    const [baris, status] = await Promise.all([
+      pembayaranModel.totalPerBulan(awalBulan(filter.bulan), filter.levelId),
+      pembayaranModel.statusSiswaBulan(awalBulan(filter.bulan), filter.levelId),
+    ]);
+    const deret = deretPembayaran(filter.bulan, baris);
+    return { deret, terpilih: deret[deret.length - 1], membayar: status.membayar, belum: status.aktif - status.membayar };
+  }
+  /** Daftar tindakan "Perlu perhatian" (kondisi saat ini); `belumBayar` hanya dihitung untuk admin. */
+  async function perluPerhatian(adminkah, bulanBerjalan) {
+    const [postTest, tanpaSesi, sesiLama, bayar] = await Promise.all([
+      posttestModel.ringkasMenunggu(),
+      siswaModel.jumlahTanpaSesi(HARI_TANPA_SESI),
+      sesiModel.jumlahBerlangsungLama(),
+      adminkah ? pembayaranModel.statusSiswaBulan(awalBulan(bulanBerjalan)) : null,
+    ]);
+    return { postTestMenunggu: postTest.jumlah, tanpaSesi, hariTanpaSesi: HARI_TANPA_SESI, sesiLama, belumBayar: bayar ? bayar.aktif - bayar.membayar : null };
+  }
   /** Ringkasan latihan: jumlah main game mouse dan puzzle selesai. */
   async function latihanRingkas(siswaId) {
     const s = await latihanUsecase.statistikSiswa(siswaId);
     return { jumlahGame: s.game.reduce((n, g) => n + g.jumlah, 0), puzzleSelesai: s.puzzleSelesai };
   }
-  /** Pembayaran untuk orang tua: tanggal, jumlah, keterangan, dan total yang tercatat (tanpa nama pencatat). */
-  async function pembayaranOrtu(siswaId) {
-    const daftar = (await pembayaranUsecase.daftarSiswa(siswaId)).map((p) => ({ id: p.id, tanggal: p.tanggal, jumlah: p.jumlah, keterangan: p.keterangan }));
-    return { daftar, total: daftar.reduce((n, p) => n + (p.jumlah ?? 0), 0) };
+  /**
+   * Pembayaran untuk orang tua: satu halaman (tanggal, jumlah, keterangan, teks keterangan sesi; tanpa nama pencatat dan ID
+   * internal) dan total dari SEMUA catatan (bukan hanya halaman yang tampil).
+   */
+  async function pembayaranOrtu(siswaId, nomorHalaman) {
+    const h = await pembayaranUsecase.halamanSiswa(siswaId, nomorHalaman);
+    const baris = h.baris.map((p) => ({ id: p.id, tanggal: p.tanggal, jumlah: p.jumlah, keterangan: p.keterangan, keterangan_sesi: p.keterangan_sesi }));
+    return { daftar: { baris, total: h.total, halaman: h.halaman, totalHalaman: h.totalHalaman }, total: h.jumlahTotal };
   }
   /** Sertifikat terbit saja (yang dibatalkan tidak ditampilkan ke orang tua). */
   async function sertifikatOrtu(siswaId) {
@@ -78,27 +138,30 @@ export function buatRaporUsecase({ siswaModel, sesiUsecase, posttestUsecase, men
       const siswa = await siswaModel.cariId(siswaId);
       // cookie sah tetapi siswa sudah dihapus/nonaktif: perlakukan seperti tidak ada
       if (!siswa || siswa.status !== STATUS_SISWA.AKTIF) throw new AppError(t('dataSiswa.tidakAda'), 404);
-      const [riwayat, levelRiwayat, postTest, mengetik, latihan, pembayaran, sertifikat, karya] = await Promise.all([
-        sesiUsecase.riwayatSiswa(siswaId),
+      const [riwayat, levelRiwayat, postTest, ringkasan, mengetik, latihan, pembayaran, sertifikat, karya] = await Promise.all([
+        sesiUsecase.riwayatSiswaHalaman(siswaId, hal.sesi),
         siswaModel.riwayatLevel(siswaId),
         posttestUsecase.riwayatSiswa(siswaId),
+        posttestUsecase.ringkasanOrtu(siswaId),
         mengetikUsecase.statistikSiswa(siswaId),
         latihanRingkas(siswaId),
-        pembayaranOrtu(siswaId),
+        pembayaranOrtu(siswaId, hal.bayar),
         sertifikatOrtu(siswaId),
         karyaUsecase.daftarSiswa(siswaId, hal.karya),
       ]);
-      const semuaSesi = riwayat.sesi.map(sesiOrtu);
       return {
         siswa: { nama: siswa.nama, level_kode: siswa.level_kode, level_nama: siswa.level_nama, status_level: levelRiwayat[0]?.status ?? null },
         kehadiran: riwayat.kehadiran,
-        sesiTerakhir: semuaSesi[0] ?? null,
-        sesi: potong(semuaSesi, hal.sesi, PER_HALAMAN_RAPOR),
+        // sesi terakhir tidak bergantung pada halaman riwayat yang sedang dibuka
+        sesiTerakhir: riwayat.terakhir ? sesiOrtu(riwayat.terakhir) : null,
+        sesi: { baris: riwayat.sesi.map(sesiOrtu), total: riwayat.total, halaman: riwayat.halaman, totalHalaman: riwayat.totalHalaman },
         postTest: postTest.map(postTestOrtu),
+        // ringkasan penilaian tutor per level (hanya dari post test yang sudah difinalisasi); kosong = bagian tidak tampil
+        ringkasan,
         mengetik: { wpmTerbaik: mengetik.wpmTerbaik, akurasiRata: mengetik.akurasiRata, grafik: mengetik.grafik },
         latihan,
-        // total dihitung dari semua catatan, daftar yang tampil berpaginasi
-        pembayaran: { total: pembayaran.total, daftar: potong(pembayaran.daftar, hal.bayar, PER_HALAMAN_RAPOR) },
+        // total dihitung dari semua catatan, daftar yang tampil berpaginasi di database
+        pembayaran,
         sertifikat,
         karya,
       };
@@ -114,6 +177,38 @@ export function buatRaporUsecase({ siswaModel, sesiUsecase, posttestUsecase, men
         adminkah ? pembayaranModel.totalBulanIni() : null,
       ]);
       return { siswaAktif, sesiBerlangsung, postTestMenunggu, sertifikatBulanIni, pembayaran };
+    },
+    /**
+     * Data dashboard beranda pengelola. `filter` = { bulan, levelId } dari query (sudah berbentuk sah); nilai di luar rentang
+     * dinormalkan di sini. Tiap bagian dijalankan paralel dan terisolasi (`aman`). Semua yang berkaitan dengan uang hanya
+     * dihitung dan dikirim untuk admin.
+     */
+    async dashboard(adminkah, filterMasuk) {
+      const [waktu, level] = await Promise.all([sesiModel.batasWaktu(), levelModel.daftarLevel()]);
+      const levelAktif = level.filter((l) => Number(l.aktif) === 1);
+      const filter = normalisasiFilter(filterMasuk ?? {}, waktu, levelAktif);
+      const awal = awalBulan(filter.bulan);
+      const [kartu, sesiPerHari, siswaPerLevel, postTest, penuntasan, pembayaran, perhatian] = await Promise.all([
+        kartuSaatIni(adminkah),
+        aman('sesiPerHari', async () => deretSesiPerHari(filter.bulan, await sesiModel.sesiPerHari(awal, filter.levelId), waktu.hari)),
+        aman('siswaPerLevel', async () => (await siswaModel.perLevel()).map((l) => ({ id: l.id, kode: l.kode, nama: l.nama, n: Number(l.n) }))),
+        aman('postTest', () => grafikPostTest(filter)),
+        aman('penuntasan', async () => deretPenuntasan(filter.bulan, await sesiModel.penuntasanPerMinggu(awal, filter.levelId))),
+        adminkah ? aman('pembayaran', () => grafikPembayaran(filter)) : null,
+        aman('perluPerhatian', () => perluPerhatian(adminkah, filter.bulanBerjalan)),
+      ]);
+      return {
+        filter,
+        hariIni: waktu.hari,
+        level: levelAktif.map((l) => ({ id: l.id, kode: l.kode, nama: l.nama, urutan: Number(l.urutan) })),
+        ...kartu,
+        sesiPerHari,
+        siswaPerLevel,
+        postTest,
+        penuntasan,
+        pembayaran,
+        perhatian,
+      };
     },
   };
 }

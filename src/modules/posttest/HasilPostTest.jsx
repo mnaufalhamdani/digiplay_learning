@@ -8,7 +8,7 @@ import Maskot from '@/modules/shared/ui/domain/Maskot';
 
 /**
  * Layar hasil post test siswa (D2.4): nilai per bagian (angka saja, tanpa kunci jawaban), lulus atau belum.
- * Bila bagian praktik belum dinilai: "Hasilmu sedang diperiksa kakak tutor" (Zippy berpikir).
+ * Bila bagian praktik belum dinilai: "Hasilmu sedang diperiksa tutor" (Zippy berpikir).
  */
 export default function HasilPostTest({ hasil, hrefBeranda }) {
   const menunggu = hasil.lulus == null;
@@ -28,7 +28,7 @@ export default function HasilPostTest({ hasil, hrefBeranda }) {
         ))}
       </ul>
       {!menunggu && <p className="font-display text-[1.3em] font-bold">{t('posttest.nilaiTotal', { total: hasil.total })}</p>}
-      {/* tanpa tombol unduh: sertifikat diunduh lewat kakak tutor atau orang tua */}
+      {/* tanpa tombol unduh: sertifikat diunduh lewat tutor atau orang tua */}
       {hasil.sertifikatTerbit && (
         <Badge nada="sukses" className="text-[1em]">
           <Ikon nama="sertifikat" />

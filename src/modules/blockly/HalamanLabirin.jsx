@@ -1,7 +1,8 @@
 import { ambilDep } from '@/di/container';
 import { atau404 } from '@/utils/atau404';
 import ShellSiswa from '@/modules/layout/ShellSiswa';
-import { konteksSiswa } from '@/modules/sesi/konteksSiswa';
+import { MENU_GAME } from '@/enums';
+import { konteksSiswa, wajibMenuTerbuka } from '@/modules/sesi/konteksSiswa';
 import KlienLabirin from './KlienLabirin';
 
 /**
@@ -11,6 +12,8 @@ import KlienLabirin from './KlienLabirin';
  */
 export default async function HalamanLabirin({ params, searchParams }) {
   const k = await konteksSiswa();
+  // labirin hanya bisa dibuka lewat URL langsung bila Coding Zippy sudah terbuka
+  wajibMenuTerbuka(k, MENU_GAME.CODING_ZIPPY);
   const { kode } = await params;
   const { tugas: tugasId } = await searchParams;
   const dep = ambilDep();
@@ -21,7 +24,7 @@ export default async function HalamanLabirin({ params, searchParams }) {
   const labirin = { kode: l.kode, nama: l.nama, lebar: l.lebar, tinggi: l.tinggi, grid: l.grid, mulai: l.mulai, bintang: l.bintang, batas_blok: l.batas_blok, blok_tersedia: l.blok_tersedia, petunjuk: l.petunjuk, sudahSelesai: l.sudahSelesai, berikutnya: l.berikutnya };
   const tugas = tugasData?.tipe === 'blockly' ? { id: tugasData.id, labirin: tugasData.kunci.labirin } : null;
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
       {/* key: pindah ke labirin berikutnya memuat ulang papan dan editor dari awal */}
       <KlienLabirin key={labirin.kode} labirin={labirin} sesiAktif={Boolean(k.sesi)} tugas={tugas} />
     </ShellSiswa>

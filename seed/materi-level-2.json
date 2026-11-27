@@ -35,6 +35,11 @@
      "teks": "Pada huruf F dan J ada tonjolan kecil. Tonjolan itu membantu jari telunjukmu menemukan posisi awal tanpa melihat keyboard. Setelah menekan tombol lain, kembalikan jarimu ke home row."
     },
     {
+     "tipe": "paragraf",
+     "judul": "Angka dan simbol",
+     "teks": "Angka ada di baris paling atas keyboard. Simbol seperti tanda kurung, tanda persen, dan tanda tambah berada di tombol yang sama dengan angka atau tanda lain. Untuk mengetiknya, tahan Shift sambil menekan tombol itu. Tanda persen, misalnya, ada di tombol angka 5."
+    },
+    {
      "tipe": "langkah",
      "judul": "Cara berlatih",
      "langkah": [
@@ -464,6 +469,11 @@
      ]
     },
     {
+     "tipe": "paragraf",
+     "judul": "Menyalin isi sel",
+     "teks": "Kalau butuh angka yang sama di beberapa sel, kamu tidak harus mengetik berkali-kali. Klik sel yang berisi angka itu, tekan Ctrl dan C, klik sel tujuan, lalu tekan Ctrl dan V. Isinya tersalin ke sel tujuan."
+    },
+    {
      "tipe": "langkah",
      "judul": "Membuat tabel nilai",
      "langkah": [
@@ -647,7 +657,7 @@
        "teks": "Pada kartu tugas, tekan Kirim proyek lalu pilih proyekmu. Bila Studio Zippy dibuka dari tugas, kamu juga bisa menekan Kirim ke tugas."
       },
       {
-       "teks": "Kakak tutor akan membuka dan menilai proyekmu."
+       "teks": "Tutor akan membuka dan menilai proyekmu."
       }
      ]
     },
@@ -717,6 +727,11 @@
        "teks": "Tambahkan blok Tunggu (jumlah) detik supaya perubahannya terlihat."
       }
      ]
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Menggabungkan blok",
+     "teks": "Blok bisa dipasang di dalam blok lain. Misalnya, di dalam Selamanya atau Ulangi kamu pasang blok Jika Menyentuh tepi?, lalu di dalam blok Jika itu pasang Kostum berikutnya. Dengan begitu kostum berganti hanya saat sprite menyentuh tepi."
     },
     {
      "tipe": "zippy",
@@ -832,6 +847,11 @@
      "tipe": "paragraf",
      "judul": "Saat presentasi",
      "teks": "Berbicaralah dengan jelas dan tidak terlalu cepat, sambil melihat pendengarmu, bukan hanya layar. Jelaskan isi slide dengan kata-katamu sendiri, jangan hanya membaca."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Tanya jawab",
+     "teks": "Setelah presentasi, pendengar boleh bertanya. Dengarkan pertanyaannya sampai selesai, lalu jawab dengan jelas dan sopan. Kalau belum tahu jawabannya, katakan dengan jujur bahwa kamu akan mencari tahu. Jangan lupa mengucapkan terima kasih."
     },
     {
      "tipe": "paragraf",

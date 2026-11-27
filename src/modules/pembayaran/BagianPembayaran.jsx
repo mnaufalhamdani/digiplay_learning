@@ -53,9 +53,9 @@ function FormPembayaran({ siswaId, sesiId, denganTanggal, selesai }) {
 
 /**
  * Daftar dan form pembayaran untuk detail sesi (`sesiId` terisi) atau detail siswa. Hapus hanya untuk admin
- * dan memakai ConfirmDialog.
+ * dan memakai ConfirmDialog. `paginasi` (opsional) adalah elemen React dari server component, tampil di bawah daftar.
  */
-export default function BagianPembayaran({ siswaId, sesiId = null, daftar, adminkah, denganTanggal = false }) {
+export default function BagianPembayaran({ siswaId, sesiId = null, daftar, adminkah, denganTanggal = false, paginasi = null }) {
   const router = useRouter();
   const [hapus, setHapus] = useState(null);
   const [toast, setToast] = useState({ pesan: '', nada: 'sukses' });
@@ -88,7 +88,11 @@ export default function BagianPembayaran({ siswaId, sesiId = null, daftar, admin
                 <p className="text-muted">
                   {formatTanggal(p.tanggal)} · {t('pembayaran.dicatatOleh', { nama: p.dicatat_nama })}
                 </p>
-                {p.keterangan && <p>{p.keterangan}</p>}
+                {/* keterangan sesi tampil di bawah tanggal; teks panjang dipatah agar tidak membuat halaman meluap mendatar */}
+                <p className="text-muted [overflow-wrap:anywhere]">
+                  {t('pembayaran.untukSesi')}: {p.keterangan_sesi ?? '-'}
+                </p>
+                {p.keterangan && <p className="[overflow-wrap:anywhere]">{p.keterangan}</p>}
               </div>
               {adminkah && (
                 <Button varian="hantu" ikon="hapus" onClick={() => setHapus(p)}>
@@ -99,7 +103,9 @@ export default function BagianPembayaran({ siswaId, sesiId = null, daftar, admin
           ))}
         </ul>
       )}
-      <FormPembayaran siswaId={siswaId} sesiId={sesiId} denganTanggal={denganTanggal} selesai={selesai} />
+      {paginasi}
+      {/* form hanya di konteks sesi (detail sesi); di detail siswa daftar saja, karena pembayaran harus terkait sesi */}
+      {sesiId ? <FormPembayaran siswaId={siswaId} sesiId={sesiId} denganTanggal={denganTanggal} selesai={selesai} /> : <p className="text-muted">{t('pembayaran.catatDiSesi')}</p>}
       <ConfirmDialog
         terbuka={Boolean(hapus)}
         judul={t('pembayaran.hapusJudul')}

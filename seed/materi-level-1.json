@@ -44,7 +44,7 @@
      "judul": "Cara menyalakan komputer",
      "langkah": [
       {
-       "teks": "Pastikan kabel listrik sudah tersambung. Minta bantuan kakak tutor bila belum yakin."
+       "teks": "Pastikan kabel listrik sudah tersambung. Minta bantuan tutor bila belum yakin."
       },
       {
        "teks": "Cari tombol power. Gambarnya lingkaran dengan garis kecil di atasnya."
@@ -78,7 +78,25 @@
     {
      "tipe": "paragraf",
      "judul": "Duduk yang sehat",
-     "teks": "Duduklah dengan punggung tegak dan kaki menapak lantai. Letakkan layar sejajar dengan matamu. Supaya mata tidak lelah: jangan terlalu dekat dengan layar, istirahat sebentar sambil melihat ke tempat jauh, pastikan ruangan cukup terang, dan jangan memakai komputer terlalu lama."
+     "teks": "Duduklah dengan punggung tegak dan kaki menapak lantai. Letakkan layar sejajar dengan matamu, tidak terlalu tinggi dan tidak terlalu rendah."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Cara menjaga mata",
+     "langkah": [
+      {
+       "teks": "Jangan duduk terlalu dekat dengan layar."
+      },
+      {
+       "teks": "Istirahat sebentar sambil melihat ke tempat yang jauh."
+      },
+      {
+       "teks": "Pastikan ruangan cukup terang."
+      },
+      {
+       "teks": "Jangan memakai komputer terlalu lama."
+      }
+     ]
     },
     {
      "tipe": "zippy",
@@ -256,7 +274,7 @@
      "judul": "Mengetik di Notepad",
      "langkah": [
       {
-       "teks": "Buka program Notepad. Minta bantuan kakak tutor bila belum ketemu."
+       "teks": "Buka program Notepad. Minta bantuan tutor bila belum ketemu."
       },
       {
        "teks": "Ketik kalimatmu dengan huruf besar di depan dan titik di akhir."
@@ -400,6 +418,11 @@
      "tipe": "paragraf",
      "judul": "Palet warna",
      "teks": "Warna dipilih dari palet warna. Klik warna yang kamu suka, lalu mulai menggambar atau mewarnai."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Fill (ember cat)",
+     "teks": "Fill berbentuk ember cat dan dipakai untuk mengisi satu area dengan warna. Pilih warna, klik Fill, lalu klik bagian gambar yang mau diisi. Cocok untuk mewarnai bagian dalam bentuk dari Shapes. Di pertemuan berikutnya kamu akan memakainya lagi."
     },
     {
      "tipe": "paragraf",
@@ -592,6 +615,11 @@
      "teks": "Warna huruf dipilih lewat tombol Font Color. Tombol Center membuat tulisan rata tengah, cocok untuk judul."
     },
     {
+     "tipe": "paragraf",
+     "judul": "Surat singkat",
+     "teks": "Surat singkat punya susunan yang rapi. Mulai dengan judul yang rata tengah. Lalu tulis salam pembuka, misalnya Untuk Ibu. Setelah itu tulis isi suratmu, misalnya ucapan selamat atau terima kasih. Akhiri dengan penutup dan namamu di bagian bawah."
+    },
+    {
      "tipe": "langkah",
      "judul": "Menyisipkan gambar",
      "langkah": [
@@ -639,12 +667,12 @@
     {
      "tipe": "paragraf",
      "judul": "Rahasia pribadi",
-     "teks": "Jangan memberikan alamat rumah, nomor telepon, dan nama sekolahmu kepada orang asing di internet. Hobi dan warna kesukaan boleh diceritakan, tetapi tetap hati-hati."
+     "teks": "Jangan memberikan alamat rumah, nomor telepon, nama sekolah, dan fotomu kepada orang asing di internet. Hobi dan warna kesukaan boleh diceritakan, tetapi tetap hati-hati."
     },
     {
      "tipe": "paragraf",
      "judul": "Orang asing",
-     "teks": "Bila ada orang asing yang menanyakan alamat rumahmu atau mengajakmu bertemu, jangan dijawab. Segera beri tahu orang tua atau guru."
+     "teks": "Bila ada orang asing yang menanyakan alamat rumahmu, meminta fotomu, atau mengajakmu bertemu, jangan dijawab. Segera beri tahu orang tua atau guru."
     },
     {
      "tipe": "paragraf",
@@ -653,8 +681,41 @@
     },
     {
      "tipe": "paragraf",
+     "judul": "Mesin pencari",
+     "teks": "Mesin pencari adalah situs yang membantu kita mencari informasi dan gambar di internet. Kita cukup mengetik kata yang dicari, lalu mesin pencari menampilkan daftar hasilnya."
+    },
+    {
+     "tipe": "langkah",
+     "judul": "Cara mencari di internet",
+     "langkah": [
+      {
+       "teks": "Buka browser, yaitu program untuk membuka internet, bersama tutor."
+      },
+      {
+       "teks": "Ketik kata yang kamu cari di kotak pencarian, lalu tekan Enter."
+      },
+      {
+       "teks": "Pilih hasil yang cocok bersama tutor, lalu baca dengan teliti."
+      },
+      {
+       "teks": "Untuk mencari gambar, pilih tab Gambar pada hasil pencarian."
+      }
+     ]
+    },
+    {
+     "tipe": "paragraf",
      "judul": "Mencari informasi bersama tutor",
-     "teks": "Kita bisa mencari informasi dan gambar di internet bersama kakak tutor. Bacalah dengan teliti, lalu ceritakan apa yang kamu temukan dan nama situs yang kamu pakai. Pilih situs atau aplikasi yang aman untuk anak."
+     "teks": "Kita bisa mencari informasi dan gambar di internet bersama tutor. Bacalah dengan teliti, lalu ceritakan apa yang kamu temukan dan nama situs yang kamu pakai. Pilih situs atau aplikasi yang aman untuk anak. Situs dan aplikasi yang aman biasanya dipilihkan oleh orang tua atau tutor, misalnya situs sekolah, perpustakaan digital, dan aplikasi belajar. Tanyakan dulu kepada tutor sebelum membuka yang baru."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Mengunduh file dengan aman",
+     "teks": "Mengunduh artinya menyimpan file dari internet ke komputer. Unduh hanya file yang diminta tutor atau orang tuamu, seperti tombol Unduh bahan di tugasmu. File dari orang asing atau dari iklan bisa berbahaya dan merusak komputer. Kalau ragu, tanyakan dulu kepada orang dewasa."
+    },
+    {
+     "tipe": "paragraf",
+     "judul": "Waktu bermain",
+     "teks": "Pakai komputer dan internet secukupnya. Buatlah kesepakatan waktu bermain dengan orang tuamu, dan istirahatlah supaya mata dan badanmu tidak lelah."
     },
     {
      "tipe": "zippy",
@@ -685,6 +746,11 @@
     },
     {
      "tipe": "paragraf",
+     "judul": "Blok di Coding Zippy",
+     "teks": "Di menu Coding Zippy ada empat blok untuk menggerakkan Zippy. Blok Mulai berwarna hijau dan menjadi awal programmu. Blok Maju membuat Zippy melangkah satu petak ke depan. Blok Belok kiri dan Belok kanan memutar arah Zippy, jadi untuk melangkah kamu tetap perlu blok Maju. Blok Ulangi (angka) kali mengulang blok-blok di dalamnya. Angkanya bisa kamu ubah. Beberapa labirin tidak menyediakan blok Ulangi, jadi pakai blok yang ada."
+    },
+    {
+     "tipe": "paragraf",
      "judul": "Urutan itu penting",
      "teks": "Kalau urutan blok salah, hasilnya tidak sesuai yang kita inginkan. Misalnya belok dulu sebelum maju, Zippy bisa nyasar. Tidak apa-apa salah. Kita periksa urutannya lalu coba lagi."
     },
@@ -694,20 +760,28 @@
      "teks": "Blok ulangi dipakai untuk mengulang perintah beberapa kali. Daripada menyusun blok maju lima kali, cukup pakai blok ulangi sebanyak lima kali. Kodemu jadi lebih pendek dan rapi."
     },
     {
+     "tipe": "paragraf",
+     "judul": "Mencari pola",
+     "teks": "Kalau jalan Zippy punya bagian yang sama berulang-ulang, misalnya tangga atau zig-zag, cari bagian yang sama itu. Masukkan blok-blok bagian itu ke dalam satu blok Ulangi. Dalam blok Ulangi boleh ada lebih dari satu blok."
+    },
+    {
      "tipe": "langkah",
      "judul": "Membantu Zippy",
      "langkah": [
       {
-       "teks": "Lihat dulu jalan dari Zippy ke tujuannya."
+       "teks": "Buka menu Coding Zippy, lalu pilih labirin. Lihat dulu jalan dari Zippy ke bintang."
       },
       {
-       "teks": "Susun blok perintah dari atas ke bawah sesuai urutan jalan."
+       "teks": "Tarik blok dari sebelah kiri dan pasang di bawah blok Mulai, urut dari atas ke bawah sesuai jalannya."
       },
       {
-       "teks": "Jalankan programnya dan lihat hasilnya."
+       "teks": "Perhatikan penghitung Blok di bawah labirin, misalnya Blok: 0 / 6. Jumlah blokmu tidak boleh lebih dari angka kedua."
       },
       {
-       "teks": "Kalau belum berhasil, perbaiki urutan blok, lalu coba lagi."
+       "teks": "Klik Jalankan dan lihat hasilnya. Kalau belum berhasil, klik Ulang, perbaiki susunan bloknya, lalu coba lagi."
+      },
+      {
+       "teks": "Bingung? Klik Petunjuk untuk mendapat bantuan."
       }
      ]
     },

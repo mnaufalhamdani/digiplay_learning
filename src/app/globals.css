@@ -40,6 +40,32 @@ body {
   }
 }
 
+/* Batang grafik dashboard tumbuh sekali saat tampil; mati lewat aturan "kurangi gerakan" di design-tokens.css */
+@keyframes batang-tumbuh {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes batang-melebar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.batang-tumbuh {
+  transform-origin: bottom;
+  animation: batang-tumbuh var(--dur-lambat) ease-out both;
+}
+.batang-melebar {
+  transform-origin: left;
+  animation: batang-melebar var(--dur-lambat) ease-out both;
+}
+
 /* Angka skor, WPM, dan pewaktu tidak "bergoyang" saat berubah */
 .angka-tabular {
   font-variant-numeric: tabular-nums;

@@ -105,7 +105,7 @@ function PanggungStudio({ tampilan, idPanggung = undefined, onGeser = null, terp
             {sp.kata && (
               <div
                 style={{ left: `${persenX(sp.x)}%`, top: `${persenY(sp.y)}%`, fontSize: '3.4cqw', transform: 'translate(-50%, calc(-100% - 6cqw))' }}
-                className="pointer-events-none absolute max-w-[60%] rounded-2xl border-2 border-line bg-white px-[1.6cqw] py-[0.8cqw] text-center font-bold leading-tight text-[#2A2347] shadow"
+                className="pointer-events-none absolute max-w-[60%] rounded-2xl border-2 border-line bg-white px-[1.6cqw] py-[0.8cqw] text-center font-bold leading-tight text-on-sun shadow"
               >
                 {sp.kata}
               </div>
@@ -115,9 +115,9 @@ function PanggungStudio({ tampilan, idPanggung = undefined, onGeser = null, terp
       })}
       {/* monitor variabel: skor (Level 2) dan variabel buatan sendiri yang ditampilkan blok Tampilkan variabel */}
       <div style={{ fontSize: '3.4cqw' }} className="pointer-events-none absolute left-[2%] top-[2%] flex flex-col items-start gap-[0.6cqw]">
-        {tampilan.tampilSkor && <span className="rounded-full bg-white/90 px-[2cqw] py-[0.5cqw] font-display font-bold text-[#2A2347]">{t('studio.skor', { nilai: teksNilai(tampilan.variabel.skor) })}</span>}
+        {tampilan.tampilSkor && <span className="rounded-full bg-white/90 px-[2cqw] py-[0.5cqw] font-display font-bold text-on-sun">{t('studio.skor', { nilai: teksNilai(tampilan.variabel.skor) })}</span>}
         {(tampilan.monitor ?? []).map((m) => (
-          <span key={m.nama} className="rounded-full bg-white/90 px-[2cqw] py-[0.5cqw] font-display font-bold text-[#2A2347]">
+          <span key={m.nama} className="rounded-full bg-white/90 px-[2cqw] py-[0.5cqw] font-display font-bold text-on-sun">
             {m.nama}: {teksNilai(m.nilai)}
           </span>
         ))}

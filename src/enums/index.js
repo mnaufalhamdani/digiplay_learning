@@ -91,6 +91,21 @@ export const JENIS_GAMBAR_UNDUH = Object.freeze(['mewarnai', 'berwarna']);
 export const MODE_MENGETIK = Object.freeze({ PELAJARAN: 'pelajaran', LATIHAN: 'latihan', GAME: 'game', TES: 'tes' });
 /** Jenis hasil latihan web (ENUM hasil_latihan.jenis). */
 export const JENIS_LATIHAN = Object.freeze([...JENIS_GAME_MOUSE, 'puzzle']);
+/** Kunci menu game siswa (sama dengan kunci menu di ShellSiswa dan sesiSiswa.menu.*). */
+export const MENU_GAME = Object.freeze({ LATIHAN_MOUSE: 'latihanMouse', PUZZLE: 'puzzle', CODING_ZIPPY: 'codingZippy', STUDIO: 'studio', MENGETIK: 'mengetik' });
+/** Menu game yang terbuka sejak awal (tanpa syarat tugas). */
+export const MENU_GAME_AWAL = Object.freeze([MENU_GAME.PUZZLE]);
+/**
+ * Pemetaan jenis tugas (template.tipe) ke menu game yang terbuka begitu tugas itu muncul untuk siswa (juga butir post test).
+ * Tipe puzzle tidak ada di sini karena Puzzle sudah terbuka sejak awal. Bagian tes mengetik post test (bukan baris tugas)
+ * dihitung terpisah di query dan membuka menu Mengetik.
+ */
+export const MENU_GAME_DARI_TIPE = Object.freeze({ game_mouse: MENU_GAME.LATIHAN_MOUSE, mengetik: MENU_GAME.MENGETIK, blockly: MENU_GAME.CODING_ZIPPY, coding_proyek: MENU_GAME.STUDIO });
+/**
+ * Urutan level tempat tiap menu game pertama kali dipakai tugas. Siswa yang pernah berada di level dengan urutan LEBIH TINGGI
+ * dari angka ini (mis. masuk langsung di Level 2 atau 3) mendapat menu itu terbuka walau tugas jenis itu tidak muncul di levelnya.
+ */
+export const MENU_GAME_LEVEL_AWAL = Object.freeze({ [MENU_GAME.LATIHAN_MOUSE]: 1, [MENU_GAME.MENGETIK]: 1, [MENU_GAME.CODING_ZIPPY]: 1, [MENU_GAME.STUDIO]: 2 });
 /**
  * Jenis hasil Coding Zippy (ENUM hasil_latihan.jenis, juga kunci.jenis tugas blockly). Sengaja tidak masuk JENIS_LATIHAN:
  * hasilnya hanya boleh disimpan lewat modul blockly yang menilai program di server, bukan lewat simpanLatihan.
@@ -104,6 +119,8 @@ export const STATUS_POST_TEST = Object.freeze({ BERLANGSUNG: 'berlangsung', SELE
 export const SUMBER_NILAI = Object.freeze({ OTOMATIS: 'otomatis', TUTOR: 'tutor' });
 /** Waktu post test: interval denyut browser dan tambahan waktu maksimal per denyut (detik). */
 export const WAKTU_POST_TEST = Object.freeze({ intervalDenyutDetik: 15, maksTambahDetik: 30, peringatanDetik: 300 });
+/** Panjang maksimum ringkasan penilaian siswa dari tutor (post_test.ringkasan_tutor), dalam karakter. */
+export const MAKS_RINGKASAN_POST_TEST = 2000;
 /**
  * Nilai awal pengaturan `rubrik_bawaan` (sama dengan `rubrik_default` di seed/template-level-*.json).
  * Rubrik yang berlaku dibaca dari pengaturan (bisa diubah admin); konstanta ini hanya cadangan bila barisnya belum ada.
@@ -115,8 +132,8 @@ export const RUBRIK_BAWAAN = Object.freeze([
 ]);
 /** Jumlah pertemuan materi sebelum post test (dasar perhitungan kehadiran). */
 export const JUMLAH_PERTEMUAN_MATERI = 12;
-/** Jumlah baris per halaman pada daftar pengelola. */
-export const UKURAN_HALAMAN = 20;
+/** Jumlah baris per halaman pada semua daftar berpaginasi (backoffice, siswa, dan orang tua). */
+export const UKURAN_HALAMAN = 10;
 
 /** Hak akses route HTTP (dipakai routeHandler) dan Server Action. */
 export const AKSES = Object.freeze({
@@ -133,7 +150,7 @@ export const AKSES = Object.freeze({
 /** Jenis karya (ENUM karya.jenis). */
 export const JENIS_KARYA = Object.freeze({ TAUTAN: 'tautan', BERKAS: 'berkas' });
 /** Aturan karya: panjang teks, ukuran berkas, ukuran halaman galeri. */
-export const ATURAN_KARYA = Object.freeze({ maksJudul: 200, maksDeskripsi: 1000, maksUrl: 500, maksUkuran: 3 * 1024 * 1024, perHalaman: 12 });
+export const ATURAN_KARYA = Object.freeze({ maksJudul: 200, maksDeskripsi: 1000, maksUrl: 500, maksUkuran: 3 * 1024 * 1024, perHalaman: UKURAN_HALAMAN });
 /** Ekstensi simpan berkas karya per tipe MIME yang dideteksi dari isi berkas (tanpa SVG). */
 export const MIME_KARYA = Object.freeze({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' });
 /** Jenis ekspor CSV (segmen terakhir /api/v1/ekspor/<jenis>) dan batas baris. */
@@ -150,6 +167,9 @@ export const KUNCI_PENGATURAN = Object.freeze({
   NAMA_PELATIHAN: 'nama_pelatihan',
   NAMA_PERUSAHAAN: 'nama_perusahaan',
   LOGO_PATH: 'logo_path',
+  LOGO_IKON: 'logo_ikon',
+  LOGO_PERSEGI_TEKS: 'logo_persegi_teks',
+  LOGO_SERTIFIKAT: 'logo_sertifikat',
   BATAS_TIDAK_AKTIF_MENIT: 'batas_tidak_aktif_menit',
   NILAI_LULUS_TOTAL: 'nilai_lulus_total',
   NILAI_LULUS_BAGIAN: 'nilai_lulus_bagian',
@@ -160,6 +180,7 @@ export const KUNCI_PENGATURAN = Object.freeze({
   RUBRIK_BAWAAN: 'rubrik_bawaan',
   PENANDATANGAN_NAMA: 'penandatangan_nama',
   PENANDATANGAN_JABATAN: 'penandatangan_jabatan',
+  TANDA_TANGAN_PATH: 'tanda_tangan_path',
 });
 /** Batas isi rubrik bawaan di halaman Pengaturan: jumlah kriteria, panjang teks, dan total poin. */
 export const BATAS_RUBRIK = Object.freeze({ maksKriteria: 10, maksPanjang: 150, totalPoin: 100 });
@@ -168,6 +189,9 @@ export const BATAS_RUBRIK = Object.freeze({ maksKriteria: 10, maksPanjang: 150, 
 export const AKSI_LOG = Object.freeze({
   UBAH_PENGATURAN: 'ubah_pengaturan',
   UBAH_LOGO: 'ubah_logo',
+  KEMBALIKAN_LOGO: 'kembalikan_logo',
+  UBAH_TANDA_TANGAN: 'ubah_tanda_tangan',
+  HAPUS_TANDA_TANGAN: 'hapus_tanda_tangan',
   TAMBAH_PENGGUNA: 'tambah_pengguna',
   UBAH_PENGGUNA: 'ubah_pengguna',
   AKTIFKAN_PENGGUNA: 'aktifkan_pengguna',
@@ -204,6 +228,7 @@ export const AKSI_LOG = Object.freeze({
   FINALISASI_POST_TEST: 'finalisasi_post_test',
   NILAI_POST_TEST: 'nilai_post_test',
   NILAI_BUTIR_POST_TEST: 'nilai_butir_post_test',
+  UBAH_RINGKASAN_POST_TEST: 'ubah_ringkasan_post_test',
   BUKA_TES_ULANG: 'buka_tes_ulang',
   BANK_SOAL_KURANG: 'bank_soal_kurang',
   TERBIT_SERTIFIKAT: 'terbit_sertifikat',
@@ -230,6 +255,22 @@ export const MIME_LOGO = Object.freeze({
 });
 /** Ukuran maksimum logo (byte). */
 export const MAKS_UKURAN_LOGO = 1024 * 1024;
+/**
+ * Slot logo di Pengaturan: kunci pengaturan penyimpan path unggahan, berkas bawaan di public/aset/logo (dipakai bila slot kosong;
+ * null = ikut logo utama), bawaanGelap (versi tema gelap berkas bawaan, dibuat scripts/buat-logo-gelap.mjs; hanya dipakai bila
+ * slot tidak memakai unggahan admin), dan tanpaWebp (pdfkit tidak bisa membaca WebP, jadi slot sertifikat hanya PNG atau JPEG).
+ * Slot utama memakai kunci logo_path yang sudah ada, jadi logo yang sudah diunggah admin tetap menjadi Logo utama.
+ */
+export const SLOT_LOGO = Object.freeze({
+  utama: Object.freeze({ kunci: KUNCI_PENGATURAN.LOGO_PATH, bawaan: 'logo-landscape.png', bawaanGelap: 'logo-landscape-gelap.png', tanpaWebp: false }),
+  ikon: Object.freeze({ kunci: KUNCI_PENGATURAN.LOGO_IKON, bawaan: 'logo-persegi.png', bawaanGelap: 'logo-persegi-gelap.png', tanpaWebp: false }),
+  persegiTeks: Object.freeze({ kunci: KUNCI_PENGATURAN.LOGO_PERSEGI_TEKS, bawaan: 'logo-persegi-teks.png', bawaanGelap: 'logo-persegi-teks-gelap.png', tanpaWebp: false }),
+  sertifikat: Object.freeze({ kunci: KUNCI_PENGATURAN.LOGO_SERTIFIKAT, bawaan: null, bawaanGelap: null, tanpaWebp: true }),
+});
+/** Nama slot logo yang sah (urutan tampil di Pengaturan). */
+export const DAFTAR_SLOT_LOGO = Object.freeze(Object.keys(SLOT_LOGO));
+/** Ukuran maksimum gambar tanda tangan sertifikat (byte); hanya PNG (latar transparan). */
+export const MAKS_UKURAN_TANDA_TANGAN = 500 * 1024;
 
 /** Suasana maskot Zippy (nama berkas public/aset/maskot/zippy-<suasana>.png). */
 export const SUASANA_MASKOT = Object.freeze(['sapa', 'menunjuk', 'semangat', 'berpikir', 'merayakan', 'menyemangati', 'tidur', 'terbang', 'wajah']);

@@ -10,6 +10,15 @@ export function buatPenggunaModel({ db }) {
     daftar() {
       return db.rows(`SELECT ${KOLOM_AMAN} FROM pengguna ORDER BY aktif DESC, nama`);
     },
+    /** Satu halaman akun dengan urutan sama seperti daftar (id sebagai pembeda agar urutan stabil antar halaman). */
+    halaman({ batas, offset }) {
+      return db.rows(`SELECT ${KOLOM_AMAN} FROM pengguna ORDER BY aktif DESC, nama, id LIMIT ? OFFSET ?`, [batas, offset]);
+    },
+    /** Jumlah seluruh akun. */
+    async hitung() {
+      const baris = await db.first('SELECT COUNT(*) AS n FROM pengguna');
+      return Number(baris.n);
+    },
     /** Satu akun berdasarkan ID; null bila tidak ada. */
     cariId(id, conn) {
       return db.first(`SELECT ${KOLOM_AMAN} FROM pengguna WHERE id = ?`, [id], conn);
@@ -34,6 +43,10 @@ export function buatPenggunaModel({ db }) {
     /** Mengubah nama dan peran. */
     ubah(id, { nama, peran }, conn) {
       return db.exec('UPDATE pengguna SET nama = ?, peran = ? WHERE id = ?', [nama, peran, id], conn);
+    },
+    /** Mengubah nama dan email (profil sendiri). */
+    ubahProfil(id, { nama, email }, conn) {
+      return db.exec('UPDATE pengguna SET nama = ?, email = ? WHERE id = ?', [nama, email, id], conn);
     },
     /** Mengaktifkan atau menonaktifkan akun. */
     ubahAktif(id, aktif, conn) {

@@ -1,8 +1,9 @@
 import 'server-only';
 import { AppError } from '@/utils/appError';
 import { adaOutline, penandaBerkasGambar } from '@/utils/berkasGambar';
+import { hitungPaginasi } from '@/utils/paginasi';
 import { t } from '@/utils/i18n';
-import { AKSI_LOG, BERKAS_GAMBAR, JENIS_GAMBAR } from '@/enums';
+import { AKSI_LOG, BERKAS_GAMBAR, JENIS_GAMBAR, UKURAN_HALAMAN } from '@/enums';
 
 /** URL publik berkas subjek (disajikan langsung dari public/aset/gambar, tanpa route khusus). */
 function urlBerkas(kode, berkas) {
@@ -37,6 +38,14 @@ export function buatGambarUsecase({ gambarModel, db, catatAktivitas, folderGamba
     /** Daftar subjek sesuai filter. */
     async daftar(filter) {
       return (await gambarModel.daftar(filter)).map(bentukGambar);
+    },
+    /** Satu halaman subjek sesuai filter: { baris, total, halaman, totalHalaman }. */
+    async halaman(filter) {
+      const total = await gambarModel.hitung(filter);
+      // halaman di luar jangkauan dirapikan ke halaman terakhir oleh hitungPaginasi
+      const pg = hitungPaginasi(total, filter.halaman ?? 1, UKURAN_HALAMAN);
+      const baris = await gambarModel.halaman(filter, { batas: pg.batas, offset: pg.offset });
+      return { baris: baris.map(bentukGambar), total, halaman: pg.halaman, totalHalaman: pg.totalHalaman };
     },
     /** Detail subjek beserta empat berkasnya (outline, berwarna, puzzle, mewarnai) dan ada tidaknya. */
     async detail(id) {

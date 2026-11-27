@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { t } from '@/utils/i18n';
-import { ATURAN_SERTIFIKAT, BATAS_RUBRIK } from '@/enums';
+import { ATURAN_SERTIFIKAT, BATAS_RUBRIK, DAFTAR_SLOT_LOGO } from '@/enums';
 
 /** Teks boleh kosong dengan panjang maksimal; tidak dikirim = tidak diubah. */
 function teksOpsional(maks) {
@@ -50,3 +50,7 @@ export const ubahPengaturanSchema = z.object({
   penandatangan_nama: teksOpsional(ATURAN_SERTIFIKAT.maksPenandatangan),
   penandatangan_jabatan: teksOpsional(ATURAN_SERTIFIKAT.maksPenandatangan),
 });
+/** Slot logo (utama, ikon, persegiTeks, sertifikat); tidak dikirim = utama (perilaku unggah logo yang lama). */
+export const slotLogoSchema = z.object({ slot: z.enum(DAFTAR_SLOT_LOGO, { error: t('pengaturan.logoSlotTidakValid') }).default('utama') });
+/** Query sajian logo: slot (lihat atas) dan tema (terang bawaan, atau gelap); tema tak dikenal dianggap terang. */
+export const sajianLogoSchema = slotLogoSchema.extend({ tema: z.enum(['terang', 'gelap']).catch('terang') });

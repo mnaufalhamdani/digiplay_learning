@@ -4,14 +4,14 @@ import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 
-/** Warna sertifikat: nilai token palet area siswa (design-tokens.css) dan oranye Zippy (design-system.md 7.3). */
+/** Warna sertifikat: angka tetap palet biru-oranye (PDF tidak membaca token CSS); krem sengaja tetap sebagai kertas hangat. */
 const WARNA = Object.freeze({
-  krem: '#FFF8EE', // --bg siswa
-  ungu: '#6240F0', // --primary siswa
-  teks: '#2A2347', // --fg siswa
-  redup: '#62598A', // --muted siswa
-  garis: '#E9E2F7', // --line siswa
-  oranye: '#FF8A1F', // oranye Zippy
+  krem: '#FFF8EE', // kertas hangat (tidak mengikuti --bg siswa)
+  biru: '#0A56B8', // biru judul, bingkai, dan nilai
+  teks: '#1B2A4D', // navy teks utama (= --fg siswa)
+  redup: '#52617F', // teks sekunder (= --muted siswa)
+  garis: '#D9E6F8', // garis tipis (= --line siswa)
+  oranye: '#E88A2E', // aksen oranye: bingkai dalam dan garis pemisah
   batal: '#C42B31', // --bad siswa
 });
 
@@ -19,6 +19,12 @@ const WARNA = Object.freeze({
 const LEBAR = 841.89;
 const TINGGI = 595.28;
 const TEPI = 70;
+/** Posisi garis tanda tangan (y) dan kotak maksimal gambar tanda tangan [lebar, tinggi] dalam point. */
+const GARIS_TANDA_TANGAN_Y = 488;
+/** Posisi atas (y) dan kotak maksimal logo di kepala sertifikat [lebar, tinggi] dalam point. */
+const LOGO_Y = 28;
+const LOGO_KOTAK = Object.freeze([180, 56]);
+const TANDA_TANGAN_KOTAK = Object.freeze([160, 60]);
 
 /** Berkas font opsional di public/aset/font; tanpa berkas Nunito dipakai Helvetica bawaan PDF. */
 const BERKAS_FONT = Object.freeze({ isi: 'Nunito-Regular.ttf', tebal: 'Nunito-Bold.ttf', judul: 'Fredoka-SemiBold.ttf' });
@@ -45,6 +51,7 @@ function amankanWinAnsi(teks) {
  */
 export function buatPdfSertifikat({ logger, folderAset }) {
   let aset = null; // { font: {isi, tebal, judul}, bawaan, maskot }
+  let peringatanTandaTangan = false; // peringatan tanda tangan tak terbaca ditulis sekali per proses
 
   /** Memuat font TTF (bila lengkap) dan gambar Zippy merayakan (bila ada), sekali per proses. */
   function muatAset() {
@@ -119,36 +126,40 @@ export function buatPdfSertifikat({ logger, folderAset }) {
     }
   }
 
-  /** Latar krem dan bingkai tipis ganda (ungu di luar, oranye di dalam). */
+  /** Latar krem dan bingkai tipis ganda (biru di luar, oranye di dalam). */
   function bingkai(doc) {
     doc.rect(0, 0, LEBAR, TINGGI).fill(WARNA.krem);
-    doc.lineWidth(2).strokeColor(WARNA.ungu).rect(20, 20, LEBAR - 40, TINGGI - 40).stroke();
+    doc.lineWidth(2).strokeColor(WARNA.biru).rect(20, 20, LEBAR - 40, TINGGI - 40).stroke();
     doc.lineWidth(0.75).strokeColor(WARNA.oranye).rect(28, 28, LEBAR - 56, TINGGI - 56).stroke();
   }
 
-  /** Kepala: logo (kiri), nama pelatihan dan perusahaan (tengah), Zippy merayakan (kanan). */
+  /** Kepala: logo di tengah atas, nama pelatihan dan perusahaan di bawahnya, Zippy merayakan (kanan). */
   function kepala(doc, d, a, aman) {
-    gambarAman(doc, d.logo, TEPI - 10, 48, { fit: [70, 70] });
+    // logo di atas, rata tengah, dimuat dalam kotak LOGO_KOTAK tanpa mengubah rasio
+    const [kotakLebar, kotakTinggi] = LOGO_KOTAK;
+    gambarAman(doc, d.logo, (LEBAR - kotakLebar) / 2, LOGO_Y, { fit: LOGO_KOTAK, align: 'center', valign: 'center' });
     gambarAman(doc, a.maskot, LEBAR - TEPI - 95, 40, { fit: [105, 140] });
-    const nama = pasTeks(doc, aman(d.namaPelatihan), 'tebal', 18, 11, LEBAR - 360);
-    tengah(doc, nama.teks, 58, { font: 'tebal', ukuran: nama.ukuran, warna: WARNA.ungu });
+    // dengan logo, nama pelatihan dan perusahaan turun ke bawah logo; tanpa logo tetap di posisi semula
+    const yNama = d.logo ? LOGO_Y + kotakTinggi + 4 : 58;
+    const nama = pasTeks(doc, aman(d.namaPelatihan), 'tebal', d.logo ? 13 : 18, 11, LEBAR - 360);
+    tengah(doc, nama.teks, yNama, { font: 'tebal', ukuran: nama.ukuran, warna: WARNA.biru });
     // nama perusahaan boleh kosong di pengaturan
     if (d.namaPerusahaan) {
-      const pt = pasTeks(doc, aman(d.namaPerusahaan), 'isi', 11, 8, LEBAR - 360);
-      tengah(doc, pt.teks, 82, { font: 'isi', ukuran: pt.ukuran, warna: WARNA.redup });
+      const pt = pasTeks(doc, aman(d.namaPerusahaan), 'isi', d.logo ? 9 : 11, 8, LEBAR - 360);
+      tengah(doc, pt.teks, yNama + (d.logo ? 16 : 24), { font: 'isi', ukuran: pt.ukuran, warna: WARNA.redup });
     }
   }
 
   /** Isi utama: judul, nama siswa (dipaskan), level, dan nilai. */
   function isi(doc, d, aman) {
-    tengah(doc, 'SERTIFIKAT', 118, { font: 'judul', ukuran: 44, warna: WARNA.ungu, spasi: 6 });
+    tengah(doc, 'SERTIFIKAT', 118, { font: 'judul', ukuran: 44, warna: WARNA.biru, spasi: 6 });
     doc.rect(LEBAR / 2 - 40, 176, 80, 4).fill(WARNA.oranye);
     tengah(doc, aman('Diberikan kepada'), 200, { font: 'isi', ukuran: 14, warna: WARNA.redup });
     const nama = pasTeks(doc, aman(d.namaSiswa), 'tebal', 36, 18, 620);
     tengah(doc, nama.teks, 248 - nama.ukuran * 0.6, { font: 'tebal', ukuran: nama.ukuran, warna: WARNA.teks });
     doc.lineWidth(1).strokeColor(WARNA.garis).moveTo(LEBAR / 2 - 230, 284).lineTo(LEBAR / 2 + 230, 284).stroke();
-    tengahCampur(doc, [{ teks: aman('telah menyelesaikan '), font: 'isi', warna: WARNA.redup }, { teks: aman(d.namaLevel), font: 'tebal', warna: WARNA.ungu }], 304, 18, 640);
-    tengahCampur(doc, [{ teks: aman('dengan nilai '), font: 'isi', warna: WARNA.redup }, { teks: aman(d.nilai), font: 'tebal', warna: WARNA.ungu }], 336, 18, 640);
+    tengahCampur(doc, [{ teks: aman('telah menyelesaikan '), font: 'isi', warna: WARNA.redup }, { teks: aman(d.namaLevel), font: 'tebal', warna: WARNA.biru }], 304, 18, 640);
+    tengahCampur(doc, [{ teks: aman('dengan nilai '), font: 'isi', warna: WARNA.redup }, { teks: aman(d.nilai), font: 'tebal', warna: WARNA.biru }], 336, 18, 640);
   }
 
   /** Kaki kiri: QR verifikasi, nomor sertifikat, dan tanggal terbit. */
@@ -163,11 +174,29 @@ export function buatPdfSertifikat({ logger, folderAset }) {
     doc.font('tebal').fontSize(12).fillColor(WARNA.teks).text(aman(d.tanggal), x, y + 67, { lineBreak: false });
   }
 
-  /** Kaki kanan: garis tanda tangan, nama dan jabatan penandatangan; bila nama kosong cukup nama pelatihan. */
+  /**
+   * Gambar tanda tangan (PNG transparan) di atas garis, rata tengah terhadap blok penandatangan, dimuat dalam
+   * kotak TANDA_TANGAN_KOTAK tanpa mengubah rasio. Gagal dibaca pdfkit: dilewati dan dicatat sekali per proses.
+   */
+  function tandaTangan(doc, buffer, x, lebar) {
+    if (!buffer) return;
+    const [kotakLebar, kotakTinggi] = TANDA_TANGAN_KOTAK;
+    try {
+      doc.image(buffer, x + (lebar - kotakLebar) / 2, GARIS_TANDA_TANGAN_Y - 2 - kotakTinggi, { fit: TANDA_TANGAN_KOTAK, align: 'center', valign: 'bottom' });
+    } catch (error) {
+      // berkas rusak atau bukan PNG yang bisa dibaca pdfkit: ruang kosong untuk tanda tangan manual tetap ada
+      if (!peringatanTandaTangan) {
+        peringatanTandaTangan = true;
+        logger.warn(`Tanda tangan sertifikat dilewati: ${error.message}`);
+      }
+    }
+  }
+  /** Kaki kanan: tanda tangan, garis, nama dan jabatan penandatangan; bila nama kosong cukup nama pelatihan. */
   function kakiKanan(doc, d, aman) {
     const lebar = 230;
     const x = LEBAR - TEPI - lebar;
-    doc.lineWidth(1).strokeColor(WARNA.teks).moveTo(x, 488).lineTo(x + lebar, 488).stroke();
+    tandaTangan(doc, d.tandaTangan, x, lebar);
+    doc.lineWidth(1).strokeColor(WARNA.teks).moveTo(x, GARIS_TANDA_TANGAN_Y).lineTo(x + lebar, GARIS_TANDA_TANGAN_Y).stroke();
     const tulis = (teks, y, font, maks, warna) => {
       const p = pasTeks(doc, aman(teks), font, maks, 7, lebar);
       doc.font(font).fontSize(p.ukuran).fillColor(warna).text(p.teks, x, y, { width: lebar, align: 'center', lineBreak: false });
@@ -203,7 +232,7 @@ export function buatPdfSertifikat({ logger, folderAset }) {
   return {
     /**
      * Membuat PDF dari data: { nomor, namaSiswa, namaLevel, nilai, tanggal, urlVerifikasi, namaPelatihan, namaPerusahaan,
-     * logo (Buffer|null), penandatanganNama, penandatanganJabatan, dibatalkan }. Hasil: Buffer PDF.
+     * logo (Buffer|null), tandaTangan (Buffer PNG|null), penandatanganNama, penandatanganJabatan, dibatalkan }. Hasil: Buffer PDF.
      */
     async buat(d) {
       const a = muatAset();

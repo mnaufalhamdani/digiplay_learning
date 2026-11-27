@@ -1,5 +1,6 @@
 import { validasi } from '@/utils/validasi';
-import { idButirSchema, idPostTestSchema, jawabSchema, nilaiButirSchema, siapDinilaiSchema, tabSchema, tesMengetikSchema, tesUlangSchema, unduhButirSchema } from './posttest.schema';
+import { queryHalaman } from '@/utils/schemaDasar';
+import { idButirSchema, idPostTestSchema, jawabSchema, nilaiButirSchema, ringkasanSchema, siapDinilaiSchema, tabSchema, tesMengetikSchema, tesUlangSchema, unduhButirSchema } from './posttest.schema';
 
 /**
  * Controller post test: validasi input lalu teruskan ke usecase. Hak akses ditegakkan di action/route;
@@ -32,15 +33,22 @@ export function buatPosttestController({ posttestUsecase }) {
     /** Siswa mengumpulkan. */
     kumpul: (_input, sesi) => posttestUsecase.kumpulOlehSiswa(sesi.siswaId),
     /** Daftar pengelola per tab (`tab` dari query string; tidak sah -> menunggu). */
-    daftar: (tab) => posttestUsecase.daftar(tabSchema.parse(tab)),
+    daftar: (tab, nomorHalaman) => posttestUsecase.daftar(tabSchema.parse(tab), queryHalaman.parse(nomorHalaman)),
     /** Detail pengelola. */
     detail: (input) => posttestUsecase.detail(validasi(idPostTestSchema, input).id),
     /** Riwayat post test seorang siswa (ID sudah divalidasi halaman detail siswa). */
     riwayatSiswa: (siswaId) => posttestUsecase.riwayatSiswa(siswaId),
+    /** Satu halaman riwayat post test seorang siswa (tab Post test detail siswa); `nomorHalaman` dari query string. */
+    riwayatSiswaHalaman: (siswaId, nomorHalaman) => posttestUsecase.riwayatSiswaHalaman(siswaId, queryHalaman.parse(nomorHalaman)),
     /** Tutor menilai (atau merevisi) satu butir praktik: skor dan catatan. */
     nilaiButir(input, sesi) {
       const { id, tugasId, skor, catatan } = validasi(nilaiButirSchema, input);
       return posttestUsecase.nilaiButir(id, tugasId, { skor, catatan }, sesi.id);
+    },
+    /** Tutor atau admin menyimpan ringkasan penilaian keseluruhan siswa pada satu post test. */
+    simpanRingkasan(input, sesi) {
+      const { id, ringkasan } = validasi(ringkasanSchema, input);
+      return posttestUsecase.simpanRingkasan(id, ringkasan, sesi.id);
     },
     /** Tutor memfinalisasi post test setelah semua butir praktik dinilai. */
     finalisasi: (input, sesi) => posttestUsecase.finalisasiTutor(validasi(idPostTestSchema, input).id, sesi.id),

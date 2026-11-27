@@ -36,13 +36,13 @@ function BelumAbsen({ nama }) {
 export default async function HalamanBerandaSiswa() {
   const sesiSiswa = await wajibSiswa();
   const dep = ambilDep();
-  const [branding, info, sesi] = await Promise.all([dep.pengaturanController.branding(), infoPermintaan(), dep.sesiController.berandaSiswa(null, sesiSiswa)]);
+  const [branding, info, sesi, menuTerbuka] = await Promise.all([dep.pengaturanController.branding(), infoPermintaan(), dep.sesiController.berandaSiswa(null, sesiSiswa), dep.latihanController.menuGameTerbuka(null, sesiSiswa)]);
   // materi tampil lebih dulu sebelum daftar tugas
   if (sesi?.materi.terkunci) redirect(gabungJalur(info.basis, `/materi/${sesi.pertemuanId}`));
   // pertemuan post test: kartu Mulai/Lanjutkan Post Test (D2)
   const postTest = sesi?.pertemuanNomor === NOMOR_POST_TEST ? await dep.posttestController.statusBeranda(null, sesiSiswa) : null;
   return (
-    <ShellSiswa branding={branding} basis={info.basis} mode="siswa" intervalPingMs={keamananConfig.intervalPingDetik * 1000} sesiAktifId={sesi?.id ?? null}>
+    <ShellSiswa branding={branding} basis={info.basis} mode="siswa" intervalPingMs={keamananConfig.intervalPingDetik * 1000} sesiAktifId={sesi?.id ?? null} menuTerbuka={menuTerbuka}>
       {sesi ? <DaftarTugasSiswa nama={sesiSiswa.nama} sesi={sesi} postTest={postTest} /> : <BelumAbsen nama={sesiSiswa.nama} />}
     </ShellSiswa>
   );

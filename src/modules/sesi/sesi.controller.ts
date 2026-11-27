@@ -1,5 +1,5 @@
 import { validasi } from '@/utils/validasi';
-import { idSchema } from '@/utils/schemaDasar';
+import { idSchema, queryHalaman } from '@/utils/schemaDasar';
 import { absenMasukSchema, catatanSchema, cekKodeSchema, idSesiSchema, penuntasanSchema, pengecualianSchema } from './sesi.schema';
 
 /**
@@ -44,5 +44,7 @@ export function buatSesiController({ sesiUsecase }) {
     sesiAktifId: (siswaId) => sesiUsecase.sesiAktifId(siswaId),
     /** Riwayat sesi dan kehadiran seorang siswa. */
     riwayatSiswa: (siswaId) => sesiUsecase.riwayatSiswa(validasi(idSchema, siswaId)),
+    /** Riwayat sesi seorang siswa per halaman; nomor halaman tak sah menjadi 1. */
+    riwayatSiswaHalaman: (siswaId, nomorHalaman) => sesiUsecase.riwayatSiswaHalaman(validasi(idSchema, siswaId), queryHalaman.parse(nomorHalaman)),
   };
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useTransition } from 'react';
+import { Fragment, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { t } from '@/utils/i18n';
 import { petaGalat } from '@/utils/galatForm';
@@ -86,7 +86,7 @@ function EditorRubrik({ rubrik, onUbah, galat }) {
 }
 
 /** Form pengaturan admin. panjang_kode_akses hanya ditampilkan (tidak bisa diubah). */
-export default function FormPengaturan({ awal }) {
+export default function FormPengaturan({ awal, tandaTangan = null }) {
   const router = useRouter();
   const [nilai, setNilai] = useState(() => Object.fromEntries(KUNCI_FORM.map((k) => [k, awal[k] ?? ''])));
   const [rubrik, setRubrik] = useState(() => rubrikAwal(awal.rubrik_bawaan));
@@ -110,23 +110,27 @@ export default function FormPengaturan({ awal }) {
   return (
     <form onSubmit={kirim} className="space-y-6" noValidate>
       {KELOMPOK.map((k) => (
-        <Card key={k.judul} className="space-y-4">
-          <h2 className="text-[1.15em] font-bold">{t(k.judul)}</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {k.kolom.map((c) => (
-              <TextField
-                key={c.kunci}
-                label={t(`pengaturan.kolom.${c.kunci}`)}
-                petunjuk={t(`pengaturan.petunjuk.${c.kunci}`)}
-                inputMode={c.angka ? 'numeric' : undefined}
-                akhiran={c.satuan ? t(c.satuan) : null}
-                value={nilai[c.kunci]}
-                onChange={(e) => setNilai((n) => ({ ...n, [c.kunci]: e.target.value }))}
-                galat={galat.kolom[c.kunci]}
-              />
-            ))}
-          </div>
-        </Card>
+        <Fragment key={k.judul}>
+          <Card className="space-y-4">
+            <h2 className="text-[1.15em] font-bold">{t(k.judul)}</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {k.kolom.map((c) => (
+                <TextField
+                  key={c.kunci}
+                  label={t(`pengaturan.kolom.${c.kunci}`)}
+                  petunjuk={t(`pengaturan.petunjuk.${c.kunci}`)}
+                  inputMode={c.angka ? 'numeric' : undefined}
+                  akhiran={c.satuan ? t(c.satuan) : null}
+                  value={nilai[c.kunci]}
+                  onChange={(e) => setNilai((n) => ({ ...n, [c.kunci]: e.target.value }))}
+                  galat={galat.kolom[c.kunci]}
+                />
+              ))}
+            </div>
+          </Card>
+          {/* unggah tanda tangan dipasang tepat di bawah kolom penandatangan (kelompok Sertifikat) */}
+          {k.judul === 'pengaturan.sertifikat' && tandaTangan}
+        </Fragment>
       ))}
       <EditorRubrik rubrik={rubrik} onUbah={setRubrik} galat={galat.kolom} />
       <Card className="space-y-1">

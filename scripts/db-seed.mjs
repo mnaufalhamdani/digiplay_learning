@@ -442,6 +442,10 @@ const PENGATURAN_TAMBAHAN = [
   ['jumlah_tugas_per_sesi', '6'],
   ['penandatangan_nama', ''],
   ['penandatangan_jabatan', ''],
+  ['tanda_tangan_path', ''],
+  ['logo_ikon', ''],
+  ['logo_persegi_teks', ''],
+  ['logo_sertifikat', ''],
 ];
 
 /** Menyisipkan kunci pengaturan tambahan bila belum ada, termasuk rubrik_bawaan dari rubrik_default berkas seed template. */

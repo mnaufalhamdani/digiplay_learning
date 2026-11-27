@@ -14,13 +14,14 @@ import FormAbsen from './FormAbsen';
 import { LencanaLogin } from './LencanaSesi';
 
 /** Satu kartu sesi berlangsung (C3.2): siswa, level, pertemuan, jam masuk, lama, login, progres, tutor, dan aksi. */
-function KartuSesi({ s, idSaya, href }) {
+function KartuSesi({ s, idSaya, href, hrefSiswa }) {
   const sudah = s.tutor.some((x) => x.id === idSaya);
   return (
     <Card as="article" className="space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <Link href={href} className="text-[1.1em] font-bold text-primary-text underline">
+          {/* nama membuka detail siswa; tombol Detail membuka detail absensi (sesi) */}
+          <Link href={hrefSiswa} className="text-[1.1em] font-bold text-primary-text underline">
             {s.siswa_nama}
           </Link>
           <p className="text-muted">
@@ -57,7 +58,7 @@ function KartuSesi({ s, idSaya, href }) {
   );
 }
 
-/** Halaman Absensi (C3): form Absen masuk dan daftar Sesi berlangsung; tata letak satu kolom di HP. */
+/** Halaman Absensi (C3): form Absen masuk selebar halaman, lalu daftar Sesi berlangsung selebar halaman di bawahnya. */
 export default async function HalamanAbsensi() {
   const sesi = await wajibPengguna();
   const dep = ambilDep();
@@ -71,7 +72,8 @@ export default async function HalamanAbsensi() {
   return (
     <div className="space-y-6">
       <h1 className="text-[1.5em] font-bold">{t('menu.absensi')}</h1>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,26rem)_1fr]">
+      {/* satu kolom: form Absen masuk selebar halaman, lalu daftar Sesi berlangsung selebar halaman di bawahnya */}
+      <div className="space-y-6">
         <div>
           <FormAbsen panjangKode={panjang} tutor={tutor} />
         </div>
@@ -83,7 +85,7 @@ export default async function HalamanAbsensi() {
           ) : (
             <div className="space-y-3">
               {daftar.map((s) => (
-                <KartuSesi key={s.id} s={s} idSaya={sesi.id} href={gabungJalur(info.basis, `/absensi/${s.id}`)} />
+                <KartuSesi key={s.id} s={s} idSaya={sesi.id} href={gabungJalur(info.basis, `/absensi/${s.id}`)} hrefSiswa={gabungJalur(info.basis, `/data-siswa/${s.siswa_id}`)} />
               ))}
             </div>
           )}

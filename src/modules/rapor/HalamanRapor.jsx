@@ -54,6 +54,24 @@ function Angka({ label, nilai }) {
   );
 }
 
+/**
+ * Penilaian keseluruhan dari tutor, satu blok per level (terbaru per level, sudah difinalisasi). Daftar kosong: tidak tampil sama sekali.
+ * Teks dirender sebagai teks biasa (React meng-escape HTML); baris baru dipertahankan.
+ */
+function PenilaianTutor({ daftar }) {
+  // belum ada ringkasan dari tutor: tanpa kotak kosong
+  if (daftar.length === 0) return null;
+  return (
+    <Bagian judul={t('rapor.ringkasanTutor')} ikon="catatan">
+      {daftar.map((x) => (
+        <div key={x.level_kode} className="space-y-1">
+          <p className="font-semibold text-muted">{t('rapor.ringkasanTutorLevel', { level: `${x.level_kode} · ${x.level_nama}`, tanggal: formatTanggal(x.tanggal) })}</p>
+          <p className="whitespace-pre-line [overflow-wrap:anywhere]">{x.teks}</p>
+        </div>
+      ))}
+    </Bagian>
+  );
+}
 /** Ringkasan: kehadiran (ProgressBar), sesi terakhir, syarat post test, status level. */
 function Ringkasan({ r }) {
   const k = r.kehadiran;
@@ -168,6 +186,7 @@ function Pembayaran({ p, hrefHalaman }) {
   const kolom = [
     { label: t('riwayat.tanggal'), isi: (x) => formatTanggal(x.tanggal) },
     { label: t('pembayaran.jumlah'), isi: (x) => formatRupiah(x.jumlah) },
+    { label: t('pembayaran.untukSesi'), isi: (x) => x.keterangan_sesi ?? '-' },
     { label: t('pembayaran.keterangan'), isi: (x) => x.keterangan ?? '-' },
   ];
   return (
@@ -179,14 +198,17 @@ function Pembayaran({ p, hrefHalaman }) {
           <TabelResponsif
             kolom={kolom}
             baris={p.daftar.baris}
-            // kartu HP satu baris ringkas: tanggal dan jumlah, keterangan di bawahnya bila ada
+            // kartu HP: tanggal dan jumlah, keterangan sesi di bawahnya, lalu keterangan pembayaran bila ada
             kartuHP={(x) => (
               <div className="space-y-1">
                 <p className="flex flex-wrap justify-between gap-2">
                   <span>{formatTanggal(x.tanggal)}</span>
                   <span className="font-bold">{formatRupiah(x.jumlah)}</span>
                 </p>
-                {x.keterangan && <p className="text-[0.9em] text-muted">{x.keterangan}</p>}
+                <p className="text-[0.9em] text-muted [overflow-wrap:anywhere]">
+                  {t('pembayaran.untukSesi')}: {x.keterangan_sesi ?? '-'}
+                </p>
+                {x.keterangan && <p className="text-[0.9em] text-muted [overflow-wrap:anywhere]">{x.keterangan}</p>}
               </div>
             )}
           />
@@ -264,6 +286,7 @@ export default async function HalamanRapor({ searchParams }) {
             <Badge nada="primer">{r.siswa.level_nama ? `${r.siswa.level_kode} · ${r.siswa.level_nama}` : t('dataSiswa.tanpaLevel')}</Badge>
           </div>
         </Card>
+        <PenilaianTutor daftar={r.ringkasan} />
         <Ringkasan r={r} />
         <RiwayatSesi data={r.sesi} hrefHalaman={hrefHal('sesi')} />
         <PostTest daftar={r.postTest} />

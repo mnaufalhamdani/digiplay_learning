@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { t } from '@/utils/i18n';
 import { DAFTAR_PERAN } from '@/enums';
-import { idSchema, passwordBaruSchema } from '@/utils/schemaDasar';
+import { idSchema, passwordBaruSchema, queryHalaman } from '@/utils/schemaDasar';
 
 /** Nama tampilan akun. */
 const namaSchema = z.string().trim().min(1, t('validasi.wajib')).max(150, t('validasi.maksKarakter', { maks: 150 }));
@@ -19,6 +19,11 @@ export const tambahPenggunaSchema = z.object({
 /** Schema ubah nama/peran. */
 export const ubahPenggunaSchema = z.object({ id: idSchema, nama: namaSchema, peran: peranSchema });
 
+/** Schema ubah profil sendiri: nama dan email (peran dan status tidak bisa diubah sendiri). */
+export const ubahProfilSchema = z.object({
+  nama: namaSchema,
+  email: z.string().trim().toLowerCase().min(1, t('validasi.wajib')).max(190, t('validasi.maksKarakter', { maks: 190 })).email(t('validasi.emailTidakValid')),
+});
 /** Schema aktif/nonaktif akun. */
 export const ubahAktifSchema = z.object({ id: idSchema, aktif: z.boolean() });
 
@@ -33,3 +38,5 @@ export const ubahPasswordSendiriSchema = z
     konfirmasi: z.string(),
   })
   .refine((d) => d.passwordBaru === d.konfirmasi, { message: t('akun.konfirmasiBeda'), path: ['konfirmasi'] });
+/** Query halaman Pengguna: nomor halaman (nilai tidak sah dianggap halaman 1). */
+export const halamanPenggunaSchema = z.object({ halaman: queryHalaman });

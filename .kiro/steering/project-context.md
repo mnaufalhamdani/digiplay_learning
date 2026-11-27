@@ -13,13 +13,19 @@ Root project: folder `digiplay-learning/`. Berkas hasil percakapan ditaruh sebag
 | `project-context.md` | `.kiro/steering/project-context.md` |
 | `schema.sql` | `schema.sql` |
 | `gabung-mewarnai.mjs` | `scripts/gabung-mewarnai.mjs` |
-| `PROMPT_BUILD_DIGIPLAY.md` (dan prompt agen lain) | `docs/prompt/` |
-| `level-pertemuan.json`, `pelajaran-mengetik.json`, `template-level-1.json`, `template-level-2.json`, `template-level-3.json` | `seed/` |
+| `PROMPT_BUILD_DIGIPLAY.md` (dan prompt agen lain: `PROMPT_BUILD_MATERI.md`, `PROMPT_BUILD_BLOCKLY.md`, `PROMPT_BUILD_BLOCKLY_L2.md`, `PROMPT_BUILD_BLOCKLY_L3.md`, `PROMPT_BUGFIX_INSTRUKSI_BAHAN.md`, `PROMPT_UPDATE_PROJECT_CONTEXT.md`) | `docs/prompt/` |
+| `level-pertemuan.json`, `pelajaran-mengetik.json`, `template-level-1.json`, `template-level-2.json`, `template-level-3.json`, `materi-level-1.json`, `materi-level-2.json`, `materi-level-3.json`, `labirin-blockly.json` | `seed/` |
 | `design-system.md` | `docs/design-system.md` |
+| `ringkasan-percakapan.md` (untuk Claude di sesi chat baru, bukan untuk agen coding) | `docs/ringkasan-percakapan.md` |
+| Laporan bug fix | `docs/reports/` |
 | `prompt-gambar.md`, `prompt-gambar.csv`, `prompt-maskot.md` | `docs/aset/` |
 | `design-tokens.css` | `src/app/design-tokens.css` (diimpor dari `globals.css`) |
 | Gambar subjek (outline, berwarna, puzzle, mewarnai) | `public/aset/gambar/<kode>/` |
 | Gambar maskot `zippy-<suasana>.png` | `public/aset/maskot/` |
+| Logo bawaan: `logo-landscape.png` (1200x471), `logo-persegi.png` (512, ikon), `logo-persegi-teks.png` (640) | `public/aset/logo/` (dipakai bila slot logo di Pengaturan kosong) |
+| Favicon: `favicon.ico`, `icon.png`, `apple-icon.png` (tetap, tidak bisa diubah dari Pengaturan) | `src/app/` |
+| Gambar posisi jari `posisi-jari.png` (tampil di halaman Mengetik bila ada) | `public/aset/mengetik/posisi-jari.png` |
+| Berkas unggahan (tidak masuk repo): `karya/<siswaId>/`, `kostum/<siswaId>/`, `logo/`, `tandatangan/` | `uploads/` |
 | `README.md`, `src/app/globals.css`, semua kode aplikasi | agen |
 
 ```
@@ -27,15 +33,21 @@ digiplay-learning/
   .kiro/steering/project-context.md   (berkas ini; dimuat otomatis sebagai steering)
   schema.sql
   scripts/gabung-mewarnai.mjs
-  seed/level-pertemuan.json, pelajaran-mengetik.json, template-level-{1,2,3}.json
+  seed/level-pertemuan.json, pelajaran-mengetik.json, template-level-{1,2,3}.json,
+       materi-level-{1,2,3}.json, labirin-blockly.json
   docs/
     design-system.md
+    ringkasan-percakapan.md
     aset/prompt-gambar.md, prompt-gambar.csv, prompt-maskot.md
-    prompt/PROMPT_BUILD_DIGIPLAY.md
+    prompt/PROMPT_BUILD_*.md, PROMPT_BUGFIX_*.md, PROMPT_UPDATE_PROJECT_CONTEXT.md
     reports/                     (laporan bug fix sesuai aturan kerja)
   public/aset/gambar/<kode>/
   public/aset/maskot/
+  public/aset/mengetik/posisi-jari.png
+  uploads/karya/<siswaId>/, uploads/kostum/<siswaId>/, uploads/logo/, uploads/tandatangan/
   src/app/design-tokens.css
+  src/modules/materi/, blockly/, studio/        (modul fitur materi, Coding Zippy, Studio Zippy)
+  src/modules/shared/blockly/                   (kode bersama Blockly: daftar blok, penerjemah, pustaka studio)
 ```
 
 ## 1. Gambaran umum
@@ -52,18 +64,18 @@ digiplay-learning/
 2. Mouse: klik, drag and drop
 3. Keyboard: huruf dan angka
 4. Mengetik kata dan kalimat sederhana
-5. Desktop, folder, file
+5. Desktop, folder, dan file
 6. Paint 1: menggambar bebas
-7. Paint 2: mewarnai, membuat poster
+7. Paint 2: mewarnai dan membuat poster
 8. Word 1: mengetik dan menyimpan dokumen
-9. Word 2: format huruf, menyisipkan gambar
+9. Word 2: format huruf dan menyisipkan gambar
 10. Internet sehat
-11. Coding visual 1 (Scratch Jr / Code.org)
+11. Coding visual 1 (blok kode)
 12. Proyek akhir: kartu ucapan atau poster
 13. Post test
 
 **Level 2 — Dasar**
-1. Review level 1 dan mengetik 10 jari
+1. Review Level 1 dan mengetik 10 jari
 2. Latihan mengetik (target kecepatan)
 3. Word 1: tabel dan daftar
 4. Word 2: laporan sederhana
@@ -71,9 +83,9 @@ digiplay-learning/
 6. PowerPoint 2: animasi dan transisi
 7. Excel 1: sel, baris, kolom, tabel
 8. Excel 2: rumus dasar (SUM, AVERAGE)
-9. Scratch 1: sprite, gerak, suara
-10. Scratch 2: percabangan dan perulangan
-11. Scratch 3: game sederhana
+9. Coding 1: sprite, gerak, suara
+10. Coding 2: percabangan dan perulangan
+11. Coding 3: game sederhana
 12. Proyek akhir: presentasi topik pilihan
 13. Post test
 
@@ -88,11 +100,11 @@ digiplay-learning/
 8. Coding game 1: variabel dan logika
 9. Coding game 2: skor, nyawa, level
 10. Coding game 3: menyelesaikan game
-11. Dasar HTML/CSS atau pengenalan robotika
+11. Dasar HTML/CSS
 12. Proyek akhir: game, animasi, atau website sederhana
 13. Post test
 
-Siswa baru bisa ikut tes penempatan; level 2 dan 3 tidak harus diambil berurutan.
+Siswa baru bisa ikut tes penempatan (belum dibangun, lihat bagian 12); level 2 dan 3 tidak harus diambil berurutan.
 
 ## 3. Peran dan akses
 
@@ -111,7 +123,7 @@ Siswa baru bisa ikut tes penempatan; level 2 dan 3 tidak harus diambil berurutan
 ## 4. Alur sesi dan absensi
 
 1. Tutor input kode siswa → absen masuk (jam mulai tercatat). Pada saat itu tutor juga memilih ⚠ pertemuan ke berapa (default: pertemuan berikutnya) dan bisa mencatat pembayaran.
-2. Materi dan latihan siswa digenerate saat absen masuk (lihat bagian 6).
+2. Tugas latihan siswa digenerate saat absen masuk (lihat bagian 6). Materi pertemuan itu tampil lebih dulu dan membuka kunci tugas setelah siswa menekan "Saya sudah paham".
 3. Siswa login dengan kodenya. Jika sudah absen masuk → sesi aktif, bisa mengerjakan. Jika belum → hanya bisa view seperti orang tua.
 4. Siswa menekan tombol **Pulang** dengan ConfirmDialog (tanpa input kode lagi). Setuju → sesi berakhir, jam selesai tercatat. Tutor lalu bisa mengisi catatan.
 5. Siswa lupa pulang: tutor menekan logout/akhiri sesi. Jam pulang langsung terekap otomatis, tanpa tanda khusus.
@@ -130,22 +142,25 @@ Siswa baru bisa ikut tes penempatan; level 2 dan 3 tidak harus diambil berurutan
 **Status tugas**: belum, selesai, dilewati. Tugas dilewati tercatat dan tidak memblokir tombol Pulang atau mengurangi nilai otomatis. Tombol **Ganti tugas** (siswa atau tutor) mengambil template lain di topik yang sama. Tidak ada tombol "Butuh bantuan"; siswa menghubungi tutor langsung.
 
 **Mode penilaian tugas** (field di tiap template)
-- ⚠ `otomatis_jawaban`: siswa memasukkan hasil di web, dicocokkan dengan kunci (mengetik, pilihan ganda, hasil Excel).
-- ⚠ `dicek_tutor`: karya di aplikasi lain (Word, Paint, Scratch), ditandai selesai oleh tutor.
+- ⚠ `otomatis_jawaban`: siswa memasukkan hasil di web, dicocokkan dengan kunci (mengetik, pilihan ganda, hasil Excel), atau hasil latihan di web yang dihitung server (game mouse, puzzle, labirin Coding Zippy).
+- ⚠ `dicek_tutor`: karya di aplikasi lain (Word, PowerPoint, Paint) atau proyek Studio Zippy yang dikirim siswa, ditandai selesai oleh tutor.
+- Tipe tugas yang berlaku (`template.tipe`): `mengetik`, `pilihan_ganda`, `excel`, `word`, `powerpoint`, `paint`, `coding`, `game_mouse`, `puzzle`, `blockly` (labirin Coding Zippy, Level 1), `coding_proyek` (proyek Studio Zippy, Level 2 dan 3, selalu dicek tutor), dan `lainnya`. Tipe `scratch` masih terdaftar tetapi tidak dipakai template mana pun.
+- **Tugas terkunci sampai materi dipahami**: pada pertemuan 1-12, tugas baru terbuka setelah siswa menekan "Saya sudah paham" di materi pertemuan itu (lihat bagian 6).
 
 **Post test**
 - Dibagi bagian A, B, C, dst. Tiap bagian dinilai sendiri (0-100) dengan bobot, lalu digabung jadi nilai total. Dihitung otomatis.
-- Bagian Level 1: A mengetik 20%, B pengetahuan 30%, C praktik Mouse/File/Paint 25%, D praktik Word 25%. Level 2: A mengetik 15%, B praktik Word dan PowerPoint 25%, C Excel 25%, D praktik Scratch 20%, E konsep 15% (butir: 1 + 2 + 5 + 2 + 5 = 15). Level 3: A mengetik 10%, B Excel 30%, C praktik grafik/desain/animasi 20%, D praktik coding 20%, E konsep 20% (butir: 1 + 5 + 2 + 2 + 5 = 15). Bagian mengetik diukur otomatis dari tes mengetik bawaan.
+- Bagian Level 1: A mengetik 20%, B pengetahuan 30%, C praktik Mouse/File/Paint 25%, D praktik Word 25% (butir: 1 + 10 + 2 + 2 = 15). Level 2: A mengetik 15%, B praktik Word dan PowerPoint 25%, C Excel 25%, D **Praktik Coding** 20%, E konsep 15% (butir: 1 + 2 + 5 + 2 + 5 = 15). Level 3: A mengetik 10%, B Excel 30%, C praktik grafik/desain/animasi 20%, D **Praktik Coding** 20%, E konsep 20% (butir: 1 + 5 + 2 + 2 + 5 = 15). Bagian mengetik diukur otomatis dari tes mengetik bawaan; bagian pilihan ganda dan Excel dinilai otomatis; bagian praktik dinilai tutor (lihat di bawah).
+- **Penilaian praktik oleh tutor**: tiap butir praktik post test dinilai satu per satu di detail post test (backoffice): tutor mengisi skor dan catatan berdasarkan rubrik butir (`kunci.rubrik` template, atau rubrik bawaan di pengaturan bila kosong). Nilai bagian praktik = rata-rata persentase (skor / total poin rubrik) butir bagian itu. Butir bisa dinilai setelah siswa menandainya siap dinilai atau setelah tes dikumpulkan. Tutor menekan **Finalisasi** setelah tes dikumpulkan dan semua butir praktik dinilai; saat itu nilai bagian, nilai total, dan kelulusan dihitung, dan sertifikat terbit otomatis bila lulus.
 - **Lulus: total ≥ 70 dan tiap bagian ≥ 50** (editable di pengaturan admin).
 - Syarat ikut: kehadiran minimal **9 dari 12 pertemuan** (75%). Tutor bisa mengecualikan manual.
 - ⚠ Tombol Mulai Post Test muncul otomatis di PC siswa saat pertemuan yang dipilih tutor adalah pertemuan 13 dan sesi aktif. Tidak ada tombol "buka" dari tutor.
 - Hanya sekali dikerjakan. Remedial atau tes ulang dibuka tutor. Jika ganti device atau PC mati di tengah tes, bisa dilanjutkan dengan sisa waktu yang sama. Post test tidak bisa dilewati; jawaban yang belum terisi dihitung salah.
 - Jika ada bagian di bawah batas, cukup remedial bagian itu lalu tes ulang bagian itu saja.
-- **15 butir per level, durasi 45 menit** (semua level): 1 tes mengetik (A) + 10 soal pilihan ganda (B) + 2 tugas Paint/File (C) + 2 tugas Word (D). Butir B, C, dan D diambil acak dari bank (B: 20 soal, C dan D: masing-masing 5 tugas), sehingga tiap siswa bisa berbeda. Jumlah butir dan bobot per bagian diatur di `bagian_post_test`.
+- **15 butir per level, durasi 45 menit** (semua level; pengaturan `durasi_post_test_menit`). Level 1: 1 tes mengetik (A) + 10 soal pilihan ganda (B) + 2 tugas Paint/File (C) + 2 tugas Word (D); bank Level 1: B 20 soal, C 5 tugas, D 5 tugas. Pembagian butir Level 2 dan 3 tertulis di daftar bagian di atas. Butir selain tes mengetik diambil acak dari bank tiap bagian, sehingga tiap siswa bisa berbeda. Jumlah butir dan bobot per bagian diatur di `bagian_post_test`.
 
 ## 6. Bank soal dan materi
 
-- **Template + parameter acak, tanpa AI.** Dibuat dalam jumlah banyak (sasaran ±8-10 template per pertemuan, ±100 untuk 3 level, plus bank teks ketikan).
+- **Template + parameter acak, tanpa AI.** Dibuat dalam jumlah banyak (sasaran awal ±8-10 template per pertemuan; sekarang 407 template di 3 level, termasuk bank soal post test, plus 48 bank teks ketikan).
 - Digenerate saat absen masuk; siswa pada sesi dan level yang sama bisa mendapat latihan berbeda untuk topik yang sama.
 - Contoh format:
 
@@ -161,9 +176,16 @@ Siswa baru bisa ikut tes penempatan; level 2 dan 3 tidak harus diambil berurutan
 ```
 
 - Konvensi isi template: `parameter` berupa daftar (pilih satu acak) atau `{min,max}` (bilangan bulat acak); `pilihan_ganda` menyimpan `opsi` (4 pilihan, diacak saat tampil) dan `kunci.benar` (indeks); `mengetik` memakai `kunci.teks_ketik` + `min_akurasi`/`min_wpm`; tugas `dicek_tutor` memakai rubrik (`kunci.rubrik`, atau `rubrik_default` bila kosong).
-- File seed per level: `template-level-1.json` (Level 1: 103 latihan pertemuan 1-12 termasuk game mouse dan puzzle otomatis, bank post test bagian B/C/D, definisi `bagian_post_test`, dan 16 teks untuk `bank_teks_mengetik`).
-- `template-level-2.json` (Level 2: 136 template; 91 dinilai otomatis termasuk 21 tugas Excel dengan `kunci.ekspresi`, 45 dicek tutor; 5 bagian post test; 16 teks mengetik). Jawaban angka menerima koma atau titik desimal, dengan `toleransi` untuk hasil berkoma.
-- `template-level-3.json` (Level 3: 138 template; 87 dinilai otomatis, 51 dicek tutor; 5 bagian post test; 16 teks mengetik). Tugas Excel memakai `kunci.ekspresi` (angka) atau `kunci.jika/maka/lainnya` (fungsi IF, jawaban teks; kedua hasil muncul di data acak). Animasi dan coding game memakai Scratch, dasar web memakai HTML/CSS (robotika tidak dipakai). Desain memakai Canva (akun dan syarat usia ditangani pemilik kursus). Opsi HTML pada soal harus di-escape saat ditampilkan.
+- File seed per level: `template-level-1.json` (Level 1: 133 template = 103 latihan pertemuan 1-12 termasuk game mouse, puzzle, dan 4 tugas labirin `blockly` (P11) yang dinilai otomatis, ditambah bank post test bagian B/C/D (20 + 5 + 5); 86 dinilai otomatis, 47 dicek tutor; definisi `bagian_post_test`; 16 teks untuk `bank_teks_mengetik`).
+- `template-level-2.json` (Level 2: 136 template = 97 latihan + 39 bank post test; 91 dinilai otomatis termasuk 21 tugas Excel dengan `kunci.ekspresi`, 45 dicek tutor; 17 template praktik P09-P11 dan bagian D bertipe `coding_proyek` (Studio Zippy); 5 bagian post test; 16 teks mengetik). Jawaban angka menerima koma atau titik desimal, dengan `toleransi` untuk hasil berkoma.
+- `template-level-3.json` (Level 3: 138 template = 98 latihan + 40 bank post test; 87 dinilai otomatis, 51 dicek tutor; 5 bagian post test; 16 teks mengetik). Tugas Excel memakai `kunci.ekspresi` (angka) atau `kunci.jika/maka/lainnya` (fungsi IF, jawaban teks; kedua hasil muncul di data acak). Animasi dan coding game (P06-P12 dan bagian C/D) memakai Studio Zippy (27 template `coding_proyek`), dasar web memakai HTML/CSS (tipe `coding`, dicek tutor; robotika tidak dipakai). Desain memakai Canva (akun dan syarat usia ditangani pemilik kursus). Opsi HTML pada soal harus di-escape saat ditampilkan.
+- **Instruksi bahan**: tugas yang memakai gambar (menggambar, mewarnai, Word) menulis instruksi "Unduh bahan ..." tanpa nama subjek; tombol **Unduh bahan** ada di kartu tugas dan di butir post test. Menu dan halaman **Bahan** sudah dihilangkan. Tugas menggambar/mewarnai Level 1 (P6, P13) hanya memakai subjek yang punya `mewarnai.png` (75 subjek).
+
+### Materi pertemuan
+
+- Tiap pertemuan 1-12 punya satu **materi bacaan** (36 materi; pertemuan 13 post test tidak punya). Sumbernya `seed/materi-level-1.json`, `materi-level-2.json`, `materi-level-3.json`: larik objek `{ kodePertemuan, judul, isi }` dengan `isi` = `{ tujuan: [teks], bagian: [...] }` (bagian bertipe `paragraf`, `langkah`, `zippy`, atau `gambar`; divalidasi `isiMateriSchema`). `npm run db:seed` memuatnya ke tabel `materi`; admin bisa mengubahnya di backoffice (menu Materi).
+- Saat siswa membuka pertemuan sesi berlangsung, materi tampil lebih dulu dan **tugas terkunci di server** sampai siswa menekan **Saya sudah paham** (aktif setelah ia menggulir sampai akhir materi). Status disimpan per siswa per pertemuan (`materi_baca`) dan tidak dikunci ulang. Setelah itu materi bisa dibuka lagi lewat tombol **Baca materi** di daftar tugas beranda siswa.
+- Menu **Materi** siswa hanya menampilkan pertemuan yang sudah dilalui (punya sesi untuk siswa itu, semua level); pertemuan lain dijawab 404.
 
 ### Aset gambar
 
@@ -179,18 +201,23 @@ Siswa baru bisa ikut tes penempatan; level 2 dan 3 tidak harus diambil berurutan
 - **Sertifikat** per level: terbit otomatis saat lulus post test; admin/tutor bisa membatalkan atau menerbitkan ulang. Nomor unik dan QR yang mengarah ke **halaman verifikasi publik tanpa data sensitif** (nomor sertifikat, nama, level, nilai, tanggal). Halaman orang tua tetap lewat kodenya sendiri.
 - **Tes mengetik bawaan** (target lebih powerful dari typing.com): pelajaran bertahap per baris keyboard, WPM + akurasi + konsistensi, heatmap tombol salah, latihan adaptif, mode game, grafik perkembangan. Hasilnya menjadi nilai bagian mengetik.
 - Bank soal dan tes online dengan soal acak.
-- Galeri karya (siswa menempel link proyek Scratch atau mengunggah hasil).
+- Galeri karya (siswa menempel tautan karya atau mengunggah gambar hasil; tautan hanya http/https yang aman).
 - Pelacak materi (diajarkan / penuntasan).
+- **Materi pertemuan**: bacaan per pertemuan 1-12 (36 materi) yang dibaca siswa sebelum tugas terbuka; menu Materi untuk membaca ulang pertemuan yang sudah dilalui; admin mengubah isinya di backoffice (lihat bagian 6).
+- **Coding Zippy** (Level 1, P11): editor blok kode Blockly buatan sendiri dengan labirin; hasilnya dinilai ulang di server dan menyelesaikan tugas `blockly` otomatis. Terbuka tanpa sesi, tetapi hasil hanya tersimpan saat sesi aktif.
+- **Studio Zippy** (Level 2 dan 3): panggung bebas dengan sprite dan blok kode buatan sendiri (tanpa akun dan pihak ketiga); siswa menyimpan proyek, Level 3 menambah blok lanjutan dan kostum unggahan. Proyek dikirim sebagai salinan beku ke tugas `coding_proyek` atau butir post test, lalu dijalankan dan dinilai tutor.
+- **Penilaian praktik tutor**: panel skor, catatan, dan rubrik per butir praktik post test, diakhiri Finalisasi (lihat bagian 5).
+- Ekspor data CSV (siswa, kehadiran, post test, pembayaran); bukan berkas Excel .xlsx.
 - Pembayaran: dicatat manual oleh tutor saat absen masuk atau saat menulis catatan; **tampil di halaman orang tua**.
-- Pengumuman dan jadwal untuk orang tua; ekspor data ke Excel (tahap lanjut).
-- Gamifikasi (badge, poin) tahap lanjut.
+- Pengumuman dan jadwal untuk orang tua (tahap lanjut, belum dibangun).
+- Gamifikasi (badge, poin) tahap lanjut, belum dibangun.
 
 ## 8. Arsitektur
 
 Mengikuti project referensi `dk_docs` (Next.js, clean architecture, DI).
 
 - Alur layer: `*.jsx → controller → usecase → model (semua SQL)`. Penamaan JS: **Service** (API luar, bila perlu), **Model** (database), **UseCase** (logika bisnis), **Controller** (validasi UI dan logika ringan).
-- Stack: Next.js (App Router, Server Actions, satu route API `api/v1/[modul]/[[...path]]`), **MySQL + mysql2** (SQL mentah di model, tanpa ORM), **awilix** (DI di `src/di/container.js`), **zod** (validasi), Tailwind, teks di `locales/id_ID.json`, `enums`, `utils`, `middlewares`.
+- Stack: Next.js (App Router, Server Actions, satu route API `api/v1/[[...segmen]]` yang membaca daftar route di `src/modules/routes.index.js`), **MySQL + mysql2** (SQL mentah di model, tanpa ORM), **awilix** (DI di `src/di/container.js`), **zod** (validasi), Tailwind, teks di `locales/id_ID.json`, `enums`, `utils`, `middlewares`.
 - Dependency tidak dibuat di dalam class/function. Setiap function diberi komentar ringkas berbahasa Indonesia; cabang logika non-trivial diberi komentar alasan.
 - `src/app/` hanya routing; komponen halaman di `src/modules/<modul>/` (model, usecase, controller, schema, actions, UI).
 - Auth belum ada di referensi: dibangun sendiri (login kode unik, sesi per perangkat, batas tidak aktif).
@@ -201,22 +228,26 @@ src/
   app/
     siswa/ ...              area siswa (playful)
     backoffice/ ...         area admin/tutor
-    publik/verifikasi/[nomor]/
-    api/v1/[modul]/[[...path]]/route.js
+    publik/verifikasi/[token]/
+    api/v1/[[...segmen]]/route.js
   modules/
-    shared/ui/              Button, TextField, Select, Card, Badge,
-                            ConfirmDialog, Modal, Tabs, TabelResponsif
-    siswa/ tutor/ level/ pertemuan/ sesi/ soal/ nilai/ sertifikat/ ...
-  di/ config/ enums/ locales/ utils/ middlewares/
+    shared/ui/              Button, TextField, Select, TextArea, Card, Badge,
+                            ConfirmDialog, Modal, Tabs, TabelResponsif, Paginasi,
+                            FormFilter, EmptyState, ProgressBar, Toast, Ikon, ...
+    shared/blockly/         daftar blok, penerjemah, dan pustaka Coding/Studio Zippy
+    auth/ pengaturan/ pengguna/ siswa/ level/ template/ gambar/ sesi/ tugas/
+    pembayaran/ mengetik/ latihan/ posttest/ sertifikat/ karya/ materi/
+    blockly/ studio/ rapor/ ekspor/ log/ health/ layout/
+  di/ config/ enums/ locales/ logger/ utils/ middlewares/
 ```
 
 ### Daftar modul dan tabelnya
 
-Skema lengkap ada di `schema.sql` (MySQL 8+, 25 tabel, konvensi ID dan penamaan mengikuti DK Docs).
+Skema lengkap ada di `schema.sql` (MySQL 8+, 31 tabel, konvensi ID dan penamaan mengikuti DK Docs). Tabel di luar rancangan awal 25 tabel: `materi`, `materi_baca`, `labirin_blockly`, `proyek_coding`, `proyek_kiriman`, `kostum_unggahan`.
 
 | Modul (`src/modules/`) | Tabel | Isi |
 |---|---|---|
-| `pengaturan` | pengaturan | Nama, logo, batas waktu, batas nilai |
+| `pengaturan` | pengaturan | Nama, empat slot logo (utama, ikon, persegi dengan teks, sertifikat), tanda tangan sertifikat, batas waktu, batas nilai |
 | `auth` | login_perangkat, percobaan_login | Login kode siswa/orang tua, login backoffice, ganti device, batas tidak aktif |
 | `pengguna` | pengguna | Akun admin dan tutor |
 | `siswa` | siswa, kode_akses, siswa_level | Data siswa, kode unik, level yang sedang berjalan |
@@ -227,17 +258,23 @@ Skema lengkap ada di `schema.sql` (MySQL 8+, 25 tabel, konvensi ID dan penamaan 
 | `pembayaran` | pembayaran | Catatan bayar manual |
 | `mengetik` | pelajaran_mengetik, bank_teks_mengetik, hasil_mengetik | Pelajaran dan tes mengetik |
 | `latihan` | hasil_latihan | Game latihan mouse (5 game) dan puzzle buatan sendiri di web |
+| `materi` | materi, materi_baca | Materi bacaan per pertemuan 1-12 (kolom JSON `isi`), penanda siswa sudah paham yang membuka kunci tugas |
+| `blockly` | labirin_blockly (juga menulis `hasil_latihan` jenis `blockly`) | Coding Zippy: labirin dan penilaian ulang program siswa di server (Level 1) |
+| `studio` | proyek_coding, proyek_kiriman, kostum_unggahan | Studio Zippy: proyek siswa, salinan beku proyek yang dikirim ke tugas/butir post test, kostum unggahan (Level 2 dan 3) |
 | `gambar` | gambar | Bank subjek gambar (mewarnai, berwarna, puzzle) dan unduhan untuk tugas Paint/Word |
 | `posttest` | post_test, post_test_nilai | Post test, nilai per bagian, nilai total, kelulusan |
 | `sertifikat` | sertifikat | Terbit otomatis, PDF, QR, verifikasi publik |
 | `karya` | karya | Galeri karya |
 | `rapor` | (tanpa tabel sendiri) | Rangkuman untuk halaman orang tua dan dashboard |
 | `log` | log_aktivitas | Jejak koreksi dan aksi penting |
+| `ekspor` | (tanpa tabel sendiri) | Ekspor CSV siswa, kehadiran, post test, dan pembayaran |
+| `health` | (tanpa tabel sendiri) | Endpoint cek kesehatan `GET /api/v1/health` |
+| `layout` | (tanpa tabel sendiri) | Kerangka halaman siswa dan pengelola, menu, merek |
 
 ## 9. Domain
 
 - Satu project melayani dua domain: `namadomain.com` (siswa) dan `backoffice.namadomain.com` (pengelola).
-- File pengarah (`proxy.ts` pada Next 16) membaca host dan mengarahkan ke `app/siswa` atau `app/backoffice`; akses silang ditolak (404).
+- File pengarah (`src/proxy.js`, nama berkas pengarah pada Next 16) membaca host dan mengarahkan ke `app/siswa` atau `app/backoffice`; akses silang ditolak (404).
 - Cookie sesi tidak dibagi antar domain (tanpa `Domain=.namadomain.com`); nama cookie terpisah.
 - Di belakang reverse proxy: teruskan header `Host` dan atur `allowedOrigins` Server Actions.
 - Pengembangan lokal: `siswa.localhost:3000` dan `backoffice.localhost:3000`; bila lewat IP, cadangan path `/backoffice`.
@@ -247,7 +284,7 @@ Skema lengkap ada di `schema.sql` (MySQL 8+, 25 tabel, konvensi ID dan penamaan 
 
 - Ramah anak, kekinian, enak dilihat; semua halaman mendukung **tema gelap dan terang**.
 - Satu set komponen reusable (file sendiri) dengan variabel warna (token). Penanda area (`data-area="siswa|pengelola"`) mengganti palet, lengkung sudut, font, dan ukuran tombol: siswa playful dan cerah, pengelola rapi dan tenang.
-- Mode gelap tidak hitam pekat (biru malam/ungu tua, aksen cerah). Tombol besar dan "gemuk", sudut sangat membulat, area sentuh minimal 44px. Font bulat (Fredoka/Nunito) lewat `next/font`. Animasi kecil saat berhasil dan otomatis mati bila pengguna memilih "kurangi gerakan".
+- Mode gelap tidak hitam pekat (biru malam, aksen cerah; palet biru-oranye mengikuti logo). Tombol besar dan "gemuk", sudut sangat membulat, area sentuh minimal 44px. Font bulat (Fredoka/Nunito) lewat `next/font`. Animasi kecil saat berhasil dan otomatis mati bila pengguna memilih "kurangi gerakan".
 - **ConfirmDialog kustom ramah anak** (bukan `window.confirm`) untuk tombol Pulang dan aksi penting lain.
 - Responsif mobile dan desktop. Orang tua dan tutor kemungkinan memakai HP/tablet (prioritas mobile-first); siswa kemungkinan memakai PC. Tabel di HP berubah jadi daftar kartu.
 
@@ -256,12 +293,12 @@ Skema lengkap ada di `schema.sql` (MySQL 8+, 25 tabel, konvensi ID dan penamaan 
 
 ## 11. Rencana pengerjaan
 
-1. Dokumen konteks ini
-2. Menutup keputusan terbuka
-3. Skema database MySQL (`schema.sql`) dan daftar modul
-4. Template soal dan materi Level 1-3
-5. Desain UI: palet terang/gelap, daftar komponen, contoh layar kunci
-6. Prompt build bertahap untuk agen coding: A fondasi (project, DI, database, pengarah domain, login kode) → B data master → C sesi dan absensi → D latihan, tes mengetik, bank soal → E nilai, sertifikat, QR → F rapor orang tua, galeri, pengaturan
+1. Dokumen konteks ini (selesai)
+2. Menutup keputusan terbuka (selesai sebagian; sisanya di bagian 12)
+3. Skema database MySQL (`schema.sql`) dan daftar modul (selesai; 31 tabel)
+4. Template soal dan materi Level 1-3 (selesai: 407 template dan 36 materi)
+5. Desain UI: palet terang/gelap, daftar komponen, contoh layar kunci (selesai)
+6. Prompt build bertahap untuk agen coding: A fondasi (project, DI, database, pengarah domain, login kode) → B data master → C sesi dan absensi → D latihan, tes mengetik, bank soal → E nilai, sertifikat, QR → F rapor orang tua, galeri, pengaturan (semua fase selesai). Setelah Fase F ditambah fitur materi pertemuan, Coding Zippy (Level 1), Studio Zippy (Level 2 dan 3), serta perbaikan instruksi bahan dan penilaian praktik (lihat catatan teknis di bawah).
 7. Uji dan deploy (ditunda)
 
 Prompt untuk agen hanya meminta pembaruan `README.md` dan `.kiro/steering/project-context.md`.
@@ -270,11 +307,11 @@ Prompt untuk agen hanya meminta pembaruan `README.md` dan `.kiro/steering/projec
 
 - (Selesai) Canva tetap dipakai pada Level 3. Akun dan kondisi siswa (syarat usia Canva) ditangani sendiri oleh pemilik kursus.
 
-- ⚠ Admin dan tutor login dengan email + password.
-- ⚠ Tutor memilih pertemuan saat absen masuk, dan post test otomatis muncul pada pertemuan 13.
-- ⚠ Mode penilaian tugas (`otomatis_jawaban` / `dicek_tutor`) per template.
-- Aturan remedial setelah tidak lulus (berapa kali tes ulang, ada jeda atau tidak).
-- Tes penempatan untuk siswa baru: isi dan cara menentukan level.
+- ⚠ Admin dan tutor login dengan email + password (sudah dibangun sesuai usulan, belum dikonfirmasi eksplisit).
+- ⚠ Tutor memilih pertemuan saat absen masuk, dan post test otomatis muncul pada pertemuan 13 (sudah dibangun sesuai usulan, belum dikonfirmasi eksplisit).
+- ⚠ Mode penilaian tugas (`otomatis_jawaban` / `dicek_tutor`) per template (sudah dibangun sesuai usulan, belum dikonfirmasi eksplisit).
+- (Diputuskan) Aturan remedial setelah tidak lulus: tes ulang tidak dibatasi (tanpa batas jumlah dan tanpa jeda); tutor yang membuka tes ulang, per bagian atau semua bagian.
+- Tes penempatan untuk siswa baru: isi dan cara menentukan level. Belum dibangun, dibiarkan terbuka.
 - (Selesai) Level berikutnya diatur tutor lewat Ganti level di detail siswa, bukan terbuka otomatis setelah lulus. Siswa tidak perlu didaftarkan ulang.
 
 ## Status pengerjaan
@@ -287,6 +324,8 @@ Diperbarui oleh agen coding setelah tiap fase (lihat `docs/prompt/PROMPT_BUILD_D
 - [x] Fase D - Latihan dan tes (dikerjakan dalam dua permintaan: D1 latihan mengetik, game mouse, puzzle; D2 post test)
 - [x] Fase E - Sertifikat
 - [x] Fase F - Orang tua dan pelengkap
+- [x] Penyempurnaan (`docs/prompt/PROMPT_BUILD_PENYEMPURNAAN.md`): Tahap 1 (tanda tangan sertifikat), 2 (keterangan sesi pembayaran), 3 (detail log), 4 (ringkasan penilaian siswa), dan 5 (pagination 10 data) selesai
+- [x] Game siswa terbuka bertahap (`docs/prompt/PROMPT_BUILD_GAME_BERTAHAP.md`)
 
 ### Catatan teknis Fase A
 
@@ -341,7 +380,7 @@ Diperbarui oleh agen coding setelah tiap fase (lihat `docs/prompt/PROMPT_BUILD_D
 - Lulus post test tidak mengubah level siswa; naik level diatur tutor lewat **Ganti level** di detail siswa (keputusan developer). Siswa tidak didaftarkan ulang: kode siswa dan kode orang tua tetap, riwayat tetap. Level lama tercatat `lulus` bila punya percobaan post test yang lulus, `berhenti` bila belum.
 
 ### Catatan teknis Fase E
-- Modul `sertifikat` lengkap (model, usecase, controller, schema, actions, routes) menggantikan stub D2. Dependensi baru `pdfkit` 0.21.0 dan `qrcode` 1.5.4 (dipin; keduanya masuk `serverExternalPackages`). Pembuat PDF ada di `src/modules/sertifikat/sertifikat.pdf.js` (didaftarkan di DI sebagai `pdfSertifikat`, folder aset lewat `folderAset`); konstanta warna (ungu, krem, teks, oranye Zippy `#FF8A1F`) ada di berkas itu.
+- Modul `sertifikat` lengkap (model, usecase, controller, schema, actions, routes) menggantikan stub D2. Dependensi baru `pdfkit` 0.21.0 dan `qrcode` 1.5.4 (dipin; keduanya masuk `serverExternalPackages`). Pembuat PDF ada di `src/modules/sertifikat/sertifikat.pdf.js` (didaftarkan di DI sebagai `pdfSertifikat`, folder aset lewat `folderAset`); konstanta warna (biru `#0A56B8`, krem, teks navy `#1B2A4D`, oranye aksen `#E88A2E`; lihat "Catatan teknis palet warna") ada di berkas itu.
 - Pengaturan baru `penandatangan_nama` dan `penandatangan_jabatan` (bawaan kosong, maks. 100 karakter): ditambahkan ke `INSERT IGNORE` pengaturan di `schema.sql` (database baru) dan `db:seed` (database lama), tampil di kelompok **Sertifikat** halaman Pengaturan.
 - Penerbitan otomatis dipanggil dari finalisasi post test di dalam transaksinya, memakai SAVEPOINT lewat helper baru `db.titikSimpan(conn, nama, fn)` di `src/config/database.js`. Gagal terbit hanya membatalkan bagian sertifikat; finalisasi tetap di-commit, galat ditulis ke log aplikasi dan `log_aktivitas` (`gagal_terbit_sertifikat`, entitas `post_test`). Detail post test menurunkan status **gagal** dari catatan log itu bila post test lulus tetapi belum pernah punya sertifikat. Bentrok UNIQUE `uq_sertifikat_aktif` saat otomatis dianggap sudah terbit.
 - Idempoten: bila sudah ada sertifikat `terbit` untuk (siswa, level), penerbitan otomatis tidak melakukan apa pun. Revisi nilai praktik setelah terbit tidak mengubah snapshot sertifikat; perlu **Terbitkan ulang** bila nilai di sertifikat harus ikut berubah.
@@ -381,7 +420,7 @@ Diperbarui oleh agen coding setelah tiap fase (lihat `docs/prompt/PROMPT_BUILD_D
 - Modul baru `blockly` (model, usecase, controller, schema, actions, halaman) dan tabel `labirin_blockly` (28 tabel). `hasil_latihan` mendapat nilai ENUM `jenis` = `blockly` dan kolom `labirin_id` (FK `ON DELETE SET NULL`); `template.tipe` mendapat `blockly`. `db:init` kini juga menambah nilai ENUM (`PEMBARUAN_ENUM`) selain tabel, kolom, dan indeks. `JENIS_BLOCKLY` sengaja tidak masuk `JENIS_LATIHAN` agar hasil Coding Zippy tidak bisa disimpan lewat `latihanUsecase.simpan`; hanya `blocklyUsecase.simpan` yang menulisnya, setelah menilai ulang program di server.
 - Kode bersama di `src/modules/shared/blockly/`: `daftarBlok.js` (satu entri per blok: tampilan Blockly, cara menjalankan, aturan `kali`; `periksaProgram` tanpa rekursi; `BATAS_PROGRAM`) dan `simulasiProgram.js` (penerjemah murni, dipakai browser dan server). Pustaka `blockly` 13.4.0 (pin) hanya dimuat lewat `next/dynamic` tanpa SSR di `KlienLabirin`; jembatannya `integrasiBlockly.js` membaca workspace menjadi JSON program (tanpa generator kode), tong sampah dan zoom dimatikan (sprite tidak disertakan).
 - Tugas `blockly` dinilai lewat `tugasUsecase.selesaikanOtomatis(siswaId, { tipe: 'blockly', jenis, labirin })`; `cocokHasil` mencocokkan `kunci.jenis` dan `kunci.labirin` (nama labirin). `kunci.labirin` ikut dikirim ke browser (`KUNCI_UNTUK_SISWA`). `blockly` masuk `TIPE_LATIHAN_WEB`; kartu tugas membuka `/coding-zippy?tugas=<id>` yang meneruskan ke labirin yang diminta. Kunci materi tetap berlaku (hasil tersimpan tetapi tugas tidak selesai sebelum materi dipahami).
-- Menu Coding Zippy bersifat `bebas` (terbuka tanpa sesi, hasil tidak tersimpan di luar sesi). `Maskot` mendapat prop `penuh`. `nav` menu siswa diberi `relative` agar teks `sr-only` item terkunci tidak membuat halaman meluap mendatar di HP.
+- (Diganti aturan game bertahap, lihat "Catatan teknis game terbuka bertahap": Coding Zippy tidak lagi `bebas` penuh.) Menu Coding Zippy bersifat `bebas` (terbuka tanpa sesi, hasil tidak tersimpan di luar sesi). `Maskot` mendapat prop `penuh`. `nav` menu siswa diberi `relative` agar teks `sr-only` item terkunci tidak membuat halaman meluap mendatar di HP.
 - Seed: `seed/labirin-blockly.json` di-upsert per `kode`; `contoh_solusi` (format ringkas) divalidasi lewat penerjemah dan tidak pernah dikirim ke siswa. Empat template `L1-P11-PR-01..04` diganti dari `scratch`/`dicek_tutor` menjadi `blockly`/`otomatis_jawaban`.
 
 ### Catatan teknis fitur Studio Zippy (Blockly buatan sendiri, L2 P09-P11 dan post test bagian D)
@@ -396,8 +435,55 @@ Diperbarui oleh agen coding setelah tiap fase (lihat `docs/prompt/PROMPT_BUILD_D
 - Kunci hapus kostum: dihitung dengan `LIKE '%"<id>"%'` pada `proyek_kiriman.isi`; kostum yang sudah terkirim ditolak (409); rujukan kostum yang dihapus dicabut dari proyek tersimpan (`cabutKostum`).
 - Seed `template-level-3.json`: 27 template `scratch` menjadi `coding_proyek`, 9 soal pilihan ganda dan teks tugas memakai istilah blok Indonesia (tanpa kata Scratch); parameter objek/rintangan hanya subjek yang ada. Tipe `scratch` tetap terdaftar tetapi tidak dipakai template mana pun lagi.
 
+### Catatan teknis penyelarasan dokumen
+- Tanggal pengerjaan: 2026-11-26 (tanggal sistem saat tugas dikerjakan). Tugas dokumentasi saja; tidak ada kode, database, seed, atau template yang diubah.
+- Bagian yang diubah: 0 (letak berkas: seed materi dan labirin, prompt di `docs/prompt/`, `docs/reports/`, `docs/ringkasan-percakapan.md`, `uploads/`, `posisi-jari.png`, folder modul baru), 2 (judul pertemuan disamakan dengan `seed/level-pertemuan.json`), 5 (mode dan tipe tugas, kunci materi, bagian D post test "Praktik Coding", penilaian praktik tutor, pembagian butir), 6 (jumlah template, tipe template, instruksi bahan, bagian baru "Materi pertemuan"), 7 (fitur), 8 (struktur, 31 tabel, modul dan tabel baru, route API), 4, 9, 11, 12 (perubahan kecil: alur materi, nama berkas `src/proxy.js`, status rencana dan keputusan). Bagian 1, 3, dan 10 diperiksa dan tidak diubah.
+- Tidak bisa dipastikan dari repo: status konfirmasi pemilik untuk tiga butir ⚠ di bagian 12 (hanya diberi catatan "sudah dibangun"), serta arti "tidak ada = tidak tuntas" di bagian 5 (catatan Fase C menyebut penuntasan otomatis NULL bila sesi tanpa tugas sama sekali).
+
 ### Perbandingan fitur dengan dokumen ini (akhir Fase F)
 - Sudah: level dan materi 3 level x 13 pertemuan; peran admin/tutor/siswa/orang tua dengan login dan rate limit; kode unik 8 karakter; alur sesi (absen masuk, Pulang, tutup oleh tutor, ganti device, satu kode satu PC, batas tidak aktif); penuntasan otomatis + pilihan tutor; status tugas belum/selesai/dilewati/diganti dan Ganti tugas; penilaian `otomatis_jawaban`/`dicek_tutor`; post test 15 butir 45 menit dengan bagian berbobot, kelulusan, syarat kehadiran dan pengecualian, lanjut setelah ganti device, tes ulang per bagian; bank soal template acak tanpa AI; aset gambar, puzzle, game mouse; tes mengetik bawaan (pelajaran bertahap, WPM/akurasi/konsistensi, heatmap, latihan adaptif, game, grafik); sertifikat PDF + QR + verifikasi publik + batal/terbit ulang; rapor orang tua; galeri karya; pembayaran manual tampil di halaman orang tua; ekspor data (CSV, bukan .xlsx); tema gelap/terang dan dua area; ConfirmDialog; Zippy.
 - Belum: tes penempatan siswa baru; pengumuman dan jadwal untuk orang tua; gamifikasi (badge, poin); deploy, domain, SSL, cadangan terjadwal (ditunda).
 - Diputuskan developer setelah Fase F: berkas karya ikut terhapus saat siswa dihapus; tes ulang post test tetap tidak dibatasi (tanpa batas jumlah dan tanpa jeda); tes penempatan belum dibangun (dibiarkan).
 - Keputusan terbuka yang tersisa: ⚠ butir di bagian 12 yang belum dikonfirmasi eksplisit (login email+password, pemilihan pertemuan saat absen, mode penilaian per template) sudah dibangun sesuai usulannya.
+
+### Catatan teknis penyempurnaan (Tahap 1 dan 2)
+- Tanda tangan sertifikat: pengaturan baru `tanda_tangan_path` (`KUNCI_PENGATURAN.TANDA_TANGAN_PATH`; `schema.sql` dan `PENGATURAN_TAMBAHAN` di `db:seed`; tanpa baris pun usecase memakai nilai kosong). Berkas PNG di `uploads/tandatangan/<token>.png` (maks. 500 KB, `MAKS_UKURAN_TANDA_TANGAN`; tipe dibaca dari byte lewat `deteksiTipeGambar`, hanya PNG). Route `POST /api/v1/pengaturan/tanda-tangan` (admin, multipart kolom `tandaTangan`) dan `GET` pratinjau (`AKSES.PENGGUNA`, tidak publik); hapus lewat Server Action `hapusTandaTangan` (admin). `pengaturanUsecase` mendapat `ubahTandaTangan`, `hapusTandaTangan`, `bacaTandaTangan`, `tandaTanganUrl`. Aksi log baru `ubah_tanda_tangan` dan `hapus_tanda_tangan` (tanpa isi berkas). Komponen baru `UnggahTandaTangan.jsx` (dipasang lewat prop `tandaTangan` di `FormPengaturan`, tepat di bawah kelompok Sertifikat).
+- PDF: `sertifikatUsecase.pdf` membaca `penandatangan_nama`, `penandatangan_jabatan`, dan tanda tangan dari pengaturan saat unduh (bukan snapshot), lalu mengirim `tandaTangan` (Buffer|null) ke `pdfSertifikat.buat`. Gambar dimuat `fit` 160 x 60 pt di atas garis tanda tangan (y 488), rata tengah. Pengaturan kosong: tanpa peringatan; berkas hilang di disk atau tidak terbaca pdfkit: PDF tetap jadi dan peringatan ditulis sekali per proses (dua penanda terpisah, di usecase dan di pembuat PDF).
+- Keterangan sesi pembayaran: `pembayaranModel` menambah `LEFT JOIN sesi, pertemuan, level` (kolom `sesi_tanggal`, `pertemuan_nomor`, `pertemuan_judul`, `level_urutan`); `pembayaranUsecase.bentuk` menambah `keterangan_sesi` (teks dari `pembayaran.keteranganSesi`, null bila tanpa sesi). `BagianPembayaran` (detail siswa dan detail sesi) dan `HalamanRapor` menampilkannya; `raporUsecase.pembayaranOrtu` hanya meneruskan `keterangan_sesi`. Tanpa perubahan skema. Tidak ada menu Pembayaran tersendiri di backoffice (prompt menyebutnya, tetapi daftar pembayaran hanya ada di tiga tempat itu). Jalur pencatatan: absen masuk dan form di detail sesi mengisi `sesi_id`. Form di detail siswa sudah dihapus: pembayaran wajib terkait sesi (`pembayaranUsecase.tambah` menolak tanpa `sesiId`, 400); tab Pembayaran di detail siswa hanya daftar (`BagianPembayaran` menampilkan form hanya bila `sesiId` ada). Baris lama dengan `sesi_id` NULL tetap tampil dengan "-".
+
+### Catatan teknis penyempurnaan (Tahap 3 dan 4)
+- Tahap 3: `src/modules/log/TabelLog.jsx` (client component) menggantikan `TabelResponsif` di `HalamanLog`; `TabelResponsif` (area bersama) tidak diubah. Baris detail tambahan `<tr><td colSpan=5>` di tabel, detail di bawah isi kartu pada HP. `HalamanLog` mengirim data murni (`waktu`, `aksi_label`, dst.) karena fungsi tidak bisa melewati batas server-client. Fungsi `Detail` dan array `kolom` lama di `HalamanLog.jsx` sengaja tidak dihapus (aturan kode tidak terpakai). Kunci locales baru `log.tutupDetail`.
+- Tahap 4: kolom baru `post_test.ringkasan_tutor` (TEXT), `ringkasan_oleh` (FK `pengguna`, `ON DELETE SET NULL`), `ringkasan_at` (di `schema.sql` dan `PEMBARUAN_KOLOM` `db-init`). `MAKS_RINGKASAN_POST_TEST` (2000) dan `AKSI_LOG.UBAH_RINGKASAN_POST_TEST` di enums. `posttestModel.ringkasan/simpanRingkasan/ringkasanOrtu` (query terpisah, bukan di `KOLOM` bersama agar `cariId ... FOR UPDATE` tidak bertambah join/kunci), `posttestUsecase.simpanRingkasan/ringkasanOrtu`, Server Action `simpanRingkasanPostTest` (`AKSES.PENGGUNA`), `posttestUsecase.detail` mengembalikan `ringkasanTutor { teks, nama, at }`. `raporUsecase.ortu` mengembalikan `ringkasan` ([{ level_kode, level_nama, tanggal, teks }], satu per level, hanya post test dengan `nilai_total` terisi), ditampilkan `HalamanRapor` (`PenilaianTutor`) tepat di bawah kartu data siswa. Tanggal yang ditampilkan = `post_test.selesai_at` (belum ada kolom waktu finalisasi).
+
+### Catatan teknis penyempurnaan (Tahap 5)
+- `UKURAN_HALAMAN` = 10 untuk semua daftar berpaginasi (`ATURAN_KARYA.perHalaman` dan rapor ikut memakainya); `Paginasi` menampilkan "Menampilkan x-y dari z data" (prop `ukuran` opsional, bawaan `UKURAN_HALAMAN`). Bentuk hasil berpaginasi seragam: `{ baris, total, halaman, totalHalaman }` lewat `hitungPaginasi`.
+- Fungsi baru berdampingan dengan yang lama (yang lama tidak dihapus): `sesiUsecase.riwayatSiswaHalaman` (`{ sesi, kehadiran, terakhir, total, halaman, totalHalaman }`; `terakhir` dipakai rapor untuk sesi terakhir di halaman mana pun), `pembayaranUsecase.halamanSiswa` (`jumlahTotal` = SUM semua catatan), `posttestUsecase.riwayatSiswaHalaman` (`bisaTesUlang` dari percobaan terakhir per `siswa_level` pada data penuh), `penggunaUsecase.halaman`, `gambarUsecase.halaman`. `posttestUsecase.daftar(tab, halaman)` dan `gambarController.daftar` sekarang berbentuk berpaginasi (hanya satu pemanggil). `gambarModel.daftar` (tanpa LIMIT) tetap dipakai modul studio.
+- `raporUsecase.ortu` memakai `sesiUsecase.riwayatSiswaHalaman` dan `pembayaranUsecase.halamanSiswa` (sebelumnya memuat semua lalu `potong`; fungsi `potong` tidak dihapus tetapi tidak dipakai). Daftar post test dan sertifikat di rapor tetap penuh. Detail siswa (`HalamanDetailSiswa`) membaca `tab`, `sesi`, `bayar`, `pt` dari query dan meneruskan `awal` ke `Tabs`; `BagianPembayaran` menerima prop `paginasi` (elemen React). Indeks baru `idx_sesi_siswa_waktu` (`sesi(siswa_id, jam_masuk)`).
+- Catatan operasional: menghentikan terminal dev server dapat meninggalkan proses Next di port 3000 yang menjalankan kode lama; periksa `Get-NetTCPConnection -LocalPort 3000` sebelum menguji.
+
+### Catatan teknis game terbuka bertahap
+- Menu game siswa (Latihan Mouse, Mengetik, Coding Zippy, Studio Zippy) tidak lagi `bebas` penuh: terbuka bila siswa pernah punya tugas bertipe `game_mouse`, `mengetik`, `blockly`, atau `coding_proyek` (`MENU_GAME_DARI_TIPE` di enums; lintas level, semua status, termasuk butir post test). Puzzle terbuka sejak awal (`MENU_GAME_AWAL`). Tetap boleh dibuka tanpa sesi setelah terbuka; hasil tetap hanya tersimpan saat sesi berlangsung. Materi dan Karya tetap `bebas`. Tanpa perubahan skema; siswa lama otomatis mendapat akses dari riwayat tugasnya.
+- Aturan level: `MENU_GAME_LEVEL_AWAL` (enums) = level pertama tiap game dipakai (Latihan Mouse, Mengetik, Coding Zippy: 1; Studio: 2). Siswa yang pernah punya `siswa_level` dengan urutan lebih tinggi dari angka itu mendapat menunya terbuka walau tugasnya tidak muncul (mis. siswa yang masuk langsung di Level 2 atau 3). Urutan level tertinggi diambil satu baris `level:N` di query yang sama; kolom tipe di-`CAST` ke teks karena UNION memakai tipe ENUM dari SELECT pertama dan akan mengosongkan nilai `level:N`.
+- Query tunggal `latihanModel.tipeGameSiswa` (`tugas_siswa` JOIN `sesi` JOIN `template` UNION penanda `post_test` pada level yang punya bagian `tes_mengetik`, karena bagian A post test tidak berupa baris `tugas_siswa`). `latihanUsecase.menuGameTerbuka/wajibMenuTerbuka`; `konteksSiswa()` (modul sesi) membawa `menuTerbuka` dan mengekspor `wajibMenuTerbuka(k, menu)` (404). Butir post test dibuat saat siswa menekan Mulai Post Test (`posttestUsecase.mulai` -> `buatButir`), jadi Mengetik (bagian A) dan Studio (butir `coding_proyek`) terbuka saat itu. `ShellSiswa` menerima `menuTerbuka` (null = semua terbuka) dan menandai item `game: true` sebagai `MenuTerkunci` ("Terbuka saat pertemuannya tiba") bila belum terbuka.
+- Penjaga server: halaman game di atas (Studio dilewati bila ada `?butir=`), serta aksi di controller `mengetik` (simpan, adaptif, teksAcak, kataGame), `blockly` (simpan), `studio` (daftar, buka, simpan, hapus, unggah dan hapus kostum), dan `latihanUsecase.simpan` untuk game mouse (403). Tidak dijaga: Puzzle, alur post test (tes mengetik, butir Studio), `studio.kirim`, dan pengerjaan tugas. Controller mengetik, blockly, dan studio kini bergantung pada `latihanUsecase` (resolusi PROXY, tanpa registrasi baru di `container.js`).
+
+### Catatan teknis logo
+- Tiga varian logo bawaan di `public/aset/logo/` dan favicon tetap di `src/app/`. `SLOT_LOGO` / `DAFTAR_SLOT_LOGO` (enums) memetakan slot `utama` (kunci lama `logo_path`), `ikon` (`logo_ikon`), `persegiTeks` (`logo_persegi_teks`), dan `sertifikat` (`logo_sertifikat`, `tanpaWebp`) ke kunci pengaturan dan berkas bawaan. Kunci baru ada di `schema.sql` dan `PENGATURAN_TAMBAHAN` di `db:seed` (bawaan kosong); aksi log baru `kembalikan_logo`.
+- `pengaturanUsecase`: `branding()` kini juga mengembalikan `logo` (URL tiap slot: unggahan `/api/v1/pengaturan/logo?slot=<slot>&v=<nama berkas>` atau bawaan statis `/aset/logo/...`) dan `logoTerunggah`; `ubahLogo(buffer, penggunaId, slot)`, `kembalikanLogo(slot, penggunaId)`, `bacaLogoSlot(slot)`, `logoSertifikat()` (Logo sertifikat, lalu Logo utama bila PNG/JPEG, lalu bawaan). `bacaLogo()` lama tidak diubah. Usecase mendapat dependensi `folderAset`. `GET /api/v1/pengaturan/logo` sekarang memakai fungsi `logoSlot` (query `slot`, bawaan utama).
+- UI: `LogoAplikasi` (varian; tanpa wadah atau latar putih di tema mana pun, keputusan pemilik; logo bawaan punya versi `-gelap` dari `scripts/buat-logo-gelap.mjs`, dipasang berdampingan dan dipilih lewat `dark:`; `SLOT_LOGO.bawaanGelap`, `branding.logoGelap`; logo unggahan PNG/WebP mendapat versi gelap otomatis lewat `src/utils/logoGelap.js` dan `pengaturanUsecase.bacaLogoGelap`, disimpan sebagai `<nama>-gelap.png` di `uploads/logo/` dan dihapus bersama berkas aslinya; `GET /api/v1/pengaturan/logo` menerima `tema=gelap`), `Merek` (utama di `sm` ke atas, ikon di HP; visibilitas di pembungkus karena `display` wadah logo menimpa kelas `hidden`), `LayarPesan` (404 dan galat), `UnggahLogo` per slot. `layout.metadata.js` tidak lagi menimpa ikon tab dengan logo unggahan (baris lama dikomen). `sertifikat.pdf.js`: logo di tengah atas (`LOGO_KOTAK` 180 x 56, `LOGO_Y` 28).
+
+### Catatan teknis palet warna biru-oranye
+- Token resmi ada di `src/app/design-tokens.css` (tidak diubah oleh tugas penerapan): siswa dan orang tua biru `#0A66D8` / oranye `#FF8A1F`, pengelola biru `#1D5FB0` / oranye `#E88A2E`; `info` kini teal; token baru `nav-bg`, `nav-fg`, `nav-muted`, `nav-line`, `nav-active-bg`, `nav-active-fg` khusus menu samping.
+- Menu samping pengelola (`ShellPengelola`, desktop dan laci HP) memakai token `nav-*` (navy di kedua tema); garis fokus item memakai `nav-fg`. Logo tetap di header atas (latar `panel`), bukan di menu samping, jadi `LogoAplikasi` tidak diberi wadah terang tambahan. Pratinjau logo gelap di Pengaturan (`UnggahLogo`) memakai `bg-nav-bg`.
+- Tema area kerja Blockly (`WARNA_AREA` di `blockly/integrasiBlockly.js`, juga dipakai Studio Zippy) mengikuti nilai token siswa baru. Warna kategori blok sengaja tidak berubah.
+- Teks balon dan skor di panggung Studio (`PanggungStudio`, latar putih tetap di kedua tema) memakai `text-on-sun` agar selalu gelap.
+- PDF sertifikat (`sertifikat.pdf.js`, angka tetap): biru `#0A56B8` (judul, bingkai luar, nilai), oranye `#E88A2E` (bingkai dalam, garis pemisah), teks `#1B2A4D`, teks sekunder `#52617F`, garis `#D9E6F8`; krem `#FFF8EE` tetap sebagai kertas hangat; watermark merah tetap.
+- Warna lama yang sengaja tetap: isi game dan panggung (`PapanLabirin`, `LatarStudio`, `pustakaStudio`, pratinjau `DialogLevel3`/`KlienStudio`), kategori warna blok Blockly dan Studio, `--warn` gelap pengelola di token (nilai milik pemilik).
+
+### Catatan teknis dashboard beranda pengelola (Tahap 1 sampai 3)
+- Beranda `/` sekarang `src/modules/rapor/HalamanDashboard.jsx` (dipasang di `src/app/backoffice/(dalam)/page.jsx`); `HalamanBerandaPengelola` di modul `sesi` tidak dihapus tetapi tidak dipakai lagi. `raporController.dashboard(query, sesi)` -> `raporUsecase.dashboard(adminkah, { bulan, levelId })` (`beranda` lama tetap ada). Filter divalidasi zod di controller (tidak sah = bawaan) lalu dinormalkan di `dashboard.helper.js` (rentang bulan dari `sesiModel.batasWaktu`, level harus level aktif). Usecase `rapor` kini juga bergantung pada `levelModel`, `pengaturanUsecase`, dan `logger` (tanpa registrasi baru di `container.js`).
+- Tiap bagian dijalankan paralel dan terisolasi lewat `aman()`: bagian yang galat menjadi `{ galat: true }` (dicatat di log server), yang berhasil `{ data }`. Data uang (`pembayaranBulanIni`, `pembayaran`, `belumBayar`) hanya dihitung untuk admin; untuk tutor nilainya null dan kartunya tidak dirender.
+- Fungsi model baru: `sesiModel` (`batasWaktu`, `ringkasBerlangsungHariIni`, `perbandingan7Hari`, `sesiPerHari`, `penuntasanPerMinggu`, `jumlahBerlangsungLama`), `siswaModel` (`ringkasanAktif`, `perLevel`, `jumlahTanpaSesi`), `posttestModel` (`ringkasMenunggu`, `statusBulan`, `jumlahBelumTes`), `pembayaranModel` (`totalPerBulan`, `statusSiswaBulan`). Satu query agregasi per grafik; tanpa perubahan skema dan tanpa indeks baru (data uji besar: semua query < 50 ms, lihat catatan akhir tugas).
+- Komponen baru di `src/modules/shared/ui/`: `KartuGrafik`, `GrafikBatang` (client; ketuk/geser/hover/keyboard, pita nilai, `format` string karena fungsi tidak bisa dikirim ke client), `GrafikTumpuk`, `BatangHorizontal`, `KartuAngka`, `Skeleton` (belum ada sebelumnya; `EmptyState` mendapat prop `tersemat`). Keyframe `batang-tumbuh`/`batang-melebar` ada di `globals.css`. Tabel data pembaca layar dibungkus `<div className="sr-only">` (tabel `sr-only` langsung membuat halaman meluap mendatar). Di modul rapor: `PembungkusDashboard` (transisi navigasi; `data-memuat` dibaca `KartuGrafik` lewat `group/dash` untuk menampilkan Skeleton) dan `FilterDashboard`.
+- Keputusan: tautan **Catat** ke `/absensi` karena pembayaran wajib terkait sesi dan tidak ada halaman Pembayaran; "Siswa aktif tanpa sesi 21 hari" (`siswaModel.jumlahTanpaSesi`) mengecualikan siswa dengan `tanggal_daftar` kurang dari 21 hari lalu (keputusan pemilik).
+- Tahap 3: `KartuPerhatian` di `HalamanDashboard.jsx` (item dengan jumlah 0 dibuang; semua 0 = "Semua beres" + `Maskot` `merayakan`; tautan memakai halaman yang sudah ada, tanpa halaman atau filter baru). Petak kartu memakai container query Tailwind (`@container`, `@xl:`, `@4xl:`) karena menu samping mengurangi lebar konten; urutan HP memakai `order-*` yang dilepas pada `@xl:`. Diperiksa pada 360, 768, 1024, 1280 px, tema terang/gelap, admin dan tutor, `prefers-reduced-motion` (durasi animasi menjadi 0,01 ms), Skeleton saat memuat, keadaan kosong, dan galat satu bagian (query dirusak sementara: hanya kartu itu yang menampilkan galat, halaman tetap 200).

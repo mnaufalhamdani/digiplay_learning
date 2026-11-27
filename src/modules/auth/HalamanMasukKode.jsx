@@ -24,7 +24,7 @@ export default async function HalamanMasukKode() {
   return (
     <ShellSiswa branding={branding} basis={info.basis} mode="masuk">
       <Card varian="terangkat" className="mx-auto flex max-w-xl flex-col items-center gap-2 text-center">
-        <Maskot suasana="sapa" ukuran={140} />
+        <Maskot suasana="sapa" ukuran={110} />
         <h1 className="text-[1.8em] font-bold">{t('auth.sapaJudul')}</h1>
         <p className="mb-4 text-muted">{t('auth.sapaPesan')}</p>
         <FormMasukKode panjang={Number(pengaturan[KUNCI_PENGATURAN.PANJANG_KODE_AKSES])} />

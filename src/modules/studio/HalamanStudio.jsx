@@ -4,7 +4,8 @@ import { adalahAppError } from '@/utils/appError';
 import { atau404 } from '@/utils/atau404';
 import { gabungJalur } from '@/utils/jalurArea';
 import ShellSiswa from '@/modules/layout/ShellSiswa';
-import { konteksSiswa } from '@/modules/sesi/konteksSiswa';
+import { MENU_GAME } from '@/enums';
+import { konteksSiswa, wajibMenuTerbuka } from '@/modules/sesi/konteksSiswa';
 import KepalaButirStudio from './KepalaButirStudio';
 import KlienStudio from './KlienStudio';
 
@@ -40,6 +41,8 @@ async function bacaKonteks(searchParams, k, dep) {
 export default async function HalamanStudio({ searchParams }) {
   const k = await konteksSiswa();
   const dep = ambilDep();
+  // Studio terbuka setelah tugas coding_proyek pertama muncul; mode butir post test (layar fokus) tidak pernah terhalang
+  if (!(await searchParams).butir) wajibMenuTerbuka(k, MENU_GAME.STUDIO);
   const konteks = await bacaKonteks(searchParams, k, dep);
   if (konteks.alihkan) redirect(gabungJalur(k.basis, konteks.alihkan));
   const { proyek: proyekId } = await searchParams;
@@ -53,6 +56,7 @@ export default async function HalamanStudio({ searchParams }) {
       mode={fokus ? 'fokus' : 'siswa'}
       intervalPingMs={k.intervalPingMs}
       sesiAktifId={k.sesi?.id ?? null}
+      menuTerbuka={k.menuTerbuka}
       kepalaFokus={fokus ? <KepalaButirStudio sisaDetik={konteks.butir.sisaDetik} levelNama={konteks.butir.levelNama} basis={k.basis} /> : null}
     >
       <KlienStudio pustaka={pustaka} tingkatBoleh={tingkat.tingkatBoleh} proyekAwal={proyekAwal} sesiAktif={Boolean(k.sesi)} tugas={tugas && { jenis: tugas.jenis, id: tugas.id, soal: tugas.soal, terkirim: tugas.terkirim }} />

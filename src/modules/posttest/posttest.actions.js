@@ -41,6 +41,10 @@ export async function nilaiButirPostTest(input) {
   return jalankanPostTest(AKSES.PENGGUNA, 'nilaiButir', input);
 }
 
+/** Tutor/admin menyimpan ringkasan penilaian keseluruhan siswa (boleh sebelum maupun sesudah finalisasi). */
+export async function simpanRingkasanPostTest(input) {
+  return jalankanPostTest(AKSES.PENGGUNA, 'simpanRingkasan', input);
+}
 /** Tutor/admin memfinalisasi post test setelah semua butir praktik dinilai. */
 export async function finalisasiPostTest(input) {
   return jalankanPostTest(AKSES.PENGGUNA, 'finalisasi', input);

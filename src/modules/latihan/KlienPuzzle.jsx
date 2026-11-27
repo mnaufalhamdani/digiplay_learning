@@ -8,6 +8,9 @@ import Button from '@/modules/shared/ui/Button';
 import Card from '@/modules/shared/ui/Card';
 import Ikon from '@/modules/shared/ui/Ikon';
 import Select from '@/modules/shared/ui/Select';
+import TombolKembali from '@/modules/shared/ui/TombolKembali';
+import { useArea } from '@/modules/shared/ui/AreaContext';
+import { gabungJalur } from '@/utils/jalurArea';
 import Konfeti from '@/modules/shared/ui/domain/Konfeti';
 import Maskot from '@/modules/shared/ui/domain/Maskot';
 import PapanPuzzle from './PapanPuzzle';
@@ -44,9 +47,11 @@ function PilihPuzzle({ kategori, mulai, memuat }) {
 /**
  * Halaman Puzzle (siswa, D1.5): mode bebas (pilih kategori dan tingkat, gambar acak) atau dari tugas
  * (gambar dan jumlah keping dari tugas). Selesai -> hasil tersimpan, Konfeti dan Zippy merayakan.
+ * Bila `sesiAktif` false (belum absen/sudah pulang), puzzle tetap bisa dimainkan dan dirayakan, tetapi hasil tidak disimpan.
  */
-export default function KlienPuzzle({ tugas, kategori }) {
+export default function KlienPuzzle({ tugas, kategori, sesiAktif }) {
   const router = useRouter();
+  const { basis } = useArea();
   const dariTugas = tugas ? { kode: tugas.gambar[0]?.kode, nama: tugas.gambar[0]?.nama, keping: Number(tugas.kunci.keping) } : null;
   const [main, setMain] = useState(dariTugas);
   const [putaran, setPutaran] = useState(0);
@@ -64,8 +69,10 @@ export default function KlienPuzzle({ tugas, kategori }) {
       setPutaran((n) => n + 1);
     });
   }
-  /** Semua keping benar: simpan hasil (tugas yang cocok otomatis selesai). */
+  /** Semua keping benar: simpan hasil (tugas yang cocok otomatis selesai). Tanpa sesi hanya dirayakan. */
   function selesai({ durasiDetik }) {
+    // di luar sesi server menolak (403): lewati penyimpanan, tetap tampilkan perayaan tanpa tugas selesai
+    if (!sesiAktif) return setHasil({ tugasSelesai: [] });
     mulai(async () => {
       const r = await simpanHasilLatihan({ jenis: 'puzzle', keping: main.keping, kode: main.kode, selesai: true, durasiDetik });
       if (!r.ok) return setGalat(r.error);
@@ -76,6 +83,13 @@ export default function KlienPuzzle({ tugas, kategori }) {
   return (
     <div className="space-y-6">
       <h1 className="font-display text-[1.8em] font-bold">{t('sesiSiswa.menu.puzzle')}</h1>
+      {/* keterangan tetap sejak awal agar siswa tahu hasilnya tidak tersimpan */}
+      {!sesiAktif && (
+        <p role="status" className="flex items-center gap-2 font-semibold text-muted">
+          <Ikon nama="info" />
+          {t('latihan.belumAbsen')}
+        </p>
+      )}
       {galat && (
         <p role="alert" className="flex items-center gap-2 font-semibold text-bad">
           <Ikon nama="peringatan" />
@@ -89,9 +103,14 @@ export default function KlienPuzzle({ tugas, kategori }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-[1.2em] font-bold">{t('puzzle.judul', { nama: main.nama, keping: main.keping })}</h2>
             {dariTugas && <Badge nada="info">{t('puzzle.dariTugas')}</Badge>}
-            <Button varian="hantu" ikon="kembali" onClick={() => setMain(null)}>
-              {t('puzzle.pilihLain')}
-            </Button>
+            {/* dari tugas/dashboard: kembali ke halaman asal; dari menu: kembali ke pilihan puzzle */}
+            {tugas ? (
+              <TombolKembali cadangan={gabungJalur(basis, '/')} />
+            ) : (
+              <Button varian="hantu" ikon="kembali" onClick={() => setMain(null)}>
+                {t('umum.kembali')}
+              </Button>
+            )}
           </div>
           {hasil && (
             <div role="status" className="flex flex-col items-center gap-2 text-center">

@@ -31,7 +31,7 @@ export default async function HalamanKaryaSiswa({ searchParams }) {
   const data = await ambilDep().karyaController.galeriSaya(await searchParams, k.sesiSiswa);
   const sesiAktif = Boolean(k.sesi);
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Maskot suasana="semangat" ukuran={96} />

@@ -20,6 +20,12 @@ export function buatMengetikModel({ db }) {
       const baris = await db.rows('SELECT id, teks FROM bank_teks_mengetik WHERE aktif = 1 AND (level_id = ? OR level_id IS NULL) ORDER BY id', [levelId], conn);
       return baris.map((b) => b.teks);
     },
+    /** ID level yang sedang berjalan untuk seorang siswa; null bila tidak punya level berjalan. */
+    async levelBerjalan(siswaId, conn) {
+      const baris = await db.first("SELECT level_id FROM siswa_level WHERE siswa_id = ? AND status = 'berjalan' LIMIT 1", [siswaId], conn);
+      // siswa belum punya level berjalan: bank teks hanya memakai teks tanpa level
+      return baris?.level_id ?? null;
+    },
     /** Menyimpan satu hasil mengetik. */
     tambahHasil(d, conn) {
       return db.exec(

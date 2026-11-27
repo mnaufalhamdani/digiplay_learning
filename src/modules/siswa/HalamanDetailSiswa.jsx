@@ -18,6 +18,7 @@ import TabSertifikatSiswa from '@/modules/sertifikat/TabSertifikatSiswa';
 import GaleriKarya from '@/modules/karya/GaleriKarya';
 import { AksiKaryaPengelola } from '@/modules/karya/AksiKarya';
 import EmptyState from '@/modules/shared/ui/EmptyState';
+import Paginasi from '@/modules/shared/ui/Paginasi';
 import AksiSiswa from './AksiSiswa';
 import LencanaSiswa from './LencanaSiswa';
 
@@ -56,44 +57,84 @@ function KartuLevel({ siswa }) {
   );
 }
 
-/** Detail siswa: profil, level, kode akses, riwayat sesi (menyusul di Fase C), dan aksi. */
-export default async function HalamanDetailSiswa({ params }) {
+/** Id tab di detail siswa; dipakai memvalidasi query `tab` (tab pertama = bawaan). */
+const ID_TAB = ['riwayat', 'pembayaran', 'latihan', 'posttest', 'sertifikat', 'karya'];
+
+/** Detail siswa: profil dengan aksi sejajar nama, kode akses, level, serta riwayat sesi/pembayaran/post test berpaginasi dan tab lain. */
+export default async function HalamanDetailSiswa({ params, searchParams }) {
   const sesi = await wajibPengguna();
   const { id } = await params;
+  const query = (await searchParams) ?? {};
+  // query berulang (?tab=a&tab=b) berbentuk larik: pakai nilai pertama; id tak sah jatuh ke tab pertama
+  const tabQuery = Array.isArray(query.tab) ? query.tab[0] : query.tab;
+  const tabAwal = ID_TAB.includes(tabQuery) ? tabQuery : ID_TAB[0];
   const dep = ambilDep();
   const [siswa, level, info] = await Promise.all([atau404(() => dep.siswaController.detail({ id })), dep.siswaController.pilihanLevel(), infoPermintaan()]);
   const [riwayat, materiBaca, pembayaran, mengetik, latihan, postTest, sertifikat, karya] = await Promise.all([
-    dep.sesiController.riwayatSiswa(siswa.id),
+    // nomor halaman divalidasi dan dirapikan controller (tak sah = 1, melewati batas = halaman terakhir)
+    dep.sesiController.riwayatSiswaHalaman(siswa.id, query.sesi),
     dep.materiController.statusBacaSiswa(siswa.id),
-    dep.pembayaranController.daftarSiswa(siswa.id),
+    dep.pembayaranController.halamanSiswa(siswa.id, query.bayar),
     dep.mengetikController.statistikSiswa(siswa.id),
     dep.latihanController.statistikSiswa(siswa.id),
-    dep.posttestController.riwayatSiswa(siswa.id),
+    dep.posttestController.riwayatSiswaHalaman(siswa.id, query.pt),
     dep.sertifikatController.riwayatSiswa(siswa.id),
     dep.karyaController.daftarSiswa(siswa.id),
   ]);
   const adminkah = sesi.peran === PERAN.ADMIN;
   const opsiLevel = level.map((l) => ({ nilai: l.id, label: `${l.kode} · ${l.nama}` }));
+  /** Paginasi satu daftar: halaman daftar lain ikut terbawa (pakai halaman hasil controller) dan tab yang dibuka tetap terbuka. */
+  const paginasi = (idTab, data, kunci) => {
+    const halaman = { sesi: riwayat.halaman, bayar: pembayaran.halaman, pt: postTest.halaman };
+    return <Paginasi halaman={data.halaman} totalHalaman={data.totalHalaman} total={data.total} hrefHalaman={(n) => gabungJalur(info.basis, jalurQuery(`/data-siswa/${siswa.id}`, { tab: idTab, ...halaman, [kunci]: n }))} />;
+  };
   return (
     <div className="space-y-4">
       <TautanTombol href={gabungJalur(info.basis, '/data-siswa')} varian="hantu" ikon="kembali">
         {t('dataSiswa.kembali')}
       </TautanTombol>
-      <div className="space-y-1">
-        <h1 className="text-[1.5em] font-bold">{siswa.nama}</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <LencanaSiswa status={siswa.status} />
-          <span className="text-muted">{t('dataSiswa.terdaftar', { tanggal: formatTanggal(siswa.tanggal_daftar) })}</span>
+      {/* nama siswa di kiri; Ganti level, Nonaktifkan, dan Hapus sejajar di kanan (turun ke bawah nama di layar sempit) */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1">
+          <h1 className="break-words text-[1.5em] font-bold">{siswa.nama}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <LencanaSiswa status={siswa.status} />
+            <span className="text-muted">{t('dataSiswa.terdaftar', { tanggal: formatTanggal(siswa.tanggal_daftar) })}</span>
+          </div>
         </div>
+        <AksiSiswa bagian="aksi" siswa={siswa} opsiLevel={opsiLevel} adminkah={adminkah} />
       </div>
+      {/* kartu Kode akses tepat setelah nama siswa */}
+      <AksiSiswa bagian="kode" siswa={siswa} opsiLevel={opsiLevel} adminkah={adminkah} />
       <KartuLevel siswa={siswa} />
       <Card>
         <Tabs
+          awal={tabAwal}
           tab={[
-            { id: 'riwayat', label: t('dataSiswa.tabRiwayat'), isi: <RiwayatSesiSiswa riwayat={riwayat} materiBaca={materiBaca} hrefSesi={(sesiId) => gabungJalur(info.basis, `/absensi/${sesiId}`)} /> },
-            { id: 'pembayaran', label: t('dataSiswa.tabPembayaran'), isi: <BagianPembayaran siswaId={siswa.id} daftar={pembayaran} adminkah={adminkah} denganTanggal /> },
+            {
+              id: 'riwayat',
+              label: t('dataSiswa.tabRiwayat'),
+              isi: (
+                <div className="space-y-4">
+                  <RiwayatSesiSiswa riwayat={riwayat} materiBaca={materiBaca} hrefSesi={(sesiId) => gabungJalur(info.basis, `/absensi/${sesiId}`)} />
+                  {/* tanpa sesi sama sekali: RiwayatSesiSiswa sudah menampilkan EmptyState, paginasi tidak perlu */}
+                  {riwayat.total > 0 && paginasi('riwayat', riwayat, 'sesi')}
+                </div>
+              ),
+            },
+            { id: 'pembayaran', label: t('dataSiswa.tabPembayaran'), isi: <BagianPembayaran siswaId={siswa.id} daftar={pembayaran.baris} adminkah={adminkah} denganTanggal paginasi={pembayaran.total > 0 ? paginasi('pembayaran', pembayaran, 'bayar') : null} /> },
             { id: 'latihan', label: t('dataSiswa.tabLatihan'), isi: <TabLatihanSiswa mengetik={mengetik} latihan={latihan} /> },
-            { id: 'posttest', label: t('dataSiswa.tabPostTest'), isi: <TabPostTestSiswa riwayat={postTest} hrefDetail={(id) => gabungJalur(info.basis, `/post-test/${id}`)} /> },
+            {
+              id: 'posttest',
+              label: t('dataSiswa.tabPostTest'),
+              isi: (
+                <div className="space-y-4">
+                  <TabPostTestSiswa riwayat={postTest.baris} hrefDetail={(id) => gabungJalur(info.basis, `/post-test/${id}`)} />
+                  {/* belum pernah post test: TabPostTestSiswa sudah menampilkan EmptyState */}
+                  {postTest.total > 0 && paginasi('posttest', postTest, 'pt')}
+                </div>
+              ),
+            },
             { id: 'sertifikat', label: t('dataSiswa.tabSertifikat'), isi: <TabSertifikatSiswa riwayat={sertifikat} /> },
             {
               id: 'karya',
@@ -104,7 +145,6 @@ export default async function HalamanDetailSiswa({ params }) {
           ]}
         />
       </Card>
-      <AksiSiswa siswa={siswa} opsiLevel={opsiLevel} adminkah={adminkah} />
     </div>
   );
 }

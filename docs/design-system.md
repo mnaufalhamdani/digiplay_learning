@@ -6,7 +6,7 @@ Dokumen ini pasangan dari `design-tokens.css`. Tanda **⚠** = usulan yang belum
 
 1. **Ramah anak, bukan kekanak-kanakan.** Warna cerah dan bentuk bulat, tetapi tata letak rapi dan teks mudah dibaca (anak 6-13 tahun).
 2. **Satu set komponen, dua "kepribadian".** Area siswa playful, area pengelola tenang. Perbedaannya hanya variabel di `design-tokens.css`, tanpa kode ganda.
-3. **Terang dan gelap di semua halaman.** Mode gelap berwarna biru malam/ungu tua (bukan hitam pekat) dengan aksen cerah.
+3. **Terang dan gelap di semua halaman.** Mode gelap berwarna biru malam (bukan hitam pekat) dengan aksen cerah.
 4. **Mobile-first untuk pengelola dan orang tua**, adaptif untuk siswa (kemungkinan memakai PC).
 5. **Tidak mengandalkan warna saja.** Setiap status punya teks atau ikon (benar/salah, tuntas/sebagian, hadir/pulang).
 6. **Aman untuk pengguna yang sensitif gerak.** Animasi dekoratif mati bila pengguna memilih "kurangi gerakan".
@@ -18,30 +18,42 @@ Dokumen ini pasangan dari `design-tokens.css`. Tanda **⚠** = usulan yang belum
 - Orang tua: area siswa dengan `data-mode="ortu"` (⚠): huruf 16 px, tombol datar, lebih tenang.
 - Halaman verifikasi sertifikat publik: memakai area `pengelola` (netral) dengan nama pelatihan dan logo dari pengaturan admin.
 - Teks `nama pelatihan`, `perusahaan`, dan `logo` selalu dibaca dari pengaturan, tidak ditulis keras di komponen.
+- Logo bertulisan biru tua ("Learning"), sehingga **di latar gelap logo utama dan persegi-teks dibungkus wadah terang**. Ini berlaku di tema gelap dan di menu samping navy area pengelola.
 
 ## 3. Palet
 
-Semua nilai ada di `design-tokens.css`. Semua **64 pasangan teks/latar lulus WCAG AA** (teks normal ≥ 4,5:1; kontras utama 13,9 sampai 15,8:1).
+Palet mengikuti logo DigiPlay: **biru** (aksi utama), **oranye** (pencapaian), dan **navy** (teks). Semua nilai ada di `design-tokens.css`. Semua **144 pasangan teks/latar lulus WCAG AA** (teks normal ≥ 4,5:1; fokus dan garis aksi ≥ 3:1).
 
 | Token | Siswa terang | Siswa gelap | Pengelola terang | Pengelola gelap |
 |---|---|---|---|---|
-| `bg` (latar) | #FFF8EE | #17153A | #F5F6FB | #0E1022 |
-| `panel` (kartu) | #FFFFFF | #221F4D | #FFFFFF | #161933 |
-| `fg` (teks) | #2A2347 | #F4F1FF | #1B1D3A | #E8EAFB |
-| `muted` (teks sekunder) | #62598A | #B7B0DE | #5A5F82 | #A5AAD0 |
-| `primary` (aksi utama) | #6240F0 | #A793FF | #4F46E5 | #8B93FF |
-| `sun` (aksen hangat) | #FFC93C | #FFD45E | #F59E0B | #FBBF24 |
-| `ok` / `warn` / `bad` / `info` | hijau / amber / koral / biru, tiap warna punya versi `-soft` untuk latar lencana |
+| `bg` (latar) | #F3F8FF | #0F1A3C | #F2F5FA | #0B1220 |
+| `panel` (kartu) | #FFFFFF | #182758 | #FFFFFF | #121C31 |
+| `fg` (teks) | #1B2A4D | #EEF4FF | #172033 | #E6ECF8 |
+| `muted` (teks sekunder) | #52617F | #AFBEE3 | #566380 | #9FAECB |
+| `primary` (aksi utama) | #0A66D8 | #5DA8FF | #1D5FB0 | #6CB0FF |
+| `sun` (aksen hangat) | #FF8A1F | #FFAA4D | #E88A2E | #F2A24C |
+| `info` | #0B6A86 | #5FD3EC | #0B6A86 | #5FD3EC |
+| `nav-bg` (menu samping) | #FFFFFF | #182758 | #17284A | #0A1426 |
+| `ok` / `warn` / `bad` | hijau / amber / koral, tiap warna punya versi `-soft` untuk latar lencana (tidak berubah dari palet sebelumnya) | | | |
+
+Pembeda dua area (satu keluarga warna):
+- **Siswa:** biru cerah, oranye menyala, latar putih kebiruan, tombol 3D gemuk.
+- **Pengelola:** biru lebih dalam dan tenang, oranye lebih teredam, latar abu kebiruan, **menu samping navy** (token `nav-*`) di terang maupun gelap, tombol datar.
+- **Orang tua:** area siswa dengan mode lebih tenang (`data-mode="ortu"`), warna sama dengan siswa.
+- Tema gelap siswa: biru malam yang lebih jenuh; tema gelap pengelola: biru kehitaman yang lebih netral.
+- `info` sekarang **teal** (bukan biru) supaya tidak tertukar dengan `primary` yang biru; lencana info tetap berisi teks atau ikon.
 
 Makna warna (konsisten di dua area):
 - `primary` = aksi utama, tautan, pilihan aktif
-- `sun` = pencapaian, poin, level, sorotan
+- `sun` = pencapaian, poin, level, sorotan (oranye)
 - `ok` = benar, tuntas, hadir
 - `warn` = tuntas sebagian, perlu perhatian
 - `bad` = salah, tidak tuntas, aksi berbahaya
-- `info` = informasi netral
+- `info` = informasi netral (teal)
 
 Tombol 3D memakai `*-edge` (versi lebih gelap dari warna tombol) sebagai "bibir" bawah.
+
+`nav-bg`, `nav-fg`, `nav-muted`, `nav-line`, `nav-active-bg`, `nav-active-fg` dipakai menu samping. Di area siswa nilainya sama dengan tampilan kartu biasa; di area pengelola berlatar navy di kedua tema.
 
 ## 4. Tipografi
 
@@ -122,7 +134,7 @@ Letak: `src/modules/shared/ui/` (satu file per komponen). Primitif memakai nama 
 | tidur | Belum absen (mode lihat saja), layar kosong |
 | terbang | Memuat data |
 
-- **Warna:** biru dan oranye Zippy berbeda dari `primary` (ungu), tetapi serasi (biru dan ungu bertetangga di roda warna), sehingga Zippy tetap menonjol di atas latar krem maupun biru malam. Opsional: `sun` bisa digeser ke oranye Zippy (`#FF8A1F`) agar lebih menyatu; belum diubah karena palet sudah disetujui.
+- **Warna:** biru dan oranye Zippy kini **selaras dengan palet** (`primary` biru, `sun` oranye `#FF8A1F`, sama dengan oranye Zippy), sehingga Zippy menyatu dengan logo dan tetap terbaca di atas latar putih kebiruan maupun biru malam.
 - **Aset:** PNG **berlatar transparan** (wajib untuk mode gelap), satu berkas per suasana di `public/aset/maskot/`, nama `zippy-<suasana>.png`. Seluruh badan berorientasi **potret 3:4** (misalnya 768 x 1024 px); `zippy-wajah.png` **persegi 1:1** (512 x 512 px). Pose harus konsisten dengan gambar referensi. Status: gambar yang tersedia sudah transparan dan siap dipakai.
 - **Pemakaian:** jangan diwarnai ulang atau diberi filter; beri jarak bebas minimal 12 px di sekelilingnya; di layar ≤ 640 px ukurannya boleh mengecil tetapi tidak di bawah 96 px.
 
@@ -141,7 +153,7 @@ Letak: `src/modules/shared/ui/` (satu file per komponen). Primitif memakai nama 
 - Saat belum absen (mode lihat saja): menu latihan dan tes terkunci dengan penjelasan ramah ("Minta kakak tutor mencatat kehadiranmu dulu").
 
 **ShellPengelola**
-- Menu samping: Absensi, Siswa, Level dan Materi, Template, Gambar, Sertifikat, Pembayaran, Pengaturan, Log. Item yang hanya untuk admin tidak tampil bagi tutor.
+- Menu samping berlatar navy (token `nav-*`) di terang dan gelap, dengan logo dalam wadah terang: Absensi, Siswa, Level dan Materi, Template, Gambar, Sertifikat, Pembayaran, Pengaturan, Log. Item yang hanya untuk admin tidak tampil bagi tutor.
 - HP: menu samping menjadi laci (drawer) dan aksi utama (Absen masuk) tampil sebagai tombol mengambang.
 - Header: nama pengguna, peran, tombol tema.
 
@@ -178,17 +190,19 @@ src/app/design-tokens.css      token warna, bentuk, dan gerak
 src/modules/shared/ui/         Button.jsx, TextField.jsx, ConfirmDialog.jsx, ...
 src/modules/shared/ui/domain/  KolomKode.jsx, OpsiJawaban.jsx, Pewaktu.jsx, ...
 public/aset/maskot/            zippy-<suasana>.png (latar transparan)
+public/aset/logo/              logo-landscape.png, logo-persegi.png, logo-persegi-teks.png
 src/modules/shared/ui/Ikon.jsx  pembungkus ikon Phosphor (bobot mengikuti area)
 ```
 
 ## 13. Keputusan
 
 Disetujui:
-- Font Fredoka + Nunito dan warna utama (ungu `#6240F0` siswa, indigo `#4F46E5` pengelola).
+- Font Fredoka + Nunito.
+- Palet biru-oranye dari logo (biru `#0A66D8` siswa, `#1D5FB0` pengelola, oranye `#FF8A1F` siswa, `#E88A2E` pengelola). Menggantikan palet ungu/indigo sebelumnya.
+- Tiga varian logo (landscape, ikon, persegi-teks) dan favicon.
 - Maskot **Zippy** (sugar glider, "Pahlawan Anti-Gaptek").
 - Mode orang tua sebagai varian area siswa dengan tampilan lebih tenang.
 - Set ikon: Phosphor Icons (lihat 7.4).
 
 Masih terbuka:
 - ⚠ Pose Zippy tambahan (8 suasana, prompt ada di `docs/aset/prompt-maskot.md`) dan versi bertransparansi dari pose saat ini.
-- Opsional: menggeser `sun` ke oranye Zippy.

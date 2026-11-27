@@ -4,8 +4,9 @@ import Card from '@/modules/shared/ui/Card';
 import Badge from '@/modules/shared/ui/Badge';
 import { PERAN } from '@/enums';
 import FormUbahPassword from './FormUbahPassword';
+import FormProfil from './FormProfil';
 
-/** Halaman Akun: profil singkat dan ubah password sendiri (admin maupun tutor). */
+/** Halaman Akun: profil singkat, ubah profil, dan ubah password sendiri (admin maupun tutor). */
 export default async function HalamanAkun() {
   const sesi = await wajibPengguna();
   return (
@@ -16,10 +17,19 @@ export default async function HalamanAkun() {
         <p className="break-all text-muted">{sesi.email}</p>
         <Badge nada={sesi.peran === PERAN.ADMIN ? 'primer' : 'info'}>{t(`peran.${sesi.peran}`)}</Badge>
       </Card>
-      <Card className="max-w-lg">
-        <h2 className="mb-4 text-[1.15em] font-bold">{t('akun.ubahPassword')}</h2>
-        <FormUbahPassword />
-      </Card>
+      {/* dua form berdampingan bila lebar konten cukup (container query, karena menu samping mengurangi lebar) */}
+      <div className="@container max-w-4xl">
+        <div className="grid gap-6 @2xl:grid-cols-2">
+          <Card>
+            <h2 className="mb-4 text-[1.15em] font-bold">{t('akun.ubahProfil')}</h2>
+            <FormProfil awal={{ nama: sesi.nama, email: sesi.email }} />
+          </Card>
+          <Card>
+            <h2 className="mb-4 text-[1.15em] font-bold">{t('akun.ubahPassword')}</h2>
+            <FormUbahPassword />
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

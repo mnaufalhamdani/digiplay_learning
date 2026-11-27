@@ -8,7 +8,8 @@ import { hasilBerkas } from '@/utils/responseHandler';
 import { jawabanHarapan, periksaJawaban, renderTemplate } from '@/utils/templateRender';
 import { t } from '@/utils/i18n';
 import { namaUnduhan } from '@/modules/tugas/tugas.usecase';
-import { AKSI_LOG, JENIS_GAMBAR_UNDUH, KUNCI_PENGATURAN, MODE_MENGETIK, NOMOR_POST_TEST, PENILAIAN, SUMBER_NILAI, STATUS_POST_TEST, WAKTU_POST_TEST } from '@/enums';
+import { hitungPaginasi } from '@/utils/paginasi';
+import { AKSI_LOG, JENIS_GAMBAR_UNDUH, KUNCI_PENGATURAN, MODE_MENGETIK, NOMOR_POST_TEST, PENILAIAN, SUMBER_NILAI, STATUS_POST_TEST, UKURAN_HALAMAN, WAKTU_POST_TEST } from '@/enums';
 
 /** Pembulatan 2 desimal. */
 const bulat2 = (n) => Math.round(Number(n) * 100) / 100;
@@ -378,7 +379,36 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       return kumpulkan(pt.id);
     },
     /** Daftar pengelola per tab (menunggu, berlangsung, selesai). */
-    daftar: async (tab) => (await posttestModel.daftar(tab)).map(bentukPt),
+    async daftar(tab, nomorHalaman = 1) {
+      const total = await posttestModel.jumlahTab(tab);
+      // halaman di luar jangkauan dibatasi ke halaman terakhir oleh hitungPaginasi
+      const pg = hitungPaginasi(total, nomorHalaman, UKURAN_HALAMAN);
+      const baris = (await posttestModel.daftar(tab, pg)).map(bentukPt);
+      return { baris, total, halaman: pg.halaman, totalHalaman: pg.totalHalaman };
+    },
+    /**
+     * Satu halaman riwayat percobaan seorang siswa (tab Post test detail siswa), bentuk tiap baris sama dengan `riwayatSiswa`.
+     * Percobaan terakhir per level ditentukan dari seluruh data siswa, bukan dari isi halaman ini.
+     */
+    async riwayatSiswaHalaman(siswaId, nomorHalaman = 1) {
+      const total = await posttestModel.hitungRiwayatSiswa(siswaId);
+      const pg = hitungPaginasi(total, nomorHalaman, UKURAN_HALAMAN);
+      const [baris, idTerakhir, lulusBagian] = await Promise.all([
+        posttestModel.riwayatSiswaHalaman(siswaId, pg),
+        posttestModel.idTerakhirSiswa(siswaId),
+        pengaturanUsecase.angka(KUNCI_PENGATURAN.NILAI_LULUS_BAGIAN),
+      ]);
+      const terakhirSet = new Set(idTerakhir);
+      const hasil = await Promise.all(
+        baris.map(async (b) => {
+          const pt = await denganNilai(bentukPt(b));
+          const gagal = pt.bagian.filter((x) => x.nilai != null && x.nilai < lulusBagian).map((x) => x.id);
+          // tes ulang hanya untuk percobaan terakhir pada level itu yang selesai dan tidak lulus
+          return { ...pt, bisaTesUlang: terakhirSet.has(pt.id) && pt.status === STATUS_POST_TEST.SELESAI && pt.lulus === false, bagianUlangBawaan: gagal.length > 0 ? gagal : pt.bagian.map((x) => x.id) };
+        }),
+      );
+      return { baris: hasil, total, halaman: pg.halaman, totalHalaman: pg.totalHalaman };
+    },
     /** Riwayat percobaan seorang siswa beserta nilai per bagian (tab Post test detail siswa). */
     async riwayatSiswa(siswaId) {
       const [baris, lulusBagian] = await Promise.all([posttestModel.riwayatSiswa(siswaId), pengaturanUsecase.angka(KUNCI_PENGATURAN.NILAI_LULUS_BAGIAN)]);
@@ -394,12 +424,41 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
         }),
       );
     },
+    /**
+     * Ringkasan penilaian siswa untuk rapor orang tua: hanya dari post test yang sudah difinalisasi, satu per level (percobaan
+     * terbaru yang berteks), urut level. Hasil: [{ level_kode, level_nama, tanggal, teks }] (tanggal = saat tes dikumpulkan).
+     */
+    async ringkasanOrtu(siswaId) {
+      const baris = await posttestModel.ringkasanOrtu(siswaId);
+      const terlihat = new Set();
+      const hasil = [];
+      for (const b of baris) {
+        // baris terurut percobaan terbaru lebih dulu: kemunculan pertama tiap level adalah ringkasan terbarunya
+        if (terlihat.has(b.level_id)) continue;
+        terlihat.add(b.level_id);
+        hasil.push({ level_kode: b.level_kode, level_nama: b.level_nama, tanggal: b.selesai_at, teks: b.ringkasan_tutor });
+      }
+      return hasil;
+    },
+    /**
+     * Tutor atau admin menyimpan ringkasan penilaian siswa pada satu post test (sebelum maupun sesudah finalisasi).
+     * Teks kosong menghapus ringkasan. Log hanya mencatat panjang teks, bukan isinya.
+     */
+    async simpanRingkasan(ptId, teks, penggunaId) {
+      return db.transaction(async (conn) => {
+        const ada = await posttestModel.cariId(ptId, conn);
+        if (!ada) throw new AppError(t('posttest.tidakAda'), 404);
+        await posttestModel.simpanRingkasan(ptId, teks === '' ? null : teks, penggunaId, conn);
+        await catatAktivitas({ penggunaId, aksi: AKSI_LOG.UBAH_RINGKASAN_POST_TEST, entitas: 'post_test', entitasId: ptId, detail: { panjang: teks.length } }, conn);
+        return { id: ptId };
+      });
+    },
     /** Detail pengelola: nilai per bagian, butir (jawaban, benar/salah, jawaban harapan, rubrik), dan kelayakan tes ulang. */
     async detail(ptId) {
       const b = await posttestModel.cariId(ptId);
       if (!b) throw new AppError(t('posttest.tidakAda'), 404);
       const pt = await denganNilai(bentukPt(b));
-      const [butir, terakhir, lulusBagian, rubrikBawaan] = await Promise.all([posttestModel.butir(ptId), posttestModel.terakhir(pt.siswa_level_id), pengaturanUsecase.angka(KUNCI_PENGATURAN.NILAI_LULUS_BAGIAN), pengaturanUsecase.rubrikBawaan()]);
+      const [butir, terakhir, lulusBagian, rubrikBawaan, ringkasan] = await Promise.all([posttestModel.butir(ptId), posttestModel.terakhir(pt.siswa_level_id), pengaturanUsecase.angka(KUNCI_PENGATURAN.NILAI_LULUS_BAGIAN), pengaturanUsecase.rubrikBawaan(), posttestModel.ringkasan(ptId)]);
       const daftarButir = butir.map(bentukButir).map((x) => {
         const render = { opsi: x.ph.opsi, nilaiParameter: x.ph.nilai ?? {}, kunci: x.ph.kunci };
         const tampil = x.tipe === 'pilihan_ganda' ? (x.ph.opsi ?? []).find((o) => String(o.indeksAsli) === String(x.jawaban))?.teks ?? x.jawaban : x.jawaban;
@@ -432,7 +491,9 @@ export function buatPosttestUsecase({ posttestModel, sesiModel, siswaModel, meng
       const praktikMenunggu = praktik.filter((x) => !x.dinilai).length;
       // Finalisasi hanya setelah dikumpulkan dan semua butir praktik dinilai; tanpa butir praktik tidak ada yang perlu difinalisasi
       const bisaFinalisasi = pt.status === STATUS_POST_TEST.SELESAI && praktik.length > 0 && praktikMenunggu === 0;
-      return { ...pt, butir: daftarButir, praktikMenunggu, bisaFinalisasi, bisaTesUlang, bagianUlangBawaan: gagal.length > 0 ? gagal : pt.bagian.map((x) => x.id) };
+      // ringkasan penilaian siswa dari tutor (kosong bila belum pernah diisi)
+      const ringkasanTutor = { teks: ringkasan?.ringkasan_tutor ?? '', nama: ringkasan?.ringkasan_nama ?? null, at: ringkasan?.ringkasan_at ?? null };
+      return { ...pt, butir: daftarButir, praktikMenunggu, bisaFinalisasi, bisaTesUlang, bagianUlangBawaan: gagal.length > 0 ? gagal : pt.bagian.map((x) => x.id), ringkasanTutor };
     },
     /**
      * Tutor menilai satu butir praktik (skor 0 sampai skor maksimum rubrik, catatan opsional). Boleh saat siswa sudah

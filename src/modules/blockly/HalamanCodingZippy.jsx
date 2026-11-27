@@ -8,7 +8,8 @@ import Card from '@/modules/shared/ui/Card';
 import Ikon from '@/modules/shared/ui/Ikon';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
 import Maskot from '@/modules/shared/ui/domain/Maskot';
-import { konteksSiswa } from '@/modules/sesi/konteksSiswa';
+import { MENU_GAME } from '@/enums';
+import { konteksSiswa, wajibMenuTerbuka } from '@/modules/sesi/konteksSiswa';
 
 /**
  * Tugas bertipe blockly milik siswa dari `?tugas=` (hanya saat sesi berlangsung, belum selesai, dan tidak terkunci
@@ -54,6 +55,8 @@ function KartuLabirin({ labirin, nomor, basis }) {
  */
 export default async function HalamanCodingZippy({ searchParams }) {
   const k = await konteksSiswa();
+  // Coding Zippy terbuka setelah tugas blockly pertama muncul
+  wajibMenuTerbuka(k, MENU_GAME.CODING_ZIPPY);
   const dep = ambilDep();
   const tugas = await tugasBlockly(searchParams, k);
   const kode = tugas ? await dep.blocklyController.kodeDariNama(tugas.kunci.labirin) : null;
@@ -61,7 +64,7 @@ export default async function HalamanCodingZippy({ searchParams }) {
   if (kode) redirect(gabungJalur(k.basis, `/coding-zippy/${kode}?tugas=${tugas.id}`));
   const daftar = await dep.blocklyController.daftar(null, k.sesiSiswa);
   return (
-    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null}>
+    <ShellSiswa branding={k.branding} basis={k.basis} mode="siswa" intervalPingMs={k.intervalPingMs} sesiAktifId={k.sesi?.id ?? null} menuTerbuka={k.menuTerbuka}>
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex items-center gap-3">
           <Maskot suasana="menunjuk" ukuran={96} />

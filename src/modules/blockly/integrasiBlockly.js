@@ -15,8 +15,8 @@ const WARNA_BLOK = {
 };
 /** Warna area kerja per tema; nilainya sama dengan token area siswa (design-tokens.css). */
 export const WARNA_AREA = {
-  terang: { workspaceBackgroundColour: '#FFF8EE', toolboxBackgroundColour: '#EFEAFF', toolboxForegroundColour: '#2A2347', flyoutBackgroundColour: '#EFEAFF', flyoutForegroundColour: '#2A2347', flyoutOpacity: 1, scrollbarColour: '#62598A', scrollbarOpacity: 0.6, insertionMarkerColour: '#2A2347', insertionMarkerOpacity: 0.3, selectedGlowColour: '#FFC93C', replacementGlowColour: '#FFC93C', cursorColour: '#6240F0' },
-  gelap: { workspaceBackgroundColour: '#17153A', toolboxBackgroundColour: '#2E2965', toolboxForegroundColour: '#F4F1FF', flyoutBackgroundColour: '#2E2965', flyoutForegroundColour: '#F4F1FF', flyoutOpacity: 1, scrollbarColour: '#B7B0DE', scrollbarOpacity: 0.6, insertionMarkerColour: '#F4F1FF', insertionMarkerOpacity: 0.3, selectedGlowColour: '#FFD45E', replacementGlowColour: '#FFD45E', cursorColour: '#A793FF' },
+  terang: { workspaceBackgroundColour: '#F3F8FF', toolboxBackgroundColour: '#E2EFFF', toolboxForegroundColour: '#1B2A4D', flyoutBackgroundColour: '#E2EFFF', flyoutForegroundColour: '#1B2A4D', flyoutOpacity: 1, scrollbarColour: '#52617F', scrollbarOpacity: 0.6, insertionMarkerColour: '#1B2A4D', insertionMarkerOpacity: 0.3, selectedGlowColour: '#FF8A1F', replacementGlowColour: '#FF8A1F', cursorColour: '#0A66D8' },
+  gelap: { workspaceBackgroundColour: '#0F1A3C', toolboxBackgroundColour: '#1E3672', toolboxForegroundColour: '#EEF4FF', flyoutBackgroundColour: '#1E3672', flyoutForegroundColour: '#EEF4FF', flyoutOpacity: 1, scrollbarColour: '#AFBEE3', scrollbarOpacity: 0.6, insertionMarkerColour: '#EEF4FF', insertionMarkerOpacity: 0.3, selectedGlowColour: '#FFAA4D', replacementGlowColour: '#FFAA4D', cursorColour: '#5DA8FF' },
 };
 /** Tema yang sudah dibuat (dibuat sekali per nama). */
 const tema = {};

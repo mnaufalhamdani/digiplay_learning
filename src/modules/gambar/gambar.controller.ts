@@ -4,10 +4,10 @@ import { daftarGambarSchema, idGambarSchema, ubahAktifGambarSchema } from './gam
 /** Controller gambar: validasi input lalu teruskan ke usecase. Hak akses ditegakkan di action. */
 export function buatGambarController({ gambarUsecase }) {
   return {
-    /** Daftar subjek; `input` dari query string (filter tidak sah diabaikan). */
+    /** Satu halaman subjek beserta filter; `input` dari query string (filter tidak sah diabaikan). */
     daftar(input) {
       const filter = validasi(daftarGambarSchema, input ?? {});
-      return gambarUsecase.daftar(filter).then((baris) => ({ baris, filter }));
+      return gambarUsecase.halaman(filter).then((hasil) => ({ ...hasil, filter }));
     },
     /** Detail satu subjek. */
     detail(input) {

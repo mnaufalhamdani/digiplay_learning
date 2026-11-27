@@ -14,3 +14,22 @@ export async function simpanPengaturan(input) {
     return null;
   });
 }
+
+/** Menghapus gambar tanda tangan sertifikat (hanya admin). */
+export async function hapusTandaTangan() {
+  return jalankanAction(async () => {
+    const sesi = await ambilDep().authController.wajibAkses(AKSES.ADMIN);
+    return ambilDep().pengaturanController.hapusTandaTangan(sesi);
+  });
+}
+
+/** Mengembalikan logo sebuah slot ke bawaan (hanya admin). */
+export async function kembalikanLogo(input) {
+  return jalankanAction(async () => {
+    const sesi = await ambilDep().authController.wajibAkses(AKSES.ADMIN);
+    const hasil = await ambilDep().pengaturanController.kembalikanLogo(input, sesi);
+    // logo tampil di header semua halaman
+    revalidatePath('/', 'layout');
+    return hasil;
+  });
+}

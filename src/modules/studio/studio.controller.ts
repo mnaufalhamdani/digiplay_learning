@@ -2,6 +2,7 @@ import { validasi } from '@/utils/validasi';
 import { AppError } from '@/utils/appError';
 import { hasilBerkas } from '@/utils/responseHandler';
 import { t } from '@/utils/i18n';
+import { MENU_GAME } from '@/enums';
 import { BATAS_STUDIO } from '@/modules/shared/blockly/pustakaStudio';
 import { idKirimanSchema, idKostumSchema, idProyekSchema, kirimProyekSchema, simpanProyekSchema } from './studio.schema';
 
@@ -18,20 +19,37 @@ async function bacaUnggahan(berkas) {
  * Controller Studio Zippy: validasi input lalu teruskan ke usecase. Hak akses ditegakkan di action/route; `sesi` siswa
  * berisi siswaId (fungsi siswa), sedangkan fungsi pengelola tidak memakai `sesi`.
  */
-export function buatStudioController({ studioUsecase }) {
+export function buatStudioController({ studioUsecase, latihanUsecase }) {
+  /**
+   * Penjaga aksi: Studio Zippy harus sudah terbuka (tugas coding_proyek atau butir post test Studio pernah muncul); selain itu 403.
+   * Tidak dipasang pada kirim, ringkasanKiriman, konteksTingkat, dan berkas kostum: itu alur tugas/post test yang pasti punya tugas.
+   */
+  const jaga = (sesi) => latihanUsecase.wajibMenuTerbuka(sesi.siswaId, MENU_GAME.STUDIO);
   return {
     /** Pustaka sprite (subjek gambar yang bisa dipakai). */
     pustaka: () => studioUsecase.pustaka(),
     /** Tingkat proyek yang boleh dibuat siswa ini. */
     konteksTingkat: (_input, sesi) => studioUsecase.konteksTingkat(sesi.siswaId),
     /** Daftar proyek siswa. */
-    daftar: (_input, sesi) => studioUsecase.daftar(sesi.siswaId),
+    daftar: async (_input, sesi) => {
+      await jaga(sesi);
+      return studioUsecase.daftar(sesi.siswaId);
+    },
     /** Satu proyek siswa beserta isinya. */
-    buka: (input, sesi) => studioUsecase.buka(sesi.siswaId, validasi(idProyekSchema, input).id),
+    buka: async (input, sesi) => {
+      await jaga(sesi);
+      return studioUsecase.buka(sesi.siswaId, validasi(idProyekSchema, input).id);
+    },
     /** Menyimpan proyek (baru atau memperbarui). */
-    simpan: (input, sesi) => studioUsecase.simpan(sesi.siswaId, validasi(simpanProyekSchema, input)),
+    simpan: async (input, sesi) => {
+      await jaga(sesi);
+      return studioUsecase.simpan(sesi.siswaId, validasi(simpanProyekSchema, input));
+    },
     /** Menghapus proyek. */
-    hapus: (input, sesi) => studioUsecase.hapus(sesi.siswaId, validasi(idProyekSchema, input).id),
+    hapus: async (input, sesi) => {
+      await jaga(sesi);
+      return studioUsecase.hapus(sesi.siswaId, validasi(idProyekSchema, input).id);
+    },
     /** Mengirim proyek ke tugas atau butir post test. */
     kirim: (input, sesi) => studioUsecase.kirim(sesi.siswaId, validasi(kirimProyekSchema, input)),
     /** Ringkasan kiriman milik siswa untuk satu tugas/butir. */
@@ -40,10 +58,14 @@ export function buatStudioController({ studioUsecase }) {
     kiriman: (input) => studioUsecase.kiriman(validasi(idKirimanSchema, input).tugasId),
     /** Siswa mengunggah kostum (route HTTP multipart, kolom `berkas`). */
     async unggahKostum(input, sesi) {
+      await jaga(sesi);
       return studioUsecase.unggahKostum(sesi.siswaId, await bacaUnggahan(input?.berkas));
     },
     /** Siswa menghapus kostum unggahannya. */
-    hapusKostum: (input, sesi) => studioUsecase.hapusKostum(sesi.siswaId, validasi(idKostumSchema, input).id),
+    hapusKostum: async (input, sesi) => {
+      await jaga(sesi);
+      return studioUsecase.hapusKostum(sesi.siswaId, validasi(idKostumSchema, input).id);
+    },
     /** Menyajikan berkas kostum (route HTTP); kepemilikan diperiksa usecase. */
     async berkasKostum(input, sesi) {
       const { buffer, tipe } = await studioUsecase.berkasKostum(validasi(idKostumSchema, input).id, sesi);

@@ -7,7 +7,8 @@
      <div data-area="siswa" class="min-h-dvh bg-bg text-fg font-body">...</div>
      <div data-area="pengelola" class="min-h-dvh bg-bg text-fg font-body">...</div>
    Komponen UI sama; tampilan berbeda hanya karena variabel di bawah ini.
-   Semua pasangan teks/latar sudah diuji kontras (WCAG AA, 64 pasangan lulus).
+   Palet biru-oranye mengikuti logo DigiPlay (biru #0A66D8, oranye #FF8A1F, navy #1B2A4D).
+   Semua pasangan teks/latar sudah diuji kontras (WCAG AA, 144 pasangan lulus).
    ===================================================================== */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -39,17 +40,17 @@
 /* ---------- Warna: terang ---------- */
 
 [data-area="siswa"] {
-  --bg: #FFF8EE;
+  --bg: #F3F8FF;
   --panel: #FFFFFF;
-  --fg: #2A2347;
-  --muted: #62598A;
-  --line: #E9E2F7;
-  --primary: #6240F0;
+  --fg: #1B2A4D;
+  --muted: #52617F;
+  --line: #D9E6F8;
+  --primary: #0A66D8;
   --on-primary: #FFFFFF;
-  --primary-soft: #EFEAFF;
-  --primary-text: #5233DB;
-  --sun: #FFC93C;
-  --on-sun: #2A2347;
+  --primary-soft: #E2EFFF;
+  --primary-text: #0A56B8;
+  --sun: #FF8A1F;
+  --on-sun: #1B2A4D;
   --ok: #0A7550;
   --on-ok: #FFFFFF;
   --ok-soft: #DDF6EA;
@@ -58,26 +59,33 @@
   --bad: #C42B31;
   --on-bad: #FFFFFF;
   --bad-soft: #FFE3E3;
-  --info: #1464BE;
-  --info-soft: #DDEEFF;
-  --primary-edge: #4C31BB;
-  --sun-edge: #C69C2E;
+  --info: #0B6A86;
+  --info-soft: #D8F1F7;
+  --primary-edge: #074C9E;
+  --sun-edge: #C2610C;
   --ok-edge: #075B3E;
   --bad-edge: #982126;
+  /* menu samping: area siswa memakai tampilan kartu biasa */
+  --nav-bg: #FFFFFF;
+  --nav-fg: #1B2A4D;
+  --nav-muted: #52617F;
+  --nav-line: #D9E6F8;
+  --nav-active-bg: #E2EFFF;
+  --nav-active-fg: #0A56B8;
 }
 
 [data-area="pengelola"] {
-  --bg: #F5F6FB;
+  --bg: #F2F5FA;
   --panel: #FFFFFF;
-  --fg: #1B1D3A;
-  --muted: #5A5F82;
-  --line: #E1E4F2;
-  --primary: #4F46E5;
+  --fg: #172033;
+  --muted: #566380;
+  --line: #DCE2EE;
+  --primary: #1D5FB0;
   --on-primary: #FFFFFF;
-  --primary-soft: #ECEBFF;
-  --primary-text: #4338CA;
-  --sun: #F59E0B;
-  --on-sun: #1B1D3A;
+  --primary-soft: #E5EDF8;
+  --primary-text: #174C90;
+  --sun: #E88A2E;
+  --on-sun: #172033;
   --ok: #0A7550;
   --on-ok: #FFFFFF;
   --ok-soft: #DDF6EA;
@@ -86,28 +94,35 @@
   --bad: #BF2A30;
   --on-bad: #FFFFFF;
   --bad-soft: #FFE3E3;
-  --info: #1464BE;
-  --info-soft: #DDEEFF;
-  --primary-edge: #3D36B2;
-  --sun-edge: #BF7B08;
+  --info: #0B6A86;
+  --info-soft: #D8F1F7;
+  --primary-edge: #144A8C;
+  --sun-edge: #B8681A;
   --ok-edge: #075B3E;
   --bad-edge: #942025;
+  /* menu samping: pengelola memakai latar navy di kedua tema */
+  --nav-bg: #17284A;
+  --nav-fg: #EAF0FB;
+  --nav-muted: #A9B8D6;
+  --nav-line: #2A3D66;
+  --nav-active-bg: #24407A;
+  --nav-active-fg: #FFFFFF;
 }
 
 /* ---------- Warna: gelap ---------- */
 
 .dark [data-area="siswa"] {
-  --bg: #17153A;
-  --panel: #221F4D;
-  --fg: #F4F1FF;
-  --muted: #B7B0DE;
-  --line: #38337A;
-  --primary: #A793FF;
-  --on-primary: #17153A;
-  --primary-soft: #2E2965;
-  --primary-text: #BBAAFF;
-  --sun: #FFD45E;
-  --on-sun: #17153A;
+  --bg: #0F1A3C;
+  --panel: #182758;
+  --fg: #EEF4FF;
+  --muted: #AFBEE3;
+  --line: #2C3F7A;
+  --primary: #5DA8FF;
+  --on-primary: #0B1531;
+  --primary-soft: #1E3672;
+  --primary-text: #8DC3FF;
+  --sun: #FFAA4D;
+  --on-sun: #0F1A3C;
   --ok: #4ADE9F;
   --on-ok: #0B2A1F;
   --ok-soft: #17402F;
@@ -116,26 +131,33 @@
   --bad: #FF8A8F;
   --on-bad: #3A0B0E;
   --bad-soft: #4A1F25;
-  --info: #6DB8FF;
-  --info-soft: #173759;
-  --primary-edge: #7B6CBC;
-  --sun-edge: #BC9C45;
+  --info: #5FD3EC;
+  --info-soft: #12404E;
+  --primary-edge: #4E7FBE;
+  --sun-edge: #BC8036;
   --ok-edge: #36A475;
   --bad-edge: #BC6669;
+  /* menu samping: area siswa memakai tampilan kartu biasa */
+  --nav-bg: #182758;
+  --nav-fg: #EEF4FF;
+  --nav-muted: #AFBEE3;
+  --nav-line: #2C3F7A;
+  --nav-active-bg: #1E3672;
+  --nav-active-fg: #8DC3FF;
 }
 
 .dark [data-area="pengelola"] {
-  --bg: #0E1022;
-  --panel: #161933;
-  --fg: #E8EAFB;
-  --muted: #A5AAD0;
-  --line: #2A2E55;
-  --primary: #8B93FF;
-  --on-primary: #0E1022;
-  --primary-soft: #222654;
-  --primary-text: #A5ABFF;
-  --sun: #FBBF24;
-  --on-sun: #0E1022;
+  --bg: #0B1220;
+  --panel: #121C31;
+  --fg: #E6ECF8;
+  --muted: #9FAECB;
+  --line: #243452;
+  --primary: #6CB0FF;
+  --on-primary: #0B1220;
+  --primary-soft: #1A2C4F;
+  --primary-text: #9ACBFF;
+  --sun: #F2A24C;
+  --on-sun: #0B1220;
   --ok: #4ADE9F;
   --on-ok: #0B2A1F;
   --ok-soft: #143A2B;
@@ -144,12 +166,19 @@
   --bad: #FF8A8F;
   --on-bad: #3A0B0E;
   --bad-soft: #451D24;
-  --info: #6DB8FF;
-  --info-soft: #163455;
-  --primary-edge: #666CBC;
-  --sun-edge: #B98D1A;
+  --info: #5FD3EC;
+  --info-soft: #123A48;
+  --primary-edge: #5A89C0;
+  --sun-edge: #B97F34;
   --ok-edge: #36A475;
   --bad-edge: #BC6669;
+  /* menu samping: pengelola memakai latar navy di kedua tema */
+  --nav-bg: #0A1426;
+  --nav-fg: #E6ECF8;
+  --nav-muted: #9FAECB;
+  --nav-line: #1D2C49;
+  --nav-active-bg: #1A2C4F;
+  --nav-active-fg: #9ACBFF;
 }
 
 /* Mode orang tua (area siswa, tampilan lihat saja): lebih tenang, huruf standar, tombol tidak "gemuk" */
@@ -187,6 +216,12 @@
   --color-bad-edge: var(--bad-edge);
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-fg: var(--nav-fg);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-line: var(--nav-line);
+  --color-nav-active-bg: var(--nav-active-bg);
+  --color-nav-active-fg: var(--nav-active-fg);
   --radius-sm: var(--r-sm);
   --radius-md: var(--r-md);
   --radius-lg: var(--r-lg);

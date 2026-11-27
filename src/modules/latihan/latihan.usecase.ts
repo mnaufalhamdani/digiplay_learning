@@ -2,7 +2,7 @@ import 'server-only';
 import { AppError } from '@/utils/appError';
 import { teksJson } from '@/utils/json';
 import { t } from '@/utils/i18n';
-import { BATAS_LATIHAN, JENIS_GAME_MOUSE, JENIS_LATIHAN } from '@/enums';
+import { BATAS_LATIHAN, JENIS_GAME_MOUSE, JENIS_LATIHAN, MENU_GAME, MENU_GAME_AWAL, MENU_GAME_DARI_TIPE, MENU_GAME_LEVEL_AWAL } from '@/enums';
 
 /** Usecase latihan (D1.4-D1.6): simpan hasil game mouse dan puzzle, gambar puzzle mode bebas, dan ringkasan pengelola. */
 export function buatLatihanUsecase({ latihanModel, gambarModel, sesiModel, tugasUsecase, idGen, acak }) {
@@ -18,7 +18,26 @@ export function buatLatihanUsecase({ latihanModel, gambarModel, sesiModel, tugas
     if (!g || !g.aktif || !g.punya_puzzle) throw new AppError(t('latihan.gambarTidakAda'), 400);
     return g.id;
   }
+  /**
+   * Menu game yang terbuka untuk siswa: Puzzle sejak awal, menu dari jenis tugas yang pernah muncul (lintas level, termasuk
+   * butir post test) sesuai MENU_GAME_DARI_TIPE, dan menu game level yang lebih rendah dari level tertinggi siswa
+   * (MENU_GAME_LEVEL_AWAL). Terbuka selamanya karena diturunkan dari riwayat.
+   */
+  async function menuGameTerbuka(siswaId) {
+    const hasil = await latihanModel.tipeGameSiswa(siswaId, Object.keys(MENU_GAME_DARI_TIPE));
+    const levelTertinggi = Number(hasil.find((x) => String(x).startsWith('level:'))?.slice(6)) || 0;
+    // siswa di level lebih tinggi (mis. masuk langsung di Level 2 atau 3) memegang game level di bawahnya walau tugasnya tidak muncul
+    const dariLevel = Object.entries(MENU_GAME_LEVEL_AWAL).filter(([, awal]) => levelTertinggi > awal).map(([menu]) => menu);
+    return [...new Set([...MENU_GAME_AWAL, ...dariLevel, ...hasil.map((x) => MENU_GAME_DARI_TIPE[x]).filter(Boolean)])];
+  }
+  /** Menolak (403) bila menu game belum terbuka untuk siswa; dipakai penjaga aksi di server. */
+  async function wajibMenuTerbuka(siswaId, menu) {
+    // menu belum terbuka: tolak walau aksi dipanggil langsung tanpa lewat halaman
+    if (!(await menuGameTerbuka(siswaId)).includes(menu)) throw new AppError(t('latihan.menuTerkunci'), 403);
+  }
   return {
+    menuGameTerbuka,
+    wajibMenuTerbuka,
     /**
      * Menyimpan hasil latihan pada sesi berlangsung lalu menyelesaikan tugas yang cocok. Validasi kewajaran:
      * jenis dikenal dan skor tidak melebihi 5 poin per detik.
@@ -26,6 +45,8 @@ export function buatLatihanUsecase({ latihanModel, gambarModel, sesiModel, tugas
     async simpan(siswaId, data) {
       const sesi = await wajibSesi(siswaId);
       if (!JENIS_LATIHAN.includes(data.jenis)) throw new AppError(t('latihan.hasilTidakWajar'), 400);
+      // game mouse hanya bisa disimpan setelah menunya terbuka (Puzzle selalu terbuka)
+      if (data.jenis !== 'puzzle') await wajibMenuTerbuka(siswaId, MENU_GAME.LATIHAN_MOUSE);
       const durasi = Math.max(1, Math.round(data.durasiDetik));
       // skor mustahil untuk durasi itu (mis. dikirim manual): tolak
       if ((data.skor ?? 0) > durasi * BATAS_LATIHAN.maksSkorPerDetik) throw new AppError(t('latihan.hasilTidakWajar'), 400);
@@ -39,7 +60,7 @@ export function buatLatihanUsecase({ latihanModel, gambarModel, sesiModel, tugas
     },
     /** Satu gambar puzzle acak untuk mode bebas (opsional per kategori). */
     async gambarPuzzle(siswaId, kategori) {
-      await wajibSesi(siswaId);
+      // hanya membaca bank gambar, tidak menulis data: boleh tanpa sesi berlangsung (hasil tetap butuh sesi di `simpan`)
       const daftar = await gambarModel.puzzleAktif(kategori);
       if (daftar.length === 0) throw new AppError(t('template.belumAdaGambar'), 404);
       const g = daftar[acak(daftar.length)];

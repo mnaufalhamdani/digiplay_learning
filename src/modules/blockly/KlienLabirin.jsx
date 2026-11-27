@@ -12,6 +12,7 @@ import Button from '@/modules/shared/ui/Button';
 import Card from '@/modules/shared/ui/Card';
 import Ikon from '@/modules/shared/ui/Ikon';
 import TautanTombol from '@/modules/shared/ui/TautanTombol';
+import TombolKembali from '@/modules/shared/ui/TombolKembali';
 import Konfeti from '@/modules/shared/ui/domain/Konfeti';
 import Maskot from '@/modules/shared/ui/domain/Maskot';
 import PapanLabirin from './PapanLabirin';
@@ -158,9 +159,14 @@ export default function KlienLabirin({ labirin, sesiAktif, tugas }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <TautanTombol href={gabungJalur(basis, '/coding-zippy')} varian="hantu" ikon="kembali">
-          {t('blockly.kembaliDaftar')}
-        </TautanTombol>
+        {/* dari kartu tugas: kembali ke halaman asal (dashboard); dari daftar labirin: kembali ke daftar labirin */}
+        {tugas ? (
+          <TombolKembali cadangan={gabungJalur(basis, '/')} />
+        ) : (
+          <TautanTombol href={gabungJalur(basis, '/coding-zippy')} varian="hantu" ikon="kembali">
+            {t('umum.kembali')}
+          </TautanTombol>
+        )}
         <h1 className="font-display text-[1.6em] font-bold">{labirin.nama}</h1>
         {dariTugas && <Badge nada="info">{t('blockly.tugasIni')}</Badge>}
         {labirin.sudahSelesai && (

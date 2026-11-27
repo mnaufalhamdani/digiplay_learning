@@ -59,7 +59,10 @@ CREATE TABLE pengaturan (
 INSERT IGNORE INTO pengaturan (kunci, nilai) VALUES
   ('nama_pelatihan',            'DigiPlay Learning'),
   ('nama_perusahaan',           ''),
-  ('logo_path',                 ''),
+  ('logo_path',                 ''),   -- Logo utama (landscape); kosong = bawaan public/aset/logo
+  ('logo_ikon',                 ''),   -- Logo ikon (persegi); kosong = bawaan
+  ('logo_persegi_teks',         ''),   -- Logo persegi dengan teks; kosong = bawaan
+  ('logo_sertifikat',           ''),   -- Logo di PDF sertifikat; kosong = Logo utama
   ('batas_tidak_aktif_menit',   '5'),   -- login perangkat siswa berakhir bila tidak aktif selama ini
   ('nilai_lulus_total',         '70'),  -- nilai total minimal post test
   ('nilai_lulus_bagian',        '50'),  -- nilai minimal tiap bagian post test
@@ -71,7 +74,9 @@ INSERT IGNORE INTO pengaturan (kunci, nilai) VALUES
   ('rubrik_bawaan',             '[{"kriteria":"Tugas dikerjakan sesuai perintah","poin":60},{"kriteria":"Hasil rapi dan lengkap","poin":25},{"kriteria":"Siswa bisa menjelaskan hasilnya","poin":15}]'),
   -- penandatangan sertifikat PDF (opsional); kosong = hanya garis tanda tangan dan nama pelatihan
   ('penandatangan_nama',        ''),
-  ('penandatangan_jabatan',     '');
+  ('penandatangan_jabatan',     ''),
+  -- path relatif gambar tanda tangan PNG transparan di uploads/tandatangan/ (kosong = belum diunggah)
+  ('tanda_tangan_path',         '');
 
 -- Akun admin dan tutor. Akun tidak dihapus, cukup dinonaktifkan (riwayat sesi tetap utuh).
 CREATE TABLE pengguna (
@@ -297,6 +302,7 @@ CREATE TABLE sesi (
   KEY idx_sesi_siswa_level (siswa_level_id, pertemuan_id),
   KEY idx_sesi_tanggal (tanggal),
   KEY idx_sesi_status (status, jam_masuk),             -- Fase F: sesi berlangsung dan lencana menu Absensi
+  KEY idx_sesi_siswa_waktu (siswa_id, jam_masuk),      -- Penyempurnaan Tahap 5: riwayat sesi per siswa berpaginasi (detail siswa, rapor orang tua)
   CONSTRAINT fk_sesi_siswa        FOREIGN KEY (siswa_id)               REFERENCES siswa (id),
   CONSTRAINT fk_sesi_siswa_level  FOREIGN KEY (siswa_level_id)         REFERENCES siswa_level (id) ON DELETE CASCADE,
   CONSTRAINT fk_sesi_pertemuan    FOREIGN KEY (pertemuan_id)           REFERENCES pertemuan (id),
@@ -508,6 +514,9 @@ CREATE TABLE post_test (
   lulus               TINYINT(1)   NULL,
   dibuka_oleh         BIGINT UNSIGNED NULL,
   bagian_ulang        JSON         NULL,                -- tes ulang: daftar id bagian_post_test yang diulang (teks id); NULL = semua bagian
+  ringkasan_tutor     TEXT         NULL,                -- ringkasan penilaian keseluruhan siswa dari tutor (maks. 2000 karakter, divalidasi aplikasi); tampil di rapor orang tua setelah finalisasi
+  ringkasan_oleh      BIGINT UNSIGNED NULL,             -- pengguna yang terakhir mengubah ringkasan
+  ringkasan_at        DATETIME     NULL,                -- waktu ringkasan terakhir diubah
   aktif_kunci         BIGINT UNSIGNED GENERATED ALWAYS AS (IF(status = 'berlangsung', siswa_level_id, NULL)) STORED,
   created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -517,7 +526,8 @@ CREATE TABLE post_test (
   KEY idx_post_test_status (status, nilai_total),      -- Fase F: tab dan kartu "menunggu penilaian"
   CONSTRAINT fk_post_test_siswa_level FOREIGN KEY (siswa_level_id) REFERENCES siswa_level (id),
   CONSTRAINT fk_post_test_sesi        FOREIGN KEY (sesi_id)        REFERENCES sesi (id),
-  CONSTRAINT fk_post_test_dibuka_oleh FOREIGN KEY (dibuka_oleh)    REFERENCES pengguna (id) ON DELETE SET NULL
+  CONSTRAINT fk_post_test_dibuka_oleh FOREIGN KEY (dibuka_oleh)    REFERENCES pengguna (id) ON DELETE SET NULL,
+  CONSTRAINT fk_post_test_ringkasan_oleh FOREIGN KEY (ringkasan_oleh) REFERENCES pengguna (id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- Tugas post test merujuk ke post_test lewat tugas_siswa.post_test_id; ikatan FK-nya ditambahkan

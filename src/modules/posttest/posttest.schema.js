@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { t } from '@/utils/i18n';
 import { idSchema } from '@/utils/schemaDasar';
+import { MAKS_RINGKASAN_POST_TEST } from '@/enums';
 import { angkaMengetikSchema } from '@/modules/mengetik/mengetik.schema';
 
 /** Schema jawaban butir post test (pilihan ganda: indeks asli opsi; isian: teks/angka; boleh dikosongkan). */
@@ -44,6 +45,14 @@ export const nilaiButirSchema = z.object({
   catatan: z.string().trim().max(500, t('validasi.maksKarakter', { maks: 500 })).default(''),
 });
 
+/** Schema ringkasan penilaian siswa dari tutor: teks bebas boleh kosong (menghapus), maksimal MAKS_RINGKASAN_POST_TEST karakter. */
+export const ringkasanSchema = z.object({
+  id: idSchema,
+  ringkasan: z
+    .string()
+    .trim()
+    .max(MAKS_RINGKASAN_POST_TEST, t('posttest.ringkasanTerlaluPanjang', { maks: MAKS_RINGKASAN_POST_TEST })),
+});
 /** Schema unduh bahan butir post test dari query string. */
 export const unduhButirSchema = z.object({ tugasId: idSchema, kode: z.string().trim().max(10) });
 

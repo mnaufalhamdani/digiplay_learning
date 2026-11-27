@@ -10,6 +10,7 @@ import Paginasi from '@/modules/shared/ui/Paginasi';
 import Select from '@/modules/shared/ui/Select';
 import TabelResponsif from '@/modules/shared/ui/TabelResponsif';
 import TextField from '@/modules/shared/ui/TextField';
+import TabelLog from './TabelLog';
 
 /** Label ramah untuk kode aksi; kode yang belum punya terjemahan ditampilkan apa adanya. */
 function labelAksi(aksi) {
@@ -18,7 +19,7 @@ function labelAksi(aksi) {
   return label.startsWith('log.aksiLabel.') ? aksi : label;
 }
 
-/** Isi kolom detail (JSON) yang bisa dibuka-tutup. */
+/** Isi kolom detail (JSON) yang bisa dibuka-tutup. Tidak dipakai lagi: tabel kini memakai TabelLog (detail tampil selebar tabel di bawah baris). */
 function Detail({ detail }) {
   // aksi tanpa detail (mis. reset password)
   if (detail == null) return <span className="text-muted">-</span>;
@@ -38,6 +39,7 @@ export default async function HalamanLog({ searchParams }) {
   const { filter } = data;
   const href = (jalur) => gabungJalur(info.basis, jalur);
   const semua = { nilai: '', label: t('umum.semua') };
+  // definisi kolom lama untuk TabelResponsif; tidak dipakai lagi karena tabel kini memakai TabelLog
   const kolom = [
     { label: t('log.waktu'), isi: (b) => <span className="whitespace-nowrap">{formatWaktu(b.created_at)}</span> },
     { label: t('log.pengguna'), isi: (b) => b.pengguna_nama ?? <span className="text-muted">{t('log.sistem')}</span> },
@@ -45,6 +47,8 @@ export default async function HalamanLog({ searchParams }) {
     { label: t('log.entitas'), isi: (b) => <span className="break-all">{b.entitas}{b.entitas_id ? ` #${b.entitas_id}` : ''}</span> },
     { label: t('log.detail'), isi: (b) => <Detail detail={b.detail} /> },
   ];
+  // TabelLog (client component) hanya menerima data murni, jadi label dan format waktu disiapkan di sini
+  const barisTabel = data.baris.map((b) => ({ id: b.id, waktu: formatWaktu(b.created_at), pengguna_nama: b.pengguna_nama ?? null, aksi_label: labelAksi(b.aksi), entitas: b.entitas, entitas_id: b.entitas_id ?? null, detail: b.detail ?? null }));
   return (
     <div className="space-y-4">
       <h1 className="text-[1.5em] font-bold">{t('log.judul')}</h1>
@@ -56,7 +60,7 @@ export default async function HalamanLog({ searchParams }) {
         <TextField label={t('log.sampai')} name="sampai" type="date" defaultValue={filter.sampai ?? ''} />
       </FormFilter>
       {/* belum ada log atau hasil filter kosong */}
-      {data.baris.length === 0 ? <EmptyState judul={t('log.kosong')} ikon="log" /> : <TabelResponsif kolom={kolom} baris={data.baris} />}
+      {data.baris.length === 0 ? <EmptyState judul={t('log.kosong')} ikon="log" /> : <TabelLog baris={barisTabel} />}
       <Paginasi halaman={data.halaman} totalHalaman={data.totalHalaman} total={data.total} hrefHalaman={(n) => href(jalurQuery('/log', { ...filter, halaman: n }))} />
     </div>
   );
